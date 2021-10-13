@@ -1,0 +1,58 @@
+{
+  "name": "guildxyz",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "type-check": "tsc --pretty --noEmit",
+    "format": "prettier --write .",
+    "lint": "next lint",
+    "lint-fix": "eslint --fix . --ext .ts,.tsx,.js,.jsx"
+  },
+  "dependencies": {
+    "@solana/wallet-adapter-base": "^0.6.0",
+    "@solana/wallet-adapter-phantom": "^0.6.1",
+    "@solana/wallet-adapter-react": "^0.12.4",
+    "@solana/wallet-adapter-wallets": "^0.10.1",
+    "@solana/web3.js": "^1.20.0",
+    "@chakra-ui/react": "^1.6.9",
+    "@chakra-ui/hooks": "^1.6.0",
+    "@chakra-ui/theme-tools": "^1.2.1",
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "focus-visible": "^5.2.0",
+    "framer-motion": "^4.1.17",
+    "phosphor-react": "^1.3.1",
+    "react-select": "^5.1.0",
+    "react-hook-form": "^7.17.2",
+    "slugify": "^1.6.1",
+    "swr": "^1.0.1",
+    "xstate": "^4.25.0",
+    "@xstate/react": "^1.6.1",
+    "next": "^11.1.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^16.10.3",
+    "@types/react": "^17.0.24",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-typescript": "^14.0.1",
+    "eslint-config-next": "^11.1.2",
+    "eslint-config-prettier": "^8.3.0",
+    "husky": "^7.0.2",
+    "lint-staged": "^11.2.3",
+    "prettier": "^2.4.1",
+    "prettier-plugin-jsdoc": "^0.3.24",
+    "next-transpile-modules": "^8.0.0",
+    "shx": "^0.3.3",
+    "typescript": "^4.4.3"
+  },
+  "lint-staged": {
+    "*.@(js|jsx|ts|tsx)": "npm run lint-fix",
+    "*.@(js|jsx|ts|tsx|css|md)": "npm run format"
+  }
+}
