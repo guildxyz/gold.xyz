@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import CopyableAddress from "components/common/CopyableAddress"
-import GuildAvatar from "components/common/GuildAvatar"
+import Identicon from "components/common/Identicon"
 import Modal from "components/common/Modal"
 import { useWalletModal } from "components/_app/WalletModalProvider"
 
@@ -32,9 +32,9 @@ const AccountModal = ({ isOpen, onClose }) => {
         <ModalCloseButton />
         <ModalBody>
           <Stack direction="row" spacing="4" alignItems="center">
-            <GuildAvatar address={publicKey} />
+            <Identicon address={publicKey.toBase58()} />
             <CopyableAddress
-              address={publicKey.toString()}
+              address={publicKey.toBase58()}
               decimals={5}
               fontSize="2xl"
             />

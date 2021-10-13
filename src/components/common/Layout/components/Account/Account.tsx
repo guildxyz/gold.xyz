@@ -1,6 +1,6 @@
 import { HStack, Text, useDisclosure } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import GuildAvatar from "components/common/GuildAvatar"
+import Identicon from "components/common/Identicon"
 import { useWalletModal } from "components/_app/WalletModalProvider"
 import { SignIn } from "phosphor-react"
 import shortenHex from "utils/shortenHex"
@@ -32,9 +32,9 @@ const Account = (): JSX.Element => {
       <AccountButton onClick={onAccountModalOpen}>
         <HStack spacing={3}>
           <Text as="span" fontSize="md" fontWeight="semibold">
-            {shortenHex(publicKey.toString(), 3)}
+            {shortenHex(publicKey.toBase58(), 3)}
           </Text>
-          <GuildAvatar address={publicKey} size={4} />
+          <Identicon address={publicKey.toBase58()} size={20} />
         </HStack>
       </AccountButton>
 
