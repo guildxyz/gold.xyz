@@ -1,29 +1,21 @@
-import {
-  Icon,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-  useDisclosure,
-  Text,
-} from "@chakra-ui/react"
-import { useWallet } from "@solana/wallet-adapter-react"
-import { Wallet, WalletName } from "@solana/wallet-adapter-wallets"
-import Link from "components/common/Link"
-import Modal from "components/common/Modal"
-import { ArrowSquareOut } from "phosphor-react"
+import { useDisclosure } from "@chakra-ui/react"
+import { WalletError } from "@solana/wallet-adapter-base"
+import { Wallet } from "@solana/wallet-adapter-wallets"
 import React, {
   createContext,
+  Dispatch,
   PropsWithChildren,
+  SetStateAction,
   useContext,
-  useEffect,
-  useState,
 } from "react"
 import WalletModal from "./components/WalletModal"
-import ConnectorButton from "./components/WalletModal/components/ConnectorButton"
+
+type Props = {
+  error: WalletError
+  removeError: () => void
+  activeWallet: Wallet
+  setActiveWallet: Dispatch<SetStateAction<Wallet>>
+}
 
 const WalletModalContext = createContext({
   isOpen: false,
@@ -31,8 +23,19 @@ const WalletModalContext = createContext({
   onClose: () => {},
 })
 
-const WalletModalProvider = ({ children }: PropsWithChildren<any>): JSX.Element => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+const WalletModalProvider = ({
+  removeError,
+  error,
+  activeWallet,
+  setActiveWallet,
+  children,
+}: PropsWithChildren<Props>): JSX.Element => {
+  const { isOpen, onOpen, onClose: onCloseInitial } = useDisclosure()
+
+  const onClose = () => {
+    removeError()
+    onCloseInitial()
+  }
 
   return (
     <WalletModalContext.Provider
@@ -47,6 +50,10 @@ const WalletModalProvider = ({ children }: PropsWithChildren<any>): JSX.Element 
         {...{
           isOpen,
           onClose,
+          error,
+          removeError,
+          activeWallet,
+          setActiveWallet,
         }}
       />
     </WalletModalContext.Provider>

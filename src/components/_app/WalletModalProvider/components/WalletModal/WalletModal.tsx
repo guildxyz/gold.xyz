@@ -9,38 +9,45 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
+import { WalletError } from "@solana/wallet-adapter-base"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { Wallet, WalletName } from "@solana/wallet-adapter-wallets"
+import { Wallet } from "@solana/wallet-adapter-wallets"
+import { Error } from "components/common/Error"
 import Link from "components/common/Link"
 import Modal from "components/common/Modal"
 import { ArrowSquareOut } from "phosphor-react"
-import React, { useEffect, useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect } from "react"
 import ConnectorButton from "./components/ConnectorButton"
+import processWalletError from "./utils/processWalletError"
 
 type Props = {
   isOpen: boolean
   onClose: () => void
+  error: WalletError
+  removeError: () => void
+  activeWallet: Wallet
+  setActiveWallet: Dispatch<SetStateAction<Wallet>>
 }
 
-const WalletModal = ({ isOpen, onClose }: Props): JSX.Element => {
-  const { wallets, select, connected, connecting, adapter } = useWallet()
-
-  const [activatingConnector, setActivatingConnector] = useState<Wallet>()
-  useEffect(() => {
-    if (activatingConnector && activatingConnector.adapter() === adapter) {
-      setActivatingConnector(undefined)
-    }
-  }, [activatingConnector, adapter])
+const WalletModal = ({
+  isOpen,
+  onClose,
+  error,
+  removeError,
+  activeWallet,
+  setActiveWallet,
+}: Props): JSX.Element => {
+  const { wallets, select, connected, connecting } = useWallet()
 
   const handleConnect = (wallet: Wallet) => {
-    // setActivatingConnector(wallet)
+    removeError()
     select(wallet.name)
-    // onClose()
+    setActiveWallet(wallet)
   }
 
   useEffect(() => {
     if (connected) onClose()
-  }, [connected, onClose])
+  }, [connected]) // intentionally leaving onClose out
 
   return (
     <>
@@ -50,7 +57,7 @@ const WalletModal = ({ isOpen, onClose }: Props): JSX.Element => {
           <ModalHeader>Connect to a wallet</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {/* <Error error={error} processError={processConnectionError} /> */}
+            <Error error={error} processError={processWalletError} />
             <Stack spacing="4">
               {wallets?.map((wallet) => (
                 <ConnectorButton
@@ -58,8 +65,8 @@ const WalletModal = ({ isOpen, onClose }: Props): JSX.Element => {
                   wallet={wallet}
                   onClick={() => handleConnect(wallet)}
                   disabled={connecting}
-                  isActive={adapter === wallet.adapter()}
-                  isLoading={activatingConnector === wallet}
+                  isActive={wallet === activeWallet}
+                  isLoading={connecting && activeWallet === wallet}
                 />
               ))}
             </Stack>
