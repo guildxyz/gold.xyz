@@ -2,6 +2,7 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  Divider,
   Flex,
   Stack,
   VStack,
@@ -40,16 +41,18 @@ const CreateGuildPage = (): JSX.Element => {
                 <AssetSelector />
               </Section>
 
-              <Section title="Set rounds">
-                <VStack spacing="4">
-                  <RoundSelector />
-
-                  <NumberOfRounds />
-                </VStack>
+              <Section title="Set the minimum price">
+                <MinPrice />
               </Section>
 
-              <Section title="Set minimum price">
-                <MinPrice />
+              <Divider />
+
+              <Section title="Set round term">
+                <RoundSelector />
+              </Section>
+
+              <Section title="Set the number of rounds">
+                <NumberOfRounds />
               </Section>
             </VStack>
 

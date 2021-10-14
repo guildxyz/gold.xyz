@@ -1,7 +1,6 @@
 import {
   FormControl,
   FormErrorMessage,
-  FormLabel,
   SimpleGrid,
   useRadioGroup,
 } from "@chakra-ui/react"
@@ -51,7 +50,7 @@ const RoundSelector = () => {
 
   return (
     <FormControl isRequired isInvalid={errors?.roundTerm}>
-      <FormLabel>Round term</FormLabel>
+      {/* <FormLabel>Round term</FormLabel> */}
       <SimpleGrid
         {...group}
         columns={{ base: 1, sm: 2, md: 4 }}

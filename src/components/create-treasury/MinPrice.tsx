@@ -3,11 +3,8 @@ import {
   FormErrorMessage,
   InputGroup,
   InputRightAddon,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
 } from "@chakra-ui/react"
 import { useFormContext } from "react-hook-form"
 
@@ -26,11 +23,12 @@ const MinPrice = () => {
               required: "This field is required.",
             })}
             borderRightRadius="0"
+            placeholder="0"
           />
-          <NumberInputStepper>
+          {/* <NumberInputStepper>
             <NumberIncrementStepper />
             <NumberDecrementStepper />
-          </NumberInputStepper>
+          </NumberInputStepper> */}
         </NumberInput>
         <InputRightAddon>SOL</InputRightAddon>
       </InputGroup>
