@@ -12,7 +12,7 @@ const size: Record<string, SystemStyleObject> = {
   },
 
   md: {
-    borderRadius: "lg",
+    borderRadius: "xl",
   },
 
   sm: {

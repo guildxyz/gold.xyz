@@ -11,7 +11,7 @@ function getSize(size: Size): PartsStyleObject<typeof parts> {
 
   const radius: Record<Size, string> = {
     lg: "xl",
-    md: "lg",
+    md: "xl",
     sm: "lg",
     xs: "md",
   }
