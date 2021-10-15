@@ -5,10 +5,6 @@ import {
   Heading,
   HStack,
   Image,
-  InputGroup,
-  InputRightElement,
-  NumberInput,
-  NumberInputField,
   SimpleGrid,
   Stat,
   StatLabel,
@@ -18,6 +14,7 @@ import {
 } from "@chakra-ui/react"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
+import Bid from "components/[auction]/Bid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import useBids from "components/[auction]/hooks/useBids"
 import { useRouter } from "next/router"
@@ -46,23 +43,7 @@ const Page = (): JSX.Element => {
               <StatNumber>16:53:24</StatNumber>
             </Stat>
           </HStack>
-          <HStack spacing="3">
-            <InputGroup size="lg">
-              <NumberInput w="full">
-                <NumberInputField
-                  placeholder={(largestBid + 1).toString()}
-                  min={largestBid + 1}
-                  name="bid"
-                />
-              </NumberInput>
-              <InputRightElement>
-                <Text colorScheme="gray" mr="4">
-                  SOL
-                </Text>
-              </InputRightElement>
-            </InputGroup>
-            <Button size="lg">Place bid</Button>
-          </HStack>
+          <Bid />
           <VStack>
             {bids?.slice(0, 2).map((bid) => (
               <Flex
