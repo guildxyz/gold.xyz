@@ -80,13 +80,7 @@ const UploadFile = () => {
   const { colorMode } = useColorMode()
 
   return (
-    <FormControl
-      isInvalid={!!errors.nftImage}
-      isRequired
-      h="full"
-      d="flex"
-      flexDir="column"
-    >
+    <FormControl isInvalid={!!errors.nftImage} h="full" d="flex" flexDir="column">
       <FormLabel>Upload file</FormLabel>
 
       <FileUpload
