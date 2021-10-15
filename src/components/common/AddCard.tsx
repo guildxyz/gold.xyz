@@ -1,14 +1,15 @@
 import { Box, Icon, Stack, Text, useColorMode } from "@chakra-ui/react"
 import Link from "components/common/Link"
 import { Plus } from "phosphor-react"
+import { Rest } from "types"
 
 type Props = {
   text: string
   link?: string
   onClick?: () => void
-}
+} & Rest
 
-const AddCard = ({ text, link, onClick }: Props): JSX.Element => {
+const AddCard = ({ text, link, onClick, ...rest }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
 
   const Component = link ? Link : Box
@@ -30,6 +31,7 @@ const AddCard = ({ text, link, onClick }: Props): JSX.Element => {
       href={link ? link : ""}
       cursor="pointer"
       onClick={onClick}
+      {...rest}
     >
       <Stack direction="row" spacing={{ base: 5, sm: 10 }} alignItems="center">
         <Icon
