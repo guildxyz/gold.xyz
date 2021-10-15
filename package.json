@@ -28,6 +28,7 @@
     "bs58": "^4.0.1",
     "focus-visible": "^5.2.0",
     "framer-motion": "^4.1.17",
+    "multer": "^1.4.3",
     "multiparty": "^4.2.2",
     "next": "^11.1.2",
     "next-connect": "^0.10.2",

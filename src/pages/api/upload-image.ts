@@ -1,14 +1,17 @@
 import fleekStorage from "@fleekhq/fleek-storage-js"
-import middleware from "middleware"
+import multer from "multer"
 import type { NextApiRequest, NextApiResponse } from "next"
 import nextConnect from "next-connect"
 
-const handler = nextConnect()
-handler.use(middleware)
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 
-type Data = {
-  imageUrl: string
-}
+const handler = nextConnect({
+  onError(error, req, res: NextApiResponse) {
+    res.status(501).json({ error: `${error.message}` })
+  },
+})
+handler.use(upload.single("nftImage"))
 
 const uploadImage = async (key: string, file: File) => {
   const uploadedFile = await fleekStorage.upload({
@@ -17,17 +20,17 @@ const uploadImage = async (key: string, file: File) => {
     key,
     data: file,
   })
-  return uploadedFile.hash
+  return uploadedFile.publicUrl
+}
+
+type Data = {
+  publicUrl: string
 }
 
 handler.post(
-  async (req: NextApiRequest & { files: File[] }, res: NextApiResponse<Data>) => {
-    // console.log("req", req)
-    // console.log("body", req.body)
-    // console.log("files", req.files)
-    const hash = await uploadImage("test", req.files[0])
-
-    res.status(200).json({ imageUrl: hash })
+  async (req: NextApiRequest & { file: any }, res: NextApiResponse<Data>) => {
+    const publicUrl = await uploadImage(req.file.originalname, req.file.buffer)
+    res.status(200).json({ publicUrl })
   }
 )
 
