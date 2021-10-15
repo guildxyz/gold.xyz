@@ -11,6 +11,20 @@ type Rest = {
 type Auction = {
   id: string
   name: string
+  nftData: {
+    name: string
+    symbol: string
+    uri: string
+  }
+  cyclePeriod: number
+  numberOfCycles: number
+  minBid: number
+  startTimestamp: number
 }
 
-export type { Icon, Rest, Auction }
+type Bid = {
+  amount: number
+  userPubKey: string
+}
+
+export type { Icon, Rest, Auction, Bid }
