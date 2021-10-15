@@ -6,6 +6,7 @@ import Menu from "./menu"
 import Modal from "./modal"
 import NumberInput from "./number-input"
 import Select from "./select"
+import Stat from "./stat"
 import Tag from "./tag"
 import Text from "./text"
 import Textarea from "./textarea"
@@ -24,5 +25,6 @@ const components = {
   Text,
   Textarea,
   Tooltip,
+  Stat,
 }
 export default components

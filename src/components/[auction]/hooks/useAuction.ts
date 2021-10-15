@@ -13,7 +13,7 @@ const getAuction = (_, id: number): Auction => ({
   nftData: {
     name: "Asd NFT",
     symbol: "ASD",
-    uri: "storageapi.fleek.co/608ac2f5-df51-4e35-a363-1afacc7db6d3-bucket/dovalid_agora.png",
+    uri: "https://storageapi.fleek.co/608ac2f5-df51-4e35-a363-1afacc7db6d3-bucket/dovalid_agora.png",
   },
 })
 
@@ -24,7 +24,7 @@ const useAuction = (): Auction => {
   const shouldFetch = !!publicKey
 
   const { data } = useSWR(
-    shouldFetch ? ["auction", router.asPath] : null,
+    shouldFetch ? ["auction", router.query.auction] : null,
     getAuction
   )
 

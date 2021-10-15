@@ -20,6 +20,7 @@
     "arrow-body-style": "warn",
     "consistent-return": "off",
     "import/no-absolute-path": "off",
+    "import/no-anonymous-default-export": "off",
     "react/display-name": "off",
     "react/require-default-props": "off",
     "react/no-unescaped-entities": "off",
