@@ -1,5 +1,5 @@
 import { Box, Button, useColorMode, useRadio } from "@chakra-ui/react"
-import CustomRound from "components/create-treasury/RoundSelector/components/CustomRound"
+import CustomRound from "components/create-auction/RoundSelector/components/CustomRound"
 import { useFormContext } from "react-hook-form"
 
 const RoundOption = (props) => {

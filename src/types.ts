@@ -8,9 +8,9 @@ type Rest = {
   [x: string]: any
 }
 
-type Treasury = {
+type Auction = {
+  id: string
   name: string
-  urlName: string
 }
 
-export type { Icon, Rest, Treasury }
+export type { Icon, Rest, Auction }

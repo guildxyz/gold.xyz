@@ -1,11 +1,11 @@
 import CtaButton from "components/common/CtaButton"
 import usePersonalSign from "hooks/usePersonalSign"
 import { useFormContext } from "react-hook-form"
-import useTreasurySubmit from "./hooks/useTreasurySubmit"
+import useAuctionSubmit from "./hooks/useAuctionSubmit"
 
 const SubmitButton = () => {
   const { isSigning, callbackWithSign } = usePersonalSign(true)
-  const { onSubmit, isLoading, isImageLoading, response } = useTreasurySubmit()
+  const { onSubmit, isLoading, isImageLoading, response } = useAuctionSubmit()
 
   const { handleSubmit } = useFormContext()
 

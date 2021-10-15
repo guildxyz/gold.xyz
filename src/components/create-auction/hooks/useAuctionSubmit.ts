@@ -8,7 +8,7 @@ const fetchImage = (data) =>
     body: data,
   }).then((response) => response)
 
-const useTreasurySubmit = () => {
+const useAuctionSubmit = () => {
   const [data, setData] = useState()
   const { onSubmit, response, error, isLoading } = useSubmit((_) => {
     console.log("submitting", _)
@@ -42,4 +42,4 @@ const useTreasurySubmit = () => {
   }
 }
 
-export default useTreasurySubmit
+export default useAuctionSubmit

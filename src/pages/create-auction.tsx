@@ -10,12 +10,12 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
 import Section from "components/common/Section"
-import AssetSelector from "components/create-treasury/AssetSelector"
-import MinPrice from "components/create-treasury/MinPrice"
-import NameAndIcon from "components/create-treasury/NameAndIcon"
-import NumberOfRounds from "components/create-treasury/NumberOfRounds"
-import RoundSelector from "components/create-treasury/RoundSelector"
-import SubmitButton from "components/create-treasury/SubmitButton"
+import AssetSelector from "components/create-auction/AssetSelector"
+import MinPrice from "components/create-auction/MinPrice"
+import NameAndIcon from "components/create-auction/NameAndIcon"
+import NumberOfRounds from "components/create-auction/NumberOfRounds"
+import RoundSelector from "components/create-auction/RoundSelector"
+import SubmitButton from "components/create-auction/SubmitButton"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { FormProvider, useForm } from "react-hook-form"
 
@@ -33,7 +33,7 @@ const CreateGuildPage = (): JSX.Element => {
         {connected ? (
           <>
             <VStack spacing={10} alignItems="start">
-              <Section title="Choose a name for your treasury">
+              <Section title="Choose a name for your auction">
                 <NameAndIcon />
               </Section>
 

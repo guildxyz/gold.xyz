@@ -1,18 +1,18 @@
 import { Flex, Text, useColorMode, VStack } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import Link from "components/common/Link"
-import { Treasury } from "types"
+import { Auction } from "types"
 
 type Props = {
-  treasury: Treasury
+  auction: Auction
 }
 
-const TreasuryCard = ({ treasury }: Props): JSX.Element => {
+const AuctionCard = ({ auction }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
 
   return (
     <Link
-      href={`/${treasury.urlName}`}
+      href={`/${auction.id}`}
       _hover={{ textDecor: "none" }}
       borderRadius="2xl"
       w="full"
@@ -56,7 +56,7 @@ const TreasuryCard = ({ treasury }: Props): JSX.Element => {
               fontWeight="bold"
               letterSpacing="wide"
             >
-              {treasury.name}
+              {auction.name}
             </Text>
           </VStack>
         </Flex>
@@ -65,4 +65,4 @@ const TreasuryCard = ({ treasury }: Props): JSX.Element => {
   )
 }
 
-export default TreasuryCard
+export default AuctionCard

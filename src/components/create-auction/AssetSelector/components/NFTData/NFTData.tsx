@@ -10,7 +10,7 @@ import {
   NumberInputStepper,
   SimpleGrid,
 } from "@chakra-ui/react"
-import UploadFile from "components/create-treasury/UploadFile"
+import UploadFile from "components/create-auction/UploadFile"
 import { useFormContext } from "react-hook-form"
 
 const NFTData = () => {

@@ -15,7 +15,7 @@ const SearchBar = ({ setSearchInput }) => {
         <Icon color="#858585" size={20} as={MagnifyingGlass} />
       </InputLeftElement>
       <Input
-        placeholder="Search treasuries"
+        placeholder="Search auctions"
         overflow="hidden"
         whiteSpace="nowrap"
         textOverflow="ellipsis"

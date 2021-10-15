@@ -1,26 +1,26 @@
 import { useWallet } from "@solana/wallet-adapter-react"
 import useSWR from "swr"
-import { Treasury } from "types"
+import { Auction } from "types"
 
-const fetchTreasuries = (_, address: string) => [
+const getAuctions = (_, address: string) => [
   {
+    id: "871632352348723",
     name: "test",
-    urlName: "test",
   },
   {
+    id: "9716343487237821",
     name: "test2",
-    urlName: "test2",
   },
 ]
 
-const useTreasuries = (): Treasury[] => {
+const useAuctions = (): Auction[] => {
   const { publicKey } = useWallet()
 
   const shouldFetch = !!publicKey
 
   const { data } = useSWR(
-    shouldFetch ? ["treasuries", publicKey] : null,
-    fetchTreasuries,
+    shouldFetch ? ["auctions", publicKey] : null,
+    getAuctions,
     {
       refreshInterval: 10000,
     }
@@ -29,4 +29,4 @@ const useTreasuries = (): Treasury[] => {
   return data
 }
 
-export default useTreasuries
+export default useAuctions
