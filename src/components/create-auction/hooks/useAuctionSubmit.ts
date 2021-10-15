@@ -1,6 +1,8 @@
 import useSubmit from "hooks/useSubmit"
 import { useEffect, useState } from "react"
 
+const DAY_IN_SECONDS = 86400
+
 type ImageResponse = { publicUrl: string } | Response
 
 const fetchImage = (data): Promise<ImageResponse> =>
@@ -12,8 +14,11 @@ const fetchImage = (data): Promise<ImageResponse> =>
 const useAuctionSubmit = () => {
   const [data, setData] = useState({})
 
-  const { onSubmit, response, error, isLoading } = useSubmit((_) => {
-    console.log("submitting", _)
+  const { onSubmit, response, error, isLoading } = useSubmit<any, any>((_) => {
+    console.log("submitting", {
+      ..._,
+      roundTerm: (_.customRoundTerm ?? _.roundTerm) * DAY_IN_SECONDS,
+    })
     return Promise.resolve(_)
   })
 

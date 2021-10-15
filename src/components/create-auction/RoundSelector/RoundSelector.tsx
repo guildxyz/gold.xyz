@@ -43,7 +43,7 @@ const RoundSelector = () => {
     name: "roundTerm",
     onChange: field.onChange,
     value: field.value,
-    defaultValue: "1",
+    defaultValue: "86400",
   })
 
   const group = getRootProps()

@@ -27,7 +27,7 @@ const CustomRound = ({ isChecked }) => {
       <InputGroup>
         <NumberInput w="full">
           <NumberInputField
-            {...register("customroundTerm")}
+            {...register("customRoundTerm")}
             ref={inputRef}
             onClick={handleClick}
             h="12"
