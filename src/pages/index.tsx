@@ -19,7 +19,7 @@ const Page = (): JSX.Element => {
   const { publicKey } = useWallet()
 
   const filteredAuctions = useMemo(
-    () => auctions.filter(({ name }) => filterByName(name, searchInput)),
+    () => auctions?.filter(({ name }) => filterByName(name, searchInput)),
     [auctions, searchInput]
   )
 

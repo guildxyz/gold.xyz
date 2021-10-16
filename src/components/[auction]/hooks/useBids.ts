@@ -1,6 +1,6 @@
 import { useWallet } from "@solana/wallet-adapter-react"
 import { useRouter } from "next/router"
-import useSWR from "swr/immutable"
+import useSWR from "swr"
 import { Bid } from "types"
 
 type Response = {
@@ -40,6 +40,7 @@ const useBids = (): Response => {
 
   const { data } = useSWR(shouldFetch ? "bids" : null, getBids, {
     fallbackData: { bids: [], largestBid: null },
+    revalidateOnFocus: false,
   })
 
   return data

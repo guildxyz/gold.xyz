@@ -59,7 +59,10 @@ const Bid = () => {
       const newBid = { amount: parseInt(amount), userPubKey: publicKey.toBase58() }
       mutate(
         "bids",
-        (data) => ({ bids: [newBid, ...data.bids], largestBid: parseInt(amount) }),
+        async (data) => ({
+          bids: [newBid, ...data?.bids],
+          largestBid: parseInt(amount),
+        }),
         false
       )
     },
