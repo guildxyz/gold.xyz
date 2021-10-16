@@ -11,9 +11,9 @@ import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
 import Section from "components/common/Section"
 import AssetSelector from "components/create-auction/AssetSelector"
-import MinPrice from "components/create-auction/MinPrice"
+import MinBid from "components/create-auction/MinBid"
 import NameAndIcon from "components/create-auction/NameAndIcon"
-import NumberOfRounds from "components/create-auction/NumberOfRounds"
+import NumberOfCycles from "components/create-auction/NumberOfCycles"
 import RoundSelector from "components/create-auction/RoundSelector"
 import SubmitButton from "components/create-auction/SubmitButton"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
@@ -42,7 +42,7 @@ const CreateGuildPage = (): JSX.Element => {
               </Section>
 
               <Section title="Set the minimum price">
-                <MinPrice />
+                <MinBid />
               </Section>
 
               <Divider />
@@ -52,7 +52,7 @@ const CreateGuildPage = (): JSX.Element => {
               </Section>
 
               <Section title="Set the number of rounds">
-                <NumberOfRounds />
+                <NumberOfCycles />
               </Section>
             </VStack>
 

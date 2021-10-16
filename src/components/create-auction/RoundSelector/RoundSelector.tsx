@@ -34,13 +34,13 @@ const RoundSelector = () => {
 
   const { field } = useController({
     control,
-    name: "roundTerm",
-    rules: { required: "You must pick a roundTerm for your guild requirements" },
+    name: "cyclePeriod",
+    rules: { required: "You must pick a cyclePeriod" },
     defaultValue: "1",
   })
 
   const { getRootProps, getRadioProps } = useRadioGroup({
-    name: "roundTerm",
+    name: "cyclePeriod",
     onChange: field.onChange,
     value: field.value,
     defaultValue: "86400",
@@ -49,7 +49,7 @@ const RoundSelector = () => {
   const group = getRootProps()
 
   return (
-    <FormControl isRequired isInvalid={errors?.roundTerm}>
+    <FormControl isRequired isInvalid={errors?.cyclePeriod}>
       {/* <FormLabel>Round term</FormLabel> */}
       <SimpleGrid
         {...group}
@@ -62,7 +62,7 @@ const RoundSelector = () => {
         })}
         {/* <CustomRound /> */}
       </SimpleGrid>
-      <FormErrorMessage>{errors?.roundTerm?.message}</FormErrorMessage>
+      <FormErrorMessage>{errors?.cyclePeriod?.message}</FormErrorMessage>
     </FormControl>
   )
 }

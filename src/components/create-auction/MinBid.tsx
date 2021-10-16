@@ -9,18 +9,18 @@ import {
 } from "@chakra-ui/react"
 import { useFormContext } from "react-hook-form"
 
-const MinPrice = () => {
+const MinBid = () => {
   const {
     register,
     formState: { errors },
   } = useFormContext()
 
   return (
-    <FormControl isInvalid={errors?.minPrice} isRequired>
+    <FormControl isInvalid={errors?.minBid} isRequired>
       <InputGroup size="lg" maxW="sm">
         <NumberInput w="full">
           <NumberInputField
-            {...register("minPrice", {
+            {...register("minBid", {
               required: "This field is required.",
             })}
             // borderRightRadius="0"
@@ -37,9 +37,9 @@ const MinPrice = () => {
           </Text>
         </InputRightElement>
       </InputGroup>
-      <FormErrorMessage>{errors?.minPrice?.message}</FormErrorMessage>
+      <FormErrorMessage>{errors?.minBid?.message}</FormErrorMessage>
     </FormControl>
   )
 }
 
-export default MinPrice
+export default MinBid

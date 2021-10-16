@@ -6,18 +6,18 @@ import {
 } from "@chakra-ui/react"
 import { useFormContext } from "react-hook-form"
 
-const NumberOfRounds = () => {
+const NumberOfCycles = () => {
   const {
     register,
     formState: { errors },
   } = useFormContext()
 
   return (
-    <FormControl isInvalid={errors?.numberOfRounds} isRequired>
+    <FormControl isInvalid={errors?.numberOfCycles} isRequired>
       {/* <FormLabel>Number of rounds</FormLabel> */}
       <NumberInput size="lg" maxW="sm">
         <NumberInputField
-          {...register("numberOfRounds", {
+          {...register("numberOfCycles", {
             required: "This field is required.",
           })}
           placeholder="0"
@@ -27,9 +27,9 @@ const NumberOfRounds = () => {
           <NumberDecrementStepper />
         </NumberInputStepper> */}
       </NumberInput>
-      <FormErrorMessage>{errors?.numberOfRounds?.message}</FormErrorMessage>
+      <FormErrorMessage>{errors?.numberOfCycles?.message}</FormErrorMessage>
     </FormControl>
   )
 }
 
-export default NumberOfRounds
+export default NumberOfCycles

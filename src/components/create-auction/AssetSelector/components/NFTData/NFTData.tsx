@@ -23,30 +23,30 @@ const NFTData = () => {
     <SimpleGrid px="5" py="4" spacing="6" columns={{ base: 1, md: 2 }}>
       <UploadFile />
       <SimpleGrid columns={{ base: 1 }} spacing="8" w="full">
-        <FormControl isInvalid={errors?.nftName}>
+        <FormControl isInvalid={errors?.nftData?.name}>
           <FormLabel>Name</FormLabel>
           <Input
-            {...register("nftName", {
+            {...register("nftData.name", {
               required: "This field is required.",
             })}
           />
-          <FormErrorMessage>{errors?.nftName?.message}</FormErrorMessage>
+          <FormErrorMessage>{errors?.nftData?.name?.message}</FormErrorMessage>
         </FormControl>
 
-        <FormControl isInvalid={errors?.nftSymbol}>
+        <FormControl isInvalid={errors?.nftData?.symbol}>
           <FormLabel>Symbol</FormLabel>
           <Input
-            {...register("nftSymbol", {
+            {...register("nftData.symbol", {
               required: "This field is required.",
             })}
           />
-          <FormErrorMessage>{errors?.nftSymbol?.message}</FormErrorMessage>
+          <FormErrorMessage>{errors?.nftData?.symbol?.message}</FormErrorMessage>
         </FormControl>
-        <FormControl isInvalid={errors?.nftMaxSupply}>
+        <FormControl isInvalid={errors?.nftData?.maxSupply}>
           <FormLabel>Max supply</FormLabel>
           <NumberInput>
             <NumberInputField
-              {...register("nftMaxSupply", {
+              {...register("nftData.maxSupply", {
                 required: "This field is required.",
               })}
             />
@@ -55,7 +55,7 @@ const NFTData = () => {
               <NumberDecrementStepper />
             </NumberInputStepper>
           </NumberInput>
-          <FormErrorMessage>{errors?.nftMaxSupply?.message}</FormErrorMessage>
+          <FormErrorMessage>{errors?.nftData?.maxSupply?.message}</FormErrorMessage>
         </FormControl>
       </SimpleGrid>
     </SimpleGrid>

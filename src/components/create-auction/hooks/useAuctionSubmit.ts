@@ -1,9 +1,11 @@
+import startAuction from "contract-logic/startAuction"
 import useSubmit from "hooks/useSubmit"
 import { useEffect, useState } from "react"
+import { AuctionBody } from "types"
 
 const DAY_IN_SECONDS = 86400
 
-type ImageResponse = { publicUrl: string } | Response
+type ImageResponse = { publicUrl: string }
 
 const fetchImage = (data): Promise<ImageResponse> =>
   fetch("/api/upload-image", {
@@ -12,15 +14,11 @@ const fetchImage = (data): Promise<ImageResponse> =>
   }).then((response) => response.json())
 
 const useAuctionSubmit = () => {
-  const [data, setData] = useState({})
+  const [data, setData] = useState<AuctionBody>()
 
-  const { onSubmit, response, error, isLoading } = useSubmit<any, any>((_) => {
-    console.log("submitting", {
-      ..._,
-      roundTerm: (_.customRoundTerm ?? _.roundTerm) * DAY_IN_SECONDS,
-    })
-    return Promise.resolve(_)
-  })
+  const { onSubmit, response, error, isLoading } = useSubmit<AuctionBody, any>(
+    startAuction
+  )
 
   const {
     onSubmit: onSubmitImage,
@@ -34,12 +32,19 @@ const useAuctionSubmit = () => {
   })
 
   useEffect(() => {
-    if (imageResponse) onSubmit({ ...data, ...imageResponse })
+    if (imageResponse?.publicUrl)
+      onSubmit({
+        ...data,
+        nftData: { ...data.nftData, uri: imageResponse.publicUrl },
+      })
   }, [imageResponse])
 
   return {
     onSubmit: (_data) => {
-      setData(_data)
+      setData({
+        ..._data,
+        cyclePeriod: (_data.customCyclePeriod ?? _data.cyclePeriod) * DAY_IN_SECONDS,
+      })
       onSubmitImage(_data.nftImage)
     },
     error: error || imageError,

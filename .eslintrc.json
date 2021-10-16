@@ -4,7 +4,7 @@
   },
   "plugins": ["@typescript-eslint"],
   "extends": [
-    "airbnb-typescript",
+    // "airbnb-typescript",
     "plugin:@typescript-eslint/recommended",
     "next",
     "next/core-web-vitals",

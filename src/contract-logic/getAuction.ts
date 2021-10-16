@@ -1,5 +1,13 @@
-import { Connection, Keypair, PublicKey } from "@solana/web3.js"
+import { PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
+import {
+  auctionOwner,
+  connection,
+  EDITION,
+  METADATA_PROGRAM_ID,
+  PREFIX,
+  programId,
+} from "./config"
 import * as StateLayout from "./config/state_layout"
 
 async function getAuction() {
@@ -17,15 +25,6 @@ async function getAuction() {
       uri: "https://storageapi.fleek.co/608ac2f5-df51-4e35-a363-1afacc7db6d3-bucket/dovalid_agora.png",
     },
   }
-
-  const auctionOwner = new Keypair()
-  const programId = new PublicKey("C49m9xTNShV9Ab1YwhgGqN3tv6bM3mYFVcdPrLxiZj2V")
-  const connection = new Connection("https://api.testnet.solana.com", "singleGossip")
-  const METADATA_PROGRAM_ID = new PublicKey(
-    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-  )
-  const PREFIX = Buffer.from("metadata")
-  const EDITION = Buffer.from("edition")
 
   const auctionId = new Uint8Array([
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,

@@ -20,14 +20,14 @@ const CustomRound = ({ isChecked }) => {
     if (isChecked) inputRef.current.focus()
   }, [isChecked])
 
-  const handleClick = () => setValue("roundTerm", "CUSTOM")
+  const handleClick = () => setValue("cyclePeriod", "CUSTOM")
 
   return (
     <FormControl>
       <InputGroup>
         <NumberInput w="full">
           <NumberInputField
-            {...register("customRoundTerm")}
+            {...register("customCyclePeriod")}
             ref={inputRef}
             onClick={handleClick}
             h="12"
