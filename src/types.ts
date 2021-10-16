@@ -8,14 +8,21 @@ type Rest = {
   [x: string]: any
 }
 
+type Bid = {
+  amount: number
+  userPubKey: string
+}
+
 type AuctionBody = {
   name: string
   nftData: {
     name: string
     symbol: string
     uri: string
-    maxSupply: number
+    supply?: string
+    maxSupply?: string
   }
+  bids?: Bid[]
   cyclePeriod: number
   numberOfCycles: number
   minBid: number
@@ -24,11 +31,6 @@ type AuctionBody = {
 type Auction = AuctionBody & {
   id: string
   startTimestamp: number
-}
-
-type Bid = {
-  amount: number
-  userPubKey: string
 }
 
 export type { Icon, Rest, AuctionBody, Auction, Bid }

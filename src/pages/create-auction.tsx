@@ -1,15 +1,8 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Divider,
-  Flex,
-  Stack,
-  VStack,
-} from "@chakra-ui/react"
+import { Divider, Flex, VStack } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
 import Section from "components/common/Section"
+import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import AssetSelector from "components/create-auction/AssetSelector"
 import MinBid from "components/create-auction/MinBid"
 import NameAndIcon from "components/create-auction/NameAndIcon"
@@ -61,14 +54,7 @@ const CreateGuildPage = (): JSX.Element => {
             </Flex>
           </>
         ) : (
-          <Alert status="error" mb="6">
-            <AlertIcon />
-            <Stack>
-              <AlertDescription position="relative" top={1}>
-                Please connect your wallet in order to continue!
-              </AlertDescription>
-            </Stack>
-          </Alert>
+          <WalletNotConnectedAlert />
         )}
       </Layout>
     </FormProvider>

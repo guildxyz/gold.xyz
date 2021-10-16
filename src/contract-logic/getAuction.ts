@@ -1,5 +1,6 @@
 import { PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
+import { Auction } from "types"
 import {
   auctionOwner,
   connection,
@@ -10,18 +11,18 @@ import {
 } from "./config"
 import * as StateLayout from "./config/state_layout"
 
-async function getAuction() {
+async function getAuction(): Promise<Auction> {
   // temporary dummy data until the function doesn't work correctly
   return {
-    id: "871632352348723",
-    name: "test",
-    cyclePeriod: 1,
+    id: "0",
+    name: "First auction",
+    cyclePeriod: 64800,
     minBid: 300,
     numberOfCycles: 10,
     startTimestamp: 1634262267169,
     nftData: {
-      name: "Asd NFT",
-      symbol: "ASD",
+      name: "First NFT",
+      symbol: "SYMB",
       uri: "https://storageapi.fleek.co/608ac2f5-df51-4e35-a363-1afacc7db6d3-bucket/dovalid_agora.png",
     },
   }
@@ -82,15 +83,15 @@ async function getAuction() {
       name: "TODO",
       symbol: "TODO",
       uri: "TODO",
+      supply: nftState.supply.toString(),
+      maxSupply: nftState.maxSupply.toString(),
     },
-    bids: auctionState.bidHistory,
-    status: auctionState.status,
+    // bids: auctionState.bidHistory,
+    // status: auctionState.status,
     cyclePeriod: auctionState.config.cyclePeriod,
     numberOfCycles: auctionState.config.numberOfCycles,
     minBid: auctionState.config.minimumBidAmount,
     startTimestamp: auctionState.startTime,
-    supply: nftState.supply.toString(),
-    maxSupply: nftState.maxSupply.toString(),
   }
 }
 

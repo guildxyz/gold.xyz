@@ -1,3 +1,4 @@
+import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { useMachine } from "@xstate/react"
 import usePersonalSign from "hooks/usePersonalSign"
 import createFetchMachine from "./utils/fetchMachine"
@@ -11,10 +12,13 @@ const useSubmit = <DataType, ResponseType>(
   fetch: (data: DataType) => Promise<ResponseType>,
   { onSuccess, onError }: Options<ResponseType> = {}
 ) => {
-  const { callbackWithSign } = usePersonalSign(true)
+  const { connection } = useConnection()
+  const { publicKey, sendTransaction } = useWallet()
+  const { callbackWithSign, isSigning } = usePersonalSign(true)
   const [state, send] = useMachine(createFetchMachine<DataType, ResponseType>(), {
     services: {
       fetch: (_context, event) => {
+        // needed for typescript to ensure that event always has data property
         if (event.type !== "FETCH") return
         return fetch(event.data)
       },
@@ -33,7 +37,7 @@ const useSubmit = <DataType, ResponseType>(
     ...state.context,
     onSubmit: (data?: DataType) =>
       callbackWithSign(() => send({ type: "FETCH", data }))(),
-    isLoading: state.matches("fetching"),
+    isLoading: state.matches("fetching") || isSigning,
   }
 }
 

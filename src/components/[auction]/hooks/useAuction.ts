@@ -8,9 +8,7 @@ const useAuction = (): Auction => {
   const { publicKey } = useWallet()
   const router = useRouter()
 
-  const shouldFetch = !!publicKey
-
-  const { data } = useSWR(shouldFetch ? ["auction"] : null, getAuction)
+  const { data } = useSWR("auction", getAuction)
 
   return data
 }

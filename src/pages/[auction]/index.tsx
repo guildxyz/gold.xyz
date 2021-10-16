@@ -1,5 +1,4 @@
 import {
-  Button,
   Divider,
   Flex,
   Heading,
@@ -12,22 +11,31 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
+import { useWallet } from "@solana/wallet-adapter-react"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
+import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import Bid from "components/[auction]/Bid"
+import BidHistory from "components/[auction]/BidHistory"
 import useAuction from "components/[auction]/hooks/useAuction"
 import useBids from "components/[auction]/hooks/useBids"
-import { useRouter } from "next/router"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const data = useAuction()
   const { bids, largestBid } = useBids()
-  const router = useRouter()
+  const { publicKey } = useWallet()
+
+  if (!publicKey)
+    return (
+      <Layout title="Auction">
+        <WalletNotConnectedAlert />
+      </Layout>
+    )
 
   return (
     <Layout title={data?.name}>
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing="12">
+      <SimpleGrid columns={{ base: 1, md: 2 }} spacing="12" alignItems="center">
         <Image src={data?.nftData.uri} alt="NFT" borderRadius="xl" />
         <VStack alignItems="stretch" spacing="8">
           <Heading as="h3" fontSize="4xl" fontFamily="display">{`${
@@ -47,7 +55,7 @@ const Page = (): JSX.Element => {
           <VStack>
             {bids?.slice(0, 2).map((bid) => (
               <Flex
-                key={bid.userPubKey}
+                key={bid.amount}
                 bg="blackAlpha.300"
                 px="4"
                 py="3"
