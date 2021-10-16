@@ -69,9 +69,7 @@ const Page = (): JSX.Element => {
                 </Text>
               </Flex>
             ))}
-            <Button variant="ghost" bg="blackAlpha.200" h="48px" w="full">
-              Bid history
-            </Button>
+            <BidHistory />
           </VStack>
         </VStack>
       </SimpleGrid>

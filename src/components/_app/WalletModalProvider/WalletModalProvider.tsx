@@ -19,8 +19,8 @@ type Props = {
 
 const WalletModalContext = createContext({
   isOpen: false,
-  onOpen: () => {},
-  onClose: () => {},
+  onOpen: null,
+  onClose: null,
 })
 
 const WalletModalProvider = ({

@@ -7,6 +7,7 @@ import {
   NumberInputField,
   Text,
 } from "@chakra-ui/react"
+import { useWallet } from "@solana/wallet-adapter-react"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRef } from "react"
@@ -18,11 +19,12 @@ type Data = {
   amount: number
 }
 
-const placeBid = ({ amount }: Data) => Promise.resolve(console.log(amount))
+const placeBid = ({ amount }: Data) => Promise.resolve(amount)
 
 const Bid = () => {
   const { largestBid } = useBids()
   const { mutate } = useSWRConfig()
+  const { publicKey } = useWallet()
   const {
     handleSubmit,
     setValue,
@@ -48,13 +50,18 @@ const Bid = () => {
         title: "Error placing bid",
         status: "error",
       }),
-    onSuccess: () => {
+    onSuccess: (amount) => {
       toast({
-        title: "Bid successfully placed",
+        title: "Bid placed successfully",
         status: "success",
       })
       setValue("amount", "")
-      mutate("bids")
+      const newBid = { amount: parseInt(amount), userPubKey: publicKey.toBase58() }
+      mutate(
+        "bids",
+        (data) => ({ bids: [newBid, ...data.bids], largestBid: parseInt(amount) }),
+        false
+      )
     },
   })
 
@@ -75,7 +82,7 @@ const Bid = () => {
           <NumberInput w="full" {...field}>
             <NumberInputField
               ref={inputRef}
-              placeholder={(largestBid + 1).toString()}
+              placeholder={`min: ${largestBid + 1}`}
             />
           </NumberInput>
           <InputRightElement>
