@@ -4,13 +4,15 @@ import { useRouter } from "next/router"
 import useSWR from "swr"
 import { Auction } from "types"
 
-const useAuction = (): Auction => {
+const useAuction = (): Auction & { largestBid: number } => {
   const { publicKey } = useWallet()
   const router = useRouter()
 
-  const { data } = useSWR("auction", getAuction)
+  const { data } = useSWR("auction", getAuction, {
+    revalidateOnFocus: false,
+  })
 
-  return data
+  return { ...data, largestBid: Math.max(data?.bids?.map((bid) => bid.amount)) }
 }
 
 export default useAuction

@@ -18,12 +18,10 @@ import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import useAuction from "components/[auction]/hooks/useAuction"
-import useBids from "components/[auction]/hooks/useBids"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const data = useAuction()
-  const { bids, largestBid } = useBids()
   const { publicKey } = useWallet()
 
   if (!publicKey)
@@ -44,7 +42,7 @@ const Page = (): JSX.Element => {
           <HStack divider={<Divider orientation="vertical" />} spacing="8">
             <Stat size="lg">
               <StatLabel>Current bid</StatLabel>
-              <StatNumber>{largestBid} SOL</StatNumber>
+              <StatNumber>{data?.largestBid} SOL</StatNumber>
             </Stat>
             <Stat size="lg">
               <StatLabel>Ends in</StatLabel>
@@ -53,7 +51,7 @@ const Page = (): JSX.Element => {
           </HStack>
           <Bid />
           <VStack>
-            {bids?.slice(0, 2).map((bid) => (
+            {data?.bids?.slice(0, 2).map((bid) => (
               <Flex
                 key={bid.amount}
                 bg="blackAlpha.300"

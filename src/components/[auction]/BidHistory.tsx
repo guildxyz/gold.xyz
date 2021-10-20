@@ -13,11 +13,13 @@ import {
 import Identicon from "components/common/Identicon"
 import Modal from "components/common/Modal"
 import shortenHex from "utils/shortenHex"
-import useBids from "./hooks/useBids"
+import useAuction from "./hooks/useAuction"
 
 const BidHistory = () => {
-  const { bids } = useBids()
+  const data = useAuction()
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  if (!data?.bids?.length) return null
 
   return (
     <>
@@ -31,7 +33,7 @@ const BidHistory = () => {
           <ModalCloseButton />
           <ModalBody>
             <VStack>
-              {bids?.map((bid) => (
+              {data.bids.map((bid) => (
                 <Flex
                   key={bid.amount}
                   bg="blackAlpha.300"

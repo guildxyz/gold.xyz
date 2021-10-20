@@ -10,10 +10,10 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
-import { useRef } from "react"
+import { useMemo, useRef } from "react"
 import { useController, useForm } from "react-hook-form"
 import { useSWRConfig } from "swr"
-import useBids from "../hooks/useBids"
+import useAuction from "../hooks/useAuction"
 
 type Data = {
   amount: number
@@ -22,7 +22,11 @@ type Data = {
 const placeBid = ({ amount }: Data) => Promise.resolve(amount)
 
 const Bid = () => {
-  const { largestBid } = useBids()
+  const data = useAuction()
+  const minBid = useMemo(
+    () => (data?.largestBid ? data?.largestBid + 1 : data?.minBid),
+    [data]
+  )
   const { mutate } = useSWRConfig()
   const { publicKey } = useWallet()
   const {
@@ -37,8 +41,8 @@ const Bid = () => {
     rules: {
       required: "Please set your bid's price",
       min: {
-        value: largestBid + 1,
-        message: `Minimum bid price is ${largestBid + 1} SOL`,
+        value: minBid,
+        message: `Minimum bid price is ${minBid} SOL`,
       },
     },
   })
@@ -58,9 +62,10 @@ const Bid = () => {
       setValue("amount", "")
       const newBid = { amount: parseInt(amount), userPubKey: publicKey.toBase58() }
       mutate(
-        "bids",
-        async (data) => ({
-          bids: [newBid, ...data?.bids],
+        "auction",
+        async (prevData) => ({
+          ...prevData,
+          bids: [newBid, ...prevData?.bids],
           largestBid: parseInt(amount),
         }),
         false
@@ -83,10 +88,7 @@ const Bid = () => {
       <HStack spacing="3">
         <InputGroup size="lg">
           <NumberInput w="full" {...field}>
-            <NumberInputField
-              ref={inputRef}
-              placeholder={`min: ${largestBid + 1}`}
-            />
+            <NumberInputField ref={inputRef} placeholder={`min: ${minBid}`} />
           </NumberInput>
           <InputRightElement>
             <Text colorScheme="gray" mr="4">

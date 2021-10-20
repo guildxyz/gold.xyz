@@ -154,6 +154,8 @@ async function readAuctionState(
     )
   }
   return {
+    id: hardAuctionId.toString(),
+    name: "TODO",
     nftData: {
       name: metadata.name,
       symbol: metadata.symbol,
