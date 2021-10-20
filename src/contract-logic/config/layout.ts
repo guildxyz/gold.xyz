@@ -152,6 +152,51 @@ export const INIT_AUCTION_SCHEMA = new Map<any, any>([
   ],
 ])
 
+export class FreezeArgs {
+  instruction: number = 2
+  auctionId: Uint8Array // 32 bytes long
+  constructor(args: { auctionId: Uint8Array }) {
+    this.auctionId = args.auctionId
+  }
+}
+
+export const FREEZE_SCHEMA = new Map<any, any>([
+  [
+    FreezeArgs,
+    {
+      kind: "struct",
+      fields: [
+        ["instruction", "u8"],
+        ["auctionId", [32]],
+      ],
+    },
+  ],
+])
+
+export class ClaimFundsArgs {
+  instruction: number = 5
+  auctionId: Uint8Array // 32 bytes long
+  amount: number
+  constructor(args: { auctionId: Uint8Array; amount: number }) {
+    this.auctionId = args.auctionId
+    this.amount = args.amount
+  }
+}
+
+export const CLAIM_FUNDS_SCHEMA = new Map<any, any>([
+  [
+    ClaimFundsArgs,
+    {
+      kind: "struct",
+      fields: [
+        ["instruction", "u8"],
+        ["auctionId", [32]],
+        ["amount", "u64"],
+      ],
+    },
+  ],
+])
+
 export class CloseAuctionCycleArgs {
   instruction: number = 3
   auctionId: Uint8Array // 32 bytes long
@@ -160,7 +205,7 @@ export class CloseAuctionCycleArgs {
   }
 }
 
-export const CLOSE_AUCTION_SCHEMA = new Map<any, any>([
+export const CLOSE_CYCLE_SCHEMA = new Map<any, any>([
   [
     CloseAuctionCycleArgs,
     {
@@ -197,6 +242,23 @@ export const BID_SCHEMA = new Map<any, any>([
   ],
 ])
 
+export class AuctionPool {
+  pool: Map<string, StringPublicKey>
+  constructor(args: { pool: Map<string, StringPublicKey> }) {
+    this.pool = args.pool
+  }
+}
+
+export const AUCTION_POOL_SCHEMA = new Map<any, any>([
+  [
+    AuctionPool,
+    {
+      kind: "struct",
+      fields: [["pool", "auctionPool"]],
+    },
+  ],
+])
+
 export const extendBorsh = () => {
   ;(BinaryReader.prototype as any).readPubkey = function () {
     const reader = this as unknown as BinaryReader
@@ -221,3 +283,20 @@ export const extendBorsh = () => {
 }
 
 extendBorsh()
+
+export const extendMapBorsh = () => {
+  ;(BinaryReader.prototype as any).readAuctionPool = function () {
+    const reader = this as unknown as BinaryReader
+    const len = reader.readU32()
+    let auctionPool = new Map()
+    for (let i = 0; i < len; i++) {
+      const auctionId = reader.readFixedArray(32).toString()
+      const array = reader.readFixedArray(32)
+      const pubkey = base58.encode(array) as StringPublicKey
+      auctionPool.set(auctionId, pubkey)
+    }
+    return auctionPool
+  }
+}
+
+extendMapBorsh()

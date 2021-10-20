@@ -9,6 +9,7 @@ import {
 import { serialize } from "borsh"
 import { AuctionBody } from "types"
 import {
+  auctionId,
   auctionOwner,
   connection,
   contractAdmin,
@@ -28,11 +29,6 @@ async function startAuction({
 }: AuctionBody) {
   console.log({ nftData, cyclePeriod, numberOfCycles, minBid, name })
 
-  const auctionId = new Uint8Array([
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-    23, 24, 25, 26, 27, 28, 29, 30, 42,
-  ]) //sha256(auction_name, auction_owner_pubkey); // TODO
-
   const data = new Layout.Data({
     name: nftData.name,
     symbol: nftData.symbol,
@@ -46,7 +42,7 @@ async function startAuction({
     auctionId: auctionId,
     auctionConfig: auctionConfig,
     metadataArgs: metadataArgs,
-    auctionStartTimestamp: Date.now(),
+    auctionStartTimestamp: null,
   })
 
   const [contractBankPubkey, _c] = await PublicKey.findProgramAddress(

@@ -33,21 +33,27 @@ export class NftData {
 
 export class AuctionState {
   auctionOwner: StringPublicKey
-  previousAuctionState: number | null = 0
-  startTime: number = 0
-  endTime: number = 0
+  previousAuctionState: StringPublicKey | null
+  startTime: BN
+  endTime: BN
   config: AuctionConfig
   bidHistory: BidData[]
   nftData: NftData
   status: AuctionStatus
   constructor(args: {
     auctionOwner: StringPublicKey
+    previousAuctionState: StringPublicKey | null
+    startTime: BN
+    endTime: BN
     config: AuctionConfig
     bidHistory: BidData[]
     nftData: NftData
     status: AuctionStatus
   }) {
     this.auctionOwner = args.auctionOwner
+    this.previousAuctionState = args.previousAuctionState
+    this.startTime = args.startTime
+    this.endTime = args.endTime
     this.config = args.config
     this.bidHistory = args.bidHistory
     this.nftData = args.nftData
@@ -143,19 +149,3 @@ export const METADATA_SCHEMA = new Map<any, any>([
     },
   ],
 ])
-
-//export class AuctionPool {
-//	pool: { BN : StringPublicKey };
-//	constructor(args: { BN: StringPublicKey }) {
-//	  this.pool = args
-//	}
-//}
-//
-//export const AUCTION_POOL_SCHEMA = new Map<any, any>([
-//  [
-//    AuctionPool,
-//    {
-//      ['pool', { kind: 'map', key: 'u256', value: 'pubkeyAsString' }],
-//    },
-//  ],
-//]);
