@@ -18,11 +18,18 @@ import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import useAuction from "components/[auction]/hooks/useAuction"
+import { useTimer } from "react-timer-hook"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const data = useAuction()
   const { publicKey } = useWallet()
+  const { seconds, minutes, hours } = useTimer({
+    expiryTimestamp: data?.startTimestamp
+      ? // WIP, this counts to the absolute end of the auction right now, not the actual cycle
+        new Date(data.startTimestamp + data.numberOfCycles * data.cyclePeriod * 1000)
+      : null,
+  })
 
   if (!publicKey)
     return (
@@ -46,7 +53,7 @@ const Page = (): JSX.Element => {
             </Stat>
             <Stat size="lg">
               <StatLabel>Ends in</StatLabel>
-              <StatNumber>16:53:24</StatNumber>
+              <StatNumber>{`${hours}:${minutes}:${seconds}`}</StatNumber>
             </Stat>
           </HStack>
           <Bid />
