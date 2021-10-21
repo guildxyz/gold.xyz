@@ -1,16 +1,9 @@
 import { PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
-import {
-  auctionId as hardAuctionId,
-  connection,
-  contractAdmin,
-  METADATA_PROGRAM_ID,
-  PREFIX,
-  programId,
-} from "./config"
-import * as Layout from "./config/layout"
+import { connection, METADATA_PROGRAM_ID, PREFIX, programId } from "./config"
 import * as MetadataLayout from "./config/metadata_layout"
 import * as StateLayout from "./config/state_layout"
+import getAuctions from "./getAuctions"
 
 // Number to little endian bytes
 function numberToBytes(num: number) {
@@ -24,20 +17,6 @@ function numberToBytes(num: number) {
   }
 
   return byteArray
-}
-
-async function getAuctions() {
-  const [auctionPoolPubkey, _b] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_pool"), Buffer.from(contractAdmin.publicKey.toBytes())],
-    programId
-  )
-  const AuctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
-  const AuctionPoolData: Buffer = AuctionPoolAccount!.data
-  return deserializeUnchecked(
-    Layout.AUCTION_POOL_SCHEMA,
-    Layout.AuctionPool,
-    Buffer.from(AuctionPoolData)
-  )
 }
 
 async function getMasterMetadata(
@@ -154,7 +133,7 @@ async function readAuctionState(
     )
   }
   return {
-    id: hardAuctionId.toString(),
+    id: auctionId.toString(),
     name: "TODO",
     nftData: {
       name: metadata.name,
@@ -169,27 +148,22 @@ async function readAuctionState(
   }
 }
 
-async function getAuction() {
-  // temporary dummy data until the function doesn't work correctly
-  // return {
-  //   id: "0",
-  //   name: "First auction",
-  //   cyclePeriod: 64800,
-  //   minBid: 300,
-  //   numberOfCycles: 10,
-  //   startTimestamp: 1634262267169,
-  //   nftData: {
-  //     name: "First NFT",
-  //     symbol: "SYMB",
-  //     uri: "https://storageapi.fleek.co/608ac2f5-df51-4e35-a363-1afacc7db6d3-bucket/dovalid_agora.png",
-  //   },
-  // }
+function getAuctionId(auctionName: string) {
+  const arr = Buffer.from(auctionName)
+  const diff = Math.max(32 - arr.length, 0)
+  const pad = Buffer.from([...Array(diff)].map(() => "00").join(""), "hex")
+  const newBuffer = Buffer.concat([arr, pad]).slice(0, 32)
+  return newBuffer
+}
+
+async function getAuction(_, auctionName: string) {
+  const auctionId = getAuctionId(auctionName)
+  // const auctionId = hardAuctionId
 
   const auctions = await getAuctions()
-  const auctionStatePubkey = new PublicKey(
-    auctions.pool.get(hardAuctionId.toString())
-  )
-  return readAuctionState(auctionStatePubkey, hardAuctionId)
+  const auctionStatePubkey = new PublicKey(auctions.pool.get(auctionId.toString()))
+
+  return readAuctionState(auctionStatePubkey, auctionId)
 }
 
 export default getAuction

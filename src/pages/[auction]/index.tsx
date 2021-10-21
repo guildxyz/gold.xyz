@@ -41,7 +41,7 @@ const Page = (): JSX.Element => {
   return (
     <Layout title={data?.name}>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing="12" alignItems="center">
-        <Image src={data?.nftData.uri} alt="NFT" borderRadius="xl" />
+        <Image src={data?.nftData?.uri} alt="NFT" borderRadius="xl" />
         <VStack alignItems="stretch" spacing="8">
           <Heading as="h3" fontSize="4xl" fontFamily="display">{`${
             data?.nftData?.name

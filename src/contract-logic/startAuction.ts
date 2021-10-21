@@ -9,11 +9,11 @@ import {
 import { serialize } from "borsh"
 import { AuctionBody } from "types"
 import {
-  auctionId,
   auctionOwner,
   connection,
   contractAdmin,
   EDITION,
+  hardAuctionId,
   METADATA_PROGRAM_ID,
   PREFIX,
   programId,
@@ -39,7 +39,7 @@ async function startAuction({
   const metadataArgs = new Layout.CreateMetadataArgs({ data: data, isMutable: true })
   const auctionConfig = new Layout.AuctionConfig({ cyclePeriod, numberOfCycles })
   const initAuctionArgs = new Layout.InitializeAuctionArgs({
-    auctionId: auctionId,
+    auctionId: hardAuctionId,
     auctionConfig: auctionConfig,
     metadataArgs: metadataArgs,
     auctionStartTimestamp: null,
@@ -60,7 +60,7 @@ async function startAuction({
   const [masterMintPubkey, _d] = await PublicKey.findProgramAddress(
     [
       Buffer.from("master_mint"),
-      Buffer.from(auctionId),
+      Buffer.from(hardAuctionId),
       Buffer.from(auctionOwner.publicKey.toBytes()),
     ],
     programId
@@ -68,7 +68,7 @@ async function startAuction({
   const [masterHoldingPubkey, _e] = await PublicKey.findProgramAddress(
     [
       Buffer.from("master_holding"),
-      Buffer.from(auctionId),
+      Buffer.from(hardAuctionId),
       Buffer.from(auctionOwner.publicKey.toBytes()),
     ],
     programId
@@ -98,7 +98,7 @@ async function startAuction({
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
     [
       Buffer.from("auction_bank"),
-      Buffer.from(auctionId),
+      Buffer.from(hardAuctionId),
       Buffer.from(auctionOwner.publicKey.toBytes()),
     ],
     programId
@@ -106,7 +106,7 @@ async function startAuction({
   const [auctionStatePubkey, _z] = await PublicKey.findProgramAddress(
     [
       Buffer.from("auction_state"),
-      Buffer.from(auctionId),
+      Buffer.from(hardAuctionId),
       Buffer.from(auctionOwner.publicKey.toBytes()),
     ],
     programId

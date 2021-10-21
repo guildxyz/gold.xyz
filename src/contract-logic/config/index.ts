@@ -23,7 +23,7 @@ const connection = new Connection("https://api.testnet.solana.com", "singleGossi
 
 const programId = new PublicKey("C49m9xTNShV9Ab1YwhgGqN3tv6bM3mYFVcdPrLxiZj2V")
 
-const auctionId = new Uint8Array([
+const hardAuctionId = new Uint8Array([
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
   23, 24, 25, 26, 27, 28, 29, 30, 42,
 ])
@@ -46,5 +46,5 @@ export {
   PREFIX,
   EDITION,
   EDITION_MARKER_BIT_SIZE,
-  auctionId,
+  hardAuctionId,
 }

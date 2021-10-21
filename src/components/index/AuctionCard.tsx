@@ -12,7 +12,7 @@ const AuctionCard = ({ auction }: Props): JSX.Element => {
 
   return (
     <Link
-      href={`/${auction.id}`}
+      href={`/${auction.name}`}
       _hover={{ textDecor: "none" }}
       borderRadius="2xl"
       w="full"

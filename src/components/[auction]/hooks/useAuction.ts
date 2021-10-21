@@ -8,7 +8,7 @@ const useAuction = (): Auction & { largestBid: number } => {
   const { publicKey } = useWallet()
   const router = useRouter()
 
-  const { data } = useSWR("auction", getAuction, {
+  const { data } = useSWR(["auction", router.query.auction], getAuction, {
     revalidateOnFocus: false,
   })
 
