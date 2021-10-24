@@ -11,8 +11,8 @@ import {
   useColorMode,
 } from "@chakra-ui/react"
 import { File } from "phosphor-react"
-import { ReactNode, useEffect, useRef, useState } from "react"
-import { useFormContext, UseFormRegisterReturn, useWatch } from "react-hook-form"
+import { ReactNode, useRef, useState } from "react"
+import { useFormContext, UseFormRegisterReturn } from "react-hook-form"
 
 type FileUploadProps = {
   register: UseFormRegisterReturn
@@ -51,13 +51,7 @@ const UploadFile = () => {
     register,
     formState: { errors },
   } = useFormContext()
-  const [pickedPhoto, setPickedPhoto] = useState<File>()
   const [photoPreview, setPhotoPreview] = useState<string>()
-
-  const file = useWatch({ name: "nftImage" })
-  useEffect(() => {
-    setPickedPhoto(file?.[0])
-  }, [file])
 
   const validateFiles = (value: FileList) => {
     if (value.length < 1) return "File is required"
@@ -71,12 +65,6 @@ const UploadFile = () => {
     return true
   }
 
-  useEffect(() => {
-    if (pickedPhoto) {
-      setPhotoPreview(URL.createObjectURL(pickedPhoto))
-    }
-  }, [pickedPhoto])
-
   const { colorMode } = useColorMode()
 
   return (
@@ -85,7 +73,13 @@ const UploadFile = () => {
 
       <FileUpload
         accept={"image/*"}
-        register={register("nftImage", { validate: validateFiles })}
+        register={register("nftImage", {
+          validate: validateFiles,
+          onChange: (e) => {
+            const file = e.target.files?.[0]
+            if (file) setPhotoPreview(URL.createObjectURL(file))
+          },
+        })}
       >
         <Box
           width="full"
