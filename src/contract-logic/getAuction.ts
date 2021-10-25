@@ -97,22 +97,68 @@ async function getChildMetadata(
   return metadata.data
 }
 
+async function getCurrentCycleStatePubkey(auctionRootStatePubkey: PublicKey) {
+  const auctionRootStateAccount = await connection.getAccountInfo(
+    auctionRootStatePubkey
+  )
+  const auctionRootStateAccountData: Buffer = auctionRootStateAccount!.data
+  const auctionRootState = deserializeUnchecked(
+    StateLayout.AUCTION_ROOT_STATE_SCHEMA,
+    StateLayout.AuctionRootState,
+    auctionRootStateAccountData
+  )
+
+  const cycle_number = auctionRootState.status.currentAuctionCycle
+  const [auctionCycleStatePubkey, _z] = await PublicKey.findProgramAddress(
+    [
+      Buffer.from("auction_cycle_state"),
+      Buffer.from(auctionRootStatePubkey.toBytes()),
+      Buffer.from(numberToBytes(cycle_number)),
+    ],
+    programId
+  )
+
+  return auctionCycleStatePubkey
+}
+
+async function getCurrentCycleState(auctionRootStatePubkey: PublicKey) {
+  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(
+    auctionRootStatePubkey
+  )
+
+  const auctionCycleStateAccount = await connection.getAccountInfo(
+    auctionCycleStatePubkey
+  )
+  const auctionCycleStateAccountData: Buffer = auctionCycleStateAccount!.data
+  const auctionCycleState = deserializeUnchecked(
+    StateLayout.AUCTION_CYCLE_STATE_SCHEMA,
+    StateLayout.AuctionCycleState,
+    auctionCycleStateAccountData
+  )
+  return auctionCycleState
+}
+
 async function readAuctionState(
-  auctionStatePubkey: PublicKey,
+  auctionRootStatePubkey: PublicKey,
   auctionId: Uint8Array
 ) {
   // read state account (for auction owner, bid history, etc)
-  const auctionStateAccountInfo = await connection.getAccountInfo(auctionStatePubkey)
-  const auctionStateData: Buffer = auctionStateAccountInfo!.data
-  const auctionStateDeserialized = deserializeUnchecked<any>(
-    StateLayout.AUCTION_STATE_SCHEMA,
-    StateLayout.AuctionState,
-    auctionStateData
+  const auctionRootStateAccountInfo = await connection.getAccountInfo(
+    auctionRootStatePubkey
+  )
+  const auctionRootStateData: Buffer = auctionRootStateAccountInfo!.data
+  const auctionRootStateDeserialized = deserializeUnchecked<any>(
+    StateLayout.AUCTION_ROOT_STATE_SCHEMA,
+    StateLayout.AuctionRootState,
+    auctionRootStateData
+  )
+  const auctionCycleStateDeserialized = await getCurrentCycleState(
+    auctionRootStatePubkey
   )
 
   // read master edition account (for current child edition)
   const masterEditionAccountInfo = await connection.getAccountInfo(
-    new PublicKey(auctionStateDeserialized.nftData.masterEdition)
+    new PublicKey(auctionRootStateDeserialized.nftData.masterEdition)
   )
   const masterEditionData: Buffer = masterEditionAccountInfo!.data
   const masterEditionDeserialized = deserializeUnchecked(
@@ -122,7 +168,7 @@ async function readAuctionState(
   )
 
   const currentChildEdition = masterEditionDeserialized.supply.toNumber()
-  const auctionOwnerPubkey = new PublicKey(auctionStateDeserialized.auctionOwner)
+  const auctionOwnerPubkey = new PublicKey(auctionRootStateDeserialized.auctionOwner)
   let metadata = await getMasterMetadata(auctionOwnerPubkey, auctionId)
   if (currentChildEdition != 0) {
     // we have minted a child nft so return with master's data
@@ -133,21 +179,20 @@ async function readAuctionState(
     )
   }
   return {
-    id: auctionId.toString(),
-    name: "TODO",
+    name: auctionRootStateDeserialized.auctionName.toString(),
     nftData: {
       name: metadata.name,
       symbol: metadata.symbol,
       uri: metadata.uri,
     },
-    bids: auctionStateDeserialized.bidHistory,
-    cyclePeriod: auctionStateDeserialized.config.cyclePeriod.toNumber(),
-    numberOfCycles: auctionStateDeserialized.config.numberOfCycles.toNumber(),
-    minBid: auctionStateDeserialized.config.minimumBidAmount,
-    startTimestamp: auctionStateDeserialized.startTime.toNumber(),
+    bids: auctionCycleStateDeserialized.bidHistory,
+    cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
+    numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
+    minBid: auctionRootStateDeserialized.config.minimumBidAmount,
+    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(),
+    endTimestamp: auctionCycleStateDeserialized.endTime,
   }
 }
-
 function getAuctionId(auctionName: string) {
   const arr = Buffer.from(auctionName)
   const diff = Math.max(32 - arr.length, 0)
@@ -157,7 +202,8 @@ function getAuctionId(auctionName: string) {
 }
 
 async function getAuction(_, auctionName: string) {
-  const auctionId = getAuctionId(auctionName)
+  // const auctionId = getAuctionId(auctionName)
+  const auctionId = new Uint8Array(auctionName.split(",").map((_) => parseInt(_)))
   // const auctionId = hardAuctionId
 
   const auctions = await getAuctions()

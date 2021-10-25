@@ -120,6 +120,19 @@ export class Metadata {
     this.isMutable = args.isMutable
   }
 }
+export const EDITION_SCHEMA = new Map<any, any>([
+  [
+    Edition,
+    {
+      kind: "struct",
+      fields: [
+        ["key", "u8"],
+        ["parent", [32]],
+        ["edition", "u64"],
+      ],
+    },
+  ],
+])
 
 export const METADATA_SCHEMA = new Map<any, any>([
   [

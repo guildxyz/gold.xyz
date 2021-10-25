@@ -3,6 +3,13 @@ import getAuctions from "contract-logic/getAuctions"
 import useSWR from "swr"
 import { Auction } from "types"
 
+const handleGetAuctions = async () => {
+  const AuctionMap = await getAuctions()
+  return Array.from(AuctionMap.pool.entries()).map((auction: any) => ({
+    [auction[0]]: auction[1],
+  })) as any
+}
+
 const useAuctions = (): Auction[] => {
   const { publicKey } = useWallet()
 
@@ -10,7 +17,7 @@ const useAuctions = (): Auction[] => {
 
   const { data } = useSWR(
     shouldFetch ? ["auctions", publicKey] : null,
-    getAuctions,
+    handleGetAuctions,
     {
       refreshInterval: 10000,
     }

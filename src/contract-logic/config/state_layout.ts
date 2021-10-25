@@ -7,11 +7,16 @@ export class AuctionConfig {
   encorePeriod: number
   numberOfCycles: number | null
   minimumBidAmount: number
-  constructor(args: { cyclePeriod: number; numberOfCycles: number | null }) {
+  constructor(args: {
+    cyclePeriod: number
+    encorePeriod: number
+    numberOfCycles: number | null
+    minimumBidAmount: number
+  }) {
     this.cyclePeriod = args.cyclePeriod
-    this.encorePeriod = 0 // only in mvp
+    this.encorePeriod = args.encorePeriod
     this.numberOfCycles = args.numberOfCycles
-    this.minimumBidAmount = 10000
+    this.minimumBidAmount = args.minimumBidAmount
   }
 }
 
@@ -31,54 +36,51 @@ export class NftData {
   }
 }
 
-export class AuctionState {
+export class AuctionStatus {
+  currentAuctionCycle: number
+  isFrozen: boolean
+  isActive: boolean
+  constructor(args: {
+    currentAuctionCycle: number
+    isFrozen: number
+    isActive: number
+  }) {
+    this.currentAuctionCycle = args.currentAuctionCycle
+    this.isFrozen = !!args.isFrozen
+    this.isActive = !!args.isActive
+  }
+}
+
+export class AuctionRootState {
+  auctionName: Uint8Array
   auctionOwner: StringPublicKey
-  previousAuctionState: StringPublicKey | null
-  startTime: BN
-  endTime: BN
   config: AuctionConfig
-  bidHistory: BidData[]
   nftData: NftData
   status: AuctionStatus
   constructor(args: {
+    auctionName: Uint8Array
     auctionOwner: StringPublicKey
-    previousAuctionState: StringPublicKey | null
-    startTime: BN
-    endTime: BN
     config: AuctionConfig
-    bidHistory: BidData[]
     nftData: NftData
     status: AuctionStatus
   }) {
+    this.auctionName = args.auctionName
     this.auctionOwner = args.auctionOwner
-    this.previousAuctionState = args.previousAuctionState
-    this.startTime = args.startTime
-    this.endTime = args.endTime
     this.config = args.config
-    this.bidHistory = args.bidHistory
     this.nftData = args.nftData
     this.status = args.status
   }
 }
 
-export class AuctionStatus {
-  currentAuctionCycle: number = 0
-  isFrozen: number = 0
-  isActive: number = 1
-}
-
-export const AUCTION_STATE_SCHEMA = new Map<any, any>([
+export const AUCTION_ROOT_STATE_SCHEMA = new Map<any, any>([
   [
-    AuctionState,
+    AuctionRootState,
     {
       kind: "struct",
       fields: [
+        ["auctionName", [32]],
         ["auctionOwner", "pubkeyAsString"],
-        ["previousAuctionState", { kind: "option", type: "pubkeyAsString" }],
-        ["startTime", "u64"],
-        ["endTime", "u64"],
         ["config", AuctionConfig],
-        ["bidHistory", [BidData]],
         ["nftData", NftData],
         ["status", AuctionStatus],
       ],
@@ -93,16 +95,6 @@ export const AUCTION_STATE_SCHEMA = new Map<any, any>([
         ["encorePeriod", "u64"],
         ["numberOfCycles", { kind: "option", type: "u64" }],
         ["minimumBidAmount", "u64"],
-      ],
-    },
-  ],
-  [
-    BidData,
-    {
-      kind: "struct",
-      fields: [
-        ["bidderPubkey", "pubkeyAsString"],
-        ["bidAmount", "u64"],
       ],
     },
   ],
@@ -122,6 +114,40 @@ export const AUCTION_STATE_SCHEMA = new Map<any, any>([
     {
       kind: "struct",
       fields: [["masterEdition", "pubkeyAsString"]],
+    },
+  ],
+])
+
+export class AuctionCycleState {
+  startTime: BN
+  endTime: BN
+  bidHistory: BidData[]
+  constructor(args: { startTime: BN; endTime: BN; bidHistory: BidData[] }) {
+    this.startTime = args.startTime
+    this.endTime = args.endTime
+    this.bidHistory = args.bidHistory
+  }
+}
+export const AUCTION_CYCLE_STATE_SCHEMA = new Map<any, any>([
+  [
+    AuctionCycleState,
+    {
+      kind: "struct",
+      fields: [
+        ["startTime", "u64"],
+        ["endTime", "u64"],
+        ["bidHistory", [BidData]],
+      ],
+    },
+  ],
+  [
+    BidData,
+    {
+      kind: "struct",
+      fields: [
+        ["bidderPubkey", "pubkeyAsString"],
+        ["bidAmount", "u64"],
+      ],
     },
   ],
 ])

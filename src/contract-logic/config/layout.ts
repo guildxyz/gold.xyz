@@ -74,16 +74,19 @@ export class AuctionConfig {
 export class InitializeAuctionArgs {
   instruction: number = 1
   auctionId: Uint8Array // 32 bytes long
+  auctionName: Uint8Array // 32 bytes long
   auctionConfig: AuctionConfig
   metadataArgs: CreateMetadataArgs
   auctionStartTimestamp: number | null
   constructor(args: {
     auctionId: Uint8Array
+    auctionName: Uint8Array
     auctionConfig: AuctionConfig
     metadataArgs: CreateMetadataArgs
     auctionStartTimestamp: number | null
   }) {
     this.auctionId = args.auctionId
+    this.auctionName = args.auctionName
     this.auctionConfig = args.auctionConfig
     this.metadataArgs = args.metadataArgs
     this.auctionStartTimestamp = args.auctionStartTimestamp
@@ -98,6 +101,7 @@ export const INIT_AUCTION_SCHEMA = new Map<any, any>([
       fields: [
         ["instruction", "u8"],
         ["auctionId", [32]],
+        ["auctionName", [32]],
         ["auctionConfig", AuctionConfig],
         ["metadataArgs", CreateMetadataArgs],
         ["auctionStartTimestamp", { kind: "option", type: "u64" }],
