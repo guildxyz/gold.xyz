@@ -5,6 +5,7 @@ import * as MetadataLayout from "./config/metadata_layout"
 import * as StateLayout from "./config/state_layout"
 import getAuctions from "./getAuctions"
 import numberToBytes from "./utils/numberToBytes"
+import padTo32Bytes from "./utils/padTo32Bytes"
 
 async function getMasterMetadata(
   auctionOwnerPubkey: PublicKey,
@@ -129,6 +130,7 @@ async function readAuctionState(
   auctionRootStatePubkey: PublicKey,
   auctionId: Uint8Array
 ) {
+  console.log({auctionRootStatePubkey,auctionId})
   // read state account (for auction owner, bid history, etc)
   const auctionRootStateAccountInfo = await connection.getAccountInfo(
     auctionRootStatePubkey
@@ -165,6 +167,13 @@ async function readAuctionState(
       currentChildEdition
     )
   }
+
+  console.log(1, auctionId)
+
+  // const slugId = Buffer.from(auction[0].split(","))
+  // const index = slugId.indexOf(0x00)
+  // const unpadded = slugId.slice(0, index).toString()
+  
   return {
     id: auctionRootStateDeserialized.auctionName.toString(),
     name: auctionRootStateDeserialized.auctionName.toString(),
@@ -184,13 +193,19 @@ async function readAuctionState(
 
 async function getAuction(auctionName: string) {
   // const auctionId = getAuctionId(auctionName)
-  const auctionId = new Uint8Array(auctionName.split(",").map((_) => parseInt(_)))
-  // const auctionId = hardAuctionId
+  try {
+    const auctionId = padTo32Bytes(auctionName)
+    // const auctionId = hardAuctionId
 
-  const auctions = await getAuctions()
-  const auctionStatePubkey = new PublicKey(auctions.pool.get(auctionName))
+    const auctions = await getAuctions()
+    console.log({auctionId})
 
-  return readAuctionState(auctionStatePubkey, auctionId)
+    const auctionStatePubkey = new PublicKey(auctions.find(({name}) => name == auctionName).id)  
+    return readAuctionState(auctionStatePubkey, auctionId)
+  } catch (e) {
+    console.error(e)
+  }  
+
 }
 
 export default getAuction
