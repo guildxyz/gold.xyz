@@ -6,7 +6,6 @@ import {
   HStack,
   Icon,
   IconButton,
-  Img,
   Text,
   useBreakpointValue,
   useColorMode,
@@ -98,25 +97,15 @@ const Layout = ({
             justify="space-between"
             pb={{ base: 8, md: 16 }}
           >
-            <HStack alignItems="center" spacing={{ base: 3, md: 4, lg: 5 }}>
-              {imageUrl && (
-                <Img
-                  src={imageUrl}
-                  alt={`${title} - logo`}
-                  htmlWidth={exactImageSize}
-                  htmlHeight={exactImageSize}
-                  mt={{ base: 1, lg: 2 }}
-                  boxSize={{ base: 8, lg: 10 }}
-                />
-              )}
-              <Heading
-                as="h1"
-                fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
-                fontFamily="display"
-              >
-                {title}
-              </Heading>
-            </HStack>
+            <Heading
+              as="h1"
+              fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+              fontFamily="display"
+              isTruncated
+              maxW="full"
+            >
+              {title}
+            </Heading>
 
             {action}
           </HStack>

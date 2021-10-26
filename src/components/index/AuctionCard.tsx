@@ -1,4 +1,4 @@
-import { Flex, Text, useColorMode, VStack } from "@chakra-ui/react"
+import { SimpleGrid, Text, useColorMode } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import Link from "components/common/Link"
 import { Auction } from "types"
@@ -48,18 +48,19 @@ const AuctionCard = ({ auction }: Props): JSX.Element => {
           },
         }}
       >
-        <Flex alignItems="center">
-          <VStack spacing={3} alignItems="start">
-            <Text
-              fontFamily="display"
-              fontSize="xl"
-              fontWeight="bold"
-              letterSpacing="wide"
-            >
-              {auction.name}
-            </Text>
-          </VStack>
-        </Flex>
+        <SimpleGrid gap={3} templateColumns="1fr">
+          <Text
+            as="span"
+            fontFamily="display"
+            fontSize="xl"
+            fontWeight="bold"
+            letterSpacing="wide"
+            maxW="full"
+            isTruncated
+          >
+            {auction.name}
+          </Text>
+        </SimpleGrid>
       </Card>
     </Link>
   )
