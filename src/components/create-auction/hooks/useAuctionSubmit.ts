@@ -1,3 +1,4 @@
+import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import startAuction from "contract-logic/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
@@ -21,9 +22,21 @@ const uploadImage = (data: FileList): Promise<ImageResponse> => {
 const useAuctionSubmit = () => {
   const [data, setData] = useState<AuctionBody>()
   const toast = useToast()
+  const { connection } = useConnection()
+  const { sendTransaction } = useWallet()
+
+  const handleStartAuction = async (data_: AuctionBody) => {
+    const tx = await startAuction(data_)
+    console.log(tx)
+    const signature = await sendTransaction(tx, connection)
+    console.log("info", "Transaction sent:", signature)
+
+    await connection.confirmTransaction(signature, "processed")
+    console.log("success", "Transaction successful!", signature)
+  }
 
   const { onSubmit, response, error, isLoading } = useSubmit<AuctionBody, any>(
-    startAuction,
+    handleStartAuction,
     {
       onError: (e) =>
         toast({

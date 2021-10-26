@@ -1,10 +1,8 @@
 import CtaButton from "components/common/CtaButton"
-import usePersonalSign from "hooks/usePersonalSign"
 import { useFormContext } from "react-hook-form"
 import useAuctionSubmit from "./hooks/useAuctionSubmit"
 
 const SubmitButton = () => {
-  const { isSigning, callbackWithSign } = usePersonalSign(true)
   const { onSubmit, isLoading, isImageLoading, response } = useAuctionSubmit()
 
   const { handleSubmit } = useFormContext()
@@ -14,9 +12,8 @@ const SubmitButton = () => {
       // disabled={isLoading || isImageLoading || isSigning || response}
       flexShrink={0}
       size="lg"
-      isLoading={isLoading || isImageLoading || isSigning}
+      isLoading={isLoading || isImageLoading}
       loadingText={(() => {
-        if (isSigning) return "Signing"
         if (isImageLoading) return "Uploading image to IPFS"
         if (isLoading) return "Loading"
       })()}
