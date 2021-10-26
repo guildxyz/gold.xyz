@@ -9,11 +9,12 @@ type Rest = {
 }
 
 type Bid = {
-  amount: number
-  userPubKey: string
+  bidAmount: number
+  bidderPubkey: string
 }
 
 type AuctionBody = {
+  id: string
   name: string
   nftData: {
     name: string
@@ -29,7 +30,6 @@ type AuctionBody = {
 }
 
 type Auction = AuctionBody & {
-  id: string
   startTimestamp: number
 }
 

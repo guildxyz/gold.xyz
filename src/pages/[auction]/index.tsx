@@ -60,17 +60,17 @@ const Page = (): JSX.Element => {
           <VStack>
             {data?.bids?.slice(0, 2).map((bid) => (
               <Flex
-                key={bid.amount}
+                key={bid.bidAmount}
                 bg="blackAlpha.300"
                 px="4"
                 py="3"
                 borderRadius="xl"
                 w="full"
               >
-                <Identicon address={bid.userPubKey} size={20} />
-                <Text ml="2">{shortenHex(bid.userPubKey)}</Text>
+                <Identicon address={bid.bidderPubkey} size={20} />
+                <Text ml="2">{shortenHex(bid.bidderPubkey)}</Text>
                 <Text ml="auto" fontWeight="semibold">
-                  {bid.amount} SOL
+                  {bid.bidAmount} SOL
                 </Text>
               </Flex>
             ))}

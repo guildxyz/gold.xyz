@@ -10,48 +10,51 @@ import { serialize } from "borsh"
 import { AuctionBody } from "types"
 import {
   auctionOwner,
-  connection,
   contractAdmin,
   EDITION,
-  hardAuctionId,
   METADATA_PROGRAM_ID,
   PREFIX,
   programId,
 } from "./config"
 import * as Layout from "./config/layout"
+import numberToBytes from "./utils/numberToBytes"
+import padTo32Bytes from "./utils/padTo32Bytes"
 
 async function startAuction({
-  nftData,
+  nftData: MasterNftData,
+  name: stringAuctionName,
   cyclePeriod,
   numberOfCycles,
   minBid,
-  name,
 }: AuctionBody) {
-  console.log({ nftData, cyclePeriod, numberOfCycles, minBid, name })
+  const auctionId = padTo32Bytes(stringAuctionName)
+  const auctionName = padTo32Bytes(stringAuctionName)
+  console.log({
+    MasterNftData,
+    cyclePeriod,
+    numberOfCycles,
+    minBid,
+    auctionId,
+    auctionName,
+  })
 
   const data = new Layout.Data({
-    name: nftData.name,
-    symbol: nftData.symbol,
-    uri: nftData.uri,
+    name: MasterNftData.name,
+    symbol: MasterNftData.symbol,
+    uri: MasterNftData.uri,
     sellerFeeBasisPoints: 10,
     creators: null,
   })
   const metadataArgs = new Layout.CreateMetadataArgs({ data: data, isMutable: true })
   const auctionConfig = new Layout.AuctionConfig({ cyclePeriod, numberOfCycles })
   const initAuctionArgs = new Layout.InitializeAuctionArgs({
-    auctionId: hardAuctionId,
+    auctionId: auctionId,
+    auctionName: auctionName,
     auctionConfig: auctionConfig,
     metadataArgs: metadataArgs,
     auctionStartTimestamp: null,
   })
 
-  const [contractBankPubkey, _c] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_contract_bank"),
-      Buffer.from(contractAdmin.publicKey.toBytes()),
-    ],
-    programId
-  )
   const [auctionPoolPubkey, _b] = await PublicKey.findProgramAddress(
     [Buffer.from("auction_pool"), Buffer.from(contractAdmin.publicKey.toBytes())],
     programId
@@ -60,7 +63,7 @@ async function startAuction({
   const [masterMintPubkey, _d] = await PublicKey.findProgramAddress(
     [
       Buffer.from("master_mint"),
-      Buffer.from(hardAuctionId),
+      Buffer.from(auctionId),
       Buffer.from(auctionOwner.publicKey.toBytes()),
     ],
     programId
@@ -68,7 +71,7 @@ async function startAuction({
   const [masterHoldingPubkey, _e] = await PublicKey.findProgramAddress(
     [
       Buffer.from("master_holding"),
-      Buffer.from(hardAuctionId),
+      Buffer.from(auctionId),
       Buffer.from(auctionOwner.publicKey.toBytes()),
     ],
     programId
@@ -98,31 +101,27 @@ async function startAuction({
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
     [
       Buffer.from("auction_bank"),
-      Buffer.from(hardAuctionId),
+      Buffer.from(auctionId),
       Buffer.from(auctionOwner.publicKey.toBytes()),
     ],
     programId
   )
-  const [auctionStatePubkey, _z] = await PublicKey.findProgramAddress(
+  const [auctionRootStatePubkey, _y] = await PublicKey.findProgramAddress(
     [
-      Buffer.from("auction_state"),
-      Buffer.from(hardAuctionId),
+      Buffer.from("auction_root_state"),
+      Buffer.from(auctionId),
       Buffer.from(auctionOwner.publicKey.toBytes()),
     ],
     programId
   )
-
-  // this works
-  const initializeContractInstruction = new TransactionInstruction({
-    programId,
-    data: Buffer.from(Uint8Array.of(0)),
-    keys: [
-      { pubkey: contractAdmin.publicKey, isSigner: true, isWritable: true },
-      { pubkey: contractBankPubkey, isSigner: false, isWritable: true },
-      { pubkey: auctionPoolPubkey, isSigner: false, isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+  const [auctionCycleStatePubkey, _z] = await PublicKey.findProgramAddress(
+    [
+      Buffer.from("auction_cycle_state"),
+      Buffer.from(auctionRootStatePubkey.toBytes()),
+      Buffer.from(numberToBytes(1)),
     ],
-  })
+    programId
+  )
 
   const auctionData = Buffer.from(
     serialize(Layout.INIT_AUCTION_SCHEMA, initAuctionArgs)
@@ -138,7 +137,8 @@ async function startAuction({
       { pubkey: masterMetadataPubkey, isSigner: false, isWritable: true },
       { pubkey: masterMintPubkey, isSigner: false, isWritable: true },
       { pubkey: auctionPoolPubkey, isSigner: false, isWritable: true },
-      { pubkey: auctionStatePubkey, isSigner: false, isWritable: true },
+      { pubkey: auctionRootStatePubkey, isSigner: false, isWritable: true },
+      { pubkey: auctionCycleStatePubkey, isSigner: false, isWritable: true },
       { pubkey: auctionBankPubkey, isSigner: false, isWritable: true },
       { pubkey: programPda, isSigner: false, isWritable: false },
       { pubkey: METADATA_PROGRAM_ID, isSigner: false, isWritable: false },
@@ -148,21 +148,7 @@ async function startAuction({
     ],
   })
 
-  //// send the transaction via connection
-  await connection.confirmTransaction(
-    await connection.sendTransaction(
-      new Transaction().add(initializeContractInstruction),
-      [contractAdmin],
-      { skipPreflight: false, preflightCommitment: "singleGossip" }
-    )
-  )
-  await connection.confirmTransaction(
-    await connection.sendTransaction(
-      new Transaction().add(initializeAuctionInstruction),
-      [auctionOwner],
-      { skipPreflight: false, preflightCommitment: "singleGossip" }
-    )
-  )
+  return new Transaction().add(initializeAuctionInstruction)
 }
 
 export default startAuction

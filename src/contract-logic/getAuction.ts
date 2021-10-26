@@ -4,20 +4,7 @@ import { connection, METADATA_PROGRAM_ID, PREFIX, programId } from "./config"
 import * as MetadataLayout from "./config/metadata_layout"
 import * as StateLayout from "./config/state_layout"
 import getAuctions from "./getAuctions"
-
-// Number to little endian bytes
-function numberToBytes(num: number) {
-  // we want to represent the input as a 8-bytes array
-  const byteArray = [0, 0, 0, 0, 0, 0, 0, 0]
-
-  for (let index = 0; index < byteArray.length; index++) {
-    const byte = num & 0xff
-    byteArray[index] = byte
-    num = (num - byte) / 256
-  }
-
-  return byteArray
-}
+import numberToBytes from "./utils/numberToBytes"
 
 async function getMasterMetadata(
   auctionOwnerPubkey: PublicKey,
@@ -179,6 +166,7 @@ async function readAuctionState(
     )
   }
   return {
+    id: auctionRootStateDeserialized.auctionName.toString(),
     name: auctionRootStateDeserialized.auctionName.toString(),
     nftData: {
       name: metadata.name,
@@ -201,7 +189,7 @@ function getAuctionId(auctionName: string) {
   return newBuffer
 }
 
-async function getAuction(_, auctionName: string) {
+async function getAuction(auctionName: string) {
   // const auctionId = getAuctionId(auctionName)
   const auctionId = new Uint8Array(auctionName.split(",").map((_) => parseInt(_)))
   // const auctionId = hardAuctionId
