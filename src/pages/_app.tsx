@@ -3,6 +3,7 @@ import "focus-visible/dist/focus-visible"
 import type { AppProps } from "next/app"
 import dynamic from "next/dynamic"
 import { IconContext } from "phosphor-react"
+import { SWRConfig } from "swr"
 
 const WalletConnectionProvider = dynamic(
   () => import("components/_app/WalletConnectionProvider"),
@@ -14,18 +15,24 @@ const WalletConnectionProvider = dynamic(
 function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <Chakra cookies={pageProps.cookies}>
-      <IconContext.Provider
+      <SWRConfig
         value={{
-          color: "currentColor",
-          size: "1em",
-          weight: "bold",
-          mirrored: false,
+          onError: (e) => console.error(e),
         }}
       >
-        <WalletConnectionProvider>
-          <Component {...pageProps} />
-        </WalletConnectionProvider>
-      </IconContext.Provider>
+        <IconContext.Provider
+          value={{
+            color: "currentColor",
+            size: "1em",
+            weight: "bold",
+            mirrored: false,
+          }}
+        >
+          <WalletConnectionProvider>
+            <Component {...pageProps} />
+          </WalletConnectionProvider>
+        </IconContext.Provider>
+      </SWRConfig>
     </Chakra>
   )
 }

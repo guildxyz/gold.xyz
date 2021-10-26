@@ -181,13 +181,6 @@ async function readAuctionState(
     endTimestamp: auctionCycleStateDeserialized.endTime,
   }
 }
-function getAuctionId(auctionName: string) {
-  const arr = Buffer.from(auctionName)
-  const diff = Math.max(32 - arr.length, 0)
-  const pad = Buffer.from([...Array(diff)].map(() => "00").join(""), "hex")
-  const newBuffer = Buffer.concat([arr, pad]).slice(0, 32)
-  return newBuffer
-}
 
 async function getAuction(auctionName: string) {
   // const auctionId = getAuctionId(auctionName)
@@ -195,7 +188,7 @@ async function getAuction(auctionName: string) {
   // const auctionId = hardAuctionId
 
   const auctions = await getAuctions()
-  const auctionStatePubkey = new PublicKey(auctions.pool.get(auctionId.toString()))
+  const auctionStatePubkey = new PublicKey(auctions.pool.get(auctionName))
 
   return readAuctionState(auctionStatePubkey, auctionId)
 }

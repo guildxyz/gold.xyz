@@ -28,7 +28,10 @@ const useAuctionSubmit = () => {
   const handleStartAuction = async (data_: AuctionBody) => {
     const tx = await startAuction(data_)
     console.log(tx)
-    const signature = await sendTransaction(tx, connection)
+    const signature = await sendTransaction(tx, connection, {
+      skipPreflight: false,
+      preflightCommitment: "singleGossip",
+    })
     console.log("info", "Transaction sent:", signature)
 
     await connection.confirmTransaction(signature, "processed")

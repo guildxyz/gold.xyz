@@ -7,19 +7,11 @@ import {
   NumberInputField,
   Text,
 } from "@chakra-ui/react"
-import { useWallet } from "@solana/wallet-adapter-react"
-import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useMemo, useRef } from "react"
 import { useController, useForm } from "react-hook-form"
-import { useSWRConfig } from "swr"
 import useAuction from "../hooks/useAuction"
-
-type Data = {
-  amount: number
-}
-
-const placeBid = ({ amount }: Data) => Promise.resolve(amount)
+import usePlaceBid from "./hook/usePlaceBid"
 
 const Bid = () => {
   const data = useAuction()
@@ -27,12 +19,11 @@ const Bid = () => {
     () => (data?.largestBid ? data?.largestBid + 1 : data?.minBid),
     [data]
   )
-  const { mutate } = useSWRConfig()
-  const { publicKey } = useWallet()
+  const toast = useToast()
   const {
     handleSubmit,
-    setValue,
     control,
+    setValue,
     formState: { errors },
   } = useForm()
   const { field } = useController({
@@ -47,31 +38,7 @@ const Bid = () => {
     },
   })
   const inputRef = useRef(null)
-  const toast = useToast()
-  const { isLoading, onSubmit } = useSubmit<Data, any>(placeBid, {
-    onError: () =>
-      toast({
-        title: "Error placing bid",
-        status: "error",
-      }),
-    onSuccess: (amount) => {
-      toast({
-        title: "Bid placed successfully",
-        status: "success",
-      })
-      setValue("amount", "")
-      const newBid = { amount: parseInt(amount), userPubKey: publicKey.toBase58() }
-      mutate(
-        "auction",
-        async (prevData) => ({
-          ...prevData,
-          bids: [newBid, ...prevData?.bids],
-          largestBid: parseInt(amount),
-        }),
-        false
-      )
-    },
-  })
+  const { onSubmit, isLoading } = usePlaceBid(setValue)
 
   const onError = () => {
     if (errors?.amount?.message)

@@ -26,7 +26,7 @@ async function startAuction({
   cyclePeriod,
   numberOfCycles,
   minBid,
-}: AuctionBody) {
+}: AuctionBody): Promise<Transaction> {
   const auctionId = padTo32Bytes(stringAuctionName)
   const auctionName = padTo32Bytes(stringAuctionName)
   console.log({

@@ -8,7 +8,9 @@ const handleGetAuction = async (_, name) => {
   const auction = await getAuction(name)
   return {
     ...auction,
-    largestBid: Math.max(...auction?.bids?.map((bid) => bid.bidAmount)),
+    largestBid: auction?.bids?.length
+      ? Math.max(...auction?.bids?.map((bid) => bid.bidAmount))
+      : 0,
   }
 }
 
