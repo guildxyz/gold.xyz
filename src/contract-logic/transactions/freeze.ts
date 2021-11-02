@@ -6,30 +6,17 @@ import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleStatePubkey } from "../queries/readCycleState"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 
-export async function freeze(
-  auctionOwnerPubkey: PublicKey,
-  auctionId: string
-): Promise<Transaction> {
+export async function freeze(auctionOwnerPubkey: PublicKey, auctionId: string): Promise<Transaction> {
   const auctionIdBuffer = padTo32Bytes(auctionId)
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_bank"),
-      auctionIdBuffer,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("auction_bank"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
   const [auctionRootStatePubkey, _z] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_root_state"),
-      auctionIdBuffer,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("auction_root_state"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
-  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(
-    auctionRootStatePubkey
-  )
+  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(auctionRootStatePubkey)
 
   const topBidder = await getTopBidder(auctionCycleStatePubkey)
 
@@ -48,5 +35,5 @@ export async function freeze(
     ],
   })
 
-  return new Transaction().add(freezeInstruction)
+  await new Transaction().add(freezeInstruction)
 }

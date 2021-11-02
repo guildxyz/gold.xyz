@@ -6,10 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "contract-logic": "npm run start --workspace=src/contract-logic",
     "type-check": "tsc --pretty --noEmit",
     "format": "prettier --write .",
     "lint": "next lint",
-    "lint-fix": "eslint --fix . --ext .ts,.tsx,.js,.jsx"
+    "lint-fix": "eslint --fix . --ext .ts,.tsx,.js,.jsx",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@chakra-ui/hooks": "^1.6.0",
@@ -24,7 +26,7 @@
     "@solana/wallet-adapter-phantom": "^0.6.1",
     "@solana/wallet-adapter-react": "^0.12.4",
     "@solana/wallet-adapter-wallets": "^0.10.1",
-    "@solana/web3.js": "^1.20.0",
+    "@solana/web3.js": "^1.30.2",
     "@xstate/react": "^1.6.1",
     "bignumber.js": "^9.0.1",
     "bn.js": "^5.2.0",
@@ -56,16 +58,20 @@
     "eslint-config-airbnb-typescript": "^14.0.1",
     "eslint-config-next": "^11.1.2",
     "eslint-config-prettier": "^8.3.0",
-    "husky": "^7.0.2",
+    "husky": "^7.0.4",
     "lint-staged": "^11.2.3",
     "next-transpile-modules": "^8.0.0",
     "prettier": "^2.4.1",
     "prettier-plugin-jsdoc": "^0.3.24",
     "shx": "^0.3.3",
+    "tsc-files": "^1.1.2",
     "typescript": "^4.4.3"
   },
   "lint-staged": {
-    "*.@(js|jsx|ts|tsx)": "npm run lint-fix",
+    "*.@(js|jsx|ts|tsx)": "tsc-files --pretty --noEmit",
     "*.@(js|jsx|ts|tsx|css|md)": "npm run format"
-  }
+  },
+  "workspaces": [
+    "src/contract-logic"
+  ]
 }

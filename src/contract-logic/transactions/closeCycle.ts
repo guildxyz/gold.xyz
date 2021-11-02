@@ -1,27 +1,12 @@
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
-import {
-  PublicKey,
-  SystemProgram,
-  SYSVAR_RENT_PUBKEY,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js"
+import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import {
-  EDITION,
-  EDITION_MARKER_BIT_SIZE,
-  METADATA_PROGRAM_ID,
-  PREFIX,
-  PROGRAM_ID,
-} from "../consts"
+import { EDITION, EDITION_MARKER_BIT_SIZE, METADATA_PROGRAM_ID, PREFIX, PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts"
 import { getChildAccounts } from "../queries/childEdition"
 import { getTopBidder } from "../queries/getTopBidder"
 import { getMasterAccounts } from "../queries/masterEdition"
-import {
-  getCurrentCycleStatePubkey,
-  getNextCycleStatePubkey,
-} from "../queries/readCycleState"
+import { getCurrentCycleStatePubkey, getNextCycleStatePubkey } from "../queries/readCycleState"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 
 // auctionOwnerPubkey from cached state data
@@ -34,37 +19,21 @@ export async function closeCycle(
 ): Promise<Transaction> {
   let auctionIdBuffer = padTo32Bytes(auctionId)
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_bank"),
-      auctionIdBuffer,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("auction_bank"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
   const [auctionRootStatePubkey, _z] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_root_state"),
-      auctionIdBuffer,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("auction_root_state"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
 
-  const currentAuctionCycleStatePubkey = await getCurrentCycleStatePubkey(
-    auctionRootStatePubkey
-  )
-  const nextAuctionCycleStatePubkey = await getNextCycleStatePubkey(
-    auctionRootStatePubkey
-  )
+  const currentAuctionCycleStatePubkey = await getCurrentCycleStatePubkey(auctionRootStatePubkey)
+  const nextAuctionCycleStatePubkey = await getNextCycleStatePubkey(auctionRootStatePubkey)
 
   const topBidder = await getTopBidder(currentAuctionCycleStatePubkey)
 
   const masterAccounts = await getMasterAccounts(auctionIdBuffer, auctionOwnerPubkey)
-  const childAccounts = await getChildAccounts(
-    auctionIdBuffer,
-    auctionOwnerPubkey,
-    nextEdition
-  )
+  const childAccounts = await getChildAccounts(auctionIdBuffer, auctionOwnerPubkey, nextEdition)
 
   const editionStr = Math.trunc(nextEdition / EDITION_MARKER_BIT_SIZE).toString()
   const [editionMarker, _f] = await PublicKey.findProgramAddress(
@@ -78,17 +47,10 @@ export async function closeCycle(
     METADATA_PROGRAM_ID
   )
 
-  const [programPda, _] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_contract")],
-    PROGRAM_ID
-  )
+  const [programPda, _] = await PublicKey.findProgramAddress([Buffer.from("auction_contract")], PROGRAM_ID)
 
-  const closeCycleArgs = new Layout.CloseAuctionCycleArgs({
-    auctionId: auctionIdBuffer,
-  })
-  const auctionData = Buffer.from(
-    serialize(Layout.CLOSE_CYCLE_SCHEMA, closeCycleArgs)
-  )
+  const closeCycleArgs = new Layout.CloseAuctionCycleArgs({ auctionId: auctionIdBuffer })
+  const auctionData = Buffer.from(serialize(Layout.CLOSE_CYCLE_SCHEMA, closeCycleArgs))
 
   const closeCycleInstruction = new TransactionInstruction({
     programId: PROGRAM_ID,

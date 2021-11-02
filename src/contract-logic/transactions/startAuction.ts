@@ -1,19 +1,7 @@
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
-import {
-  PublicKey,
-  SystemProgram,
-  SYSVAR_RENT_PUBKEY,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js"
+import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import {
-  CONTRACT_ADMIN_PUBKEY,
-  EDITION,
-  METADATA_PROGRAM_ID,
-  PREFIX,
-  PROGRAM_ID,
-} from "../consts"
+import { CONTRACT_ADMIN_PUBKEY, EDITION, METADATA_PROGRAM_ID, PREFIX, PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts"
 import { Auction } from "../queries/getAuctions"
 import { numberToBytes } from "../utils/numberToBytes"
@@ -48,77 +36,43 @@ export async function startAuction(auction: Auction): Promise<Transaction> {
   )
 
   const [masterMintPubkey, _d] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("master_mint"),
-      auctionId,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("master_mint"), auctionId, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
 
   const [masterHoldingPubkey, _e] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("master_holding"),
-      auctionId,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("master_holding"), auctionId, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
 
   const [masterMetadataPubkey, _f] = await PublicKey.findProgramAddress(
-    [
-      PREFIX,
-      Buffer.from(METADATA_PROGRAM_ID.toBytes()),
-      Buffer.from(masterMintPubkey.toBytes()),
-    ],
+    [PREFIX, Buffer.from(METADATA_PROGRAM_ID.toBytes()), Buffer.from(masterMintPubkey.toBytes())],
     METADATA_PROGRAM_ID
   )
 
   const [masterEditionPubkey, _g] = await PublicKey.findProgramAddress(
-    [
-      PREFIX,
-      Buffer.from(METADATA_PROGRAM_ID.toBytes()),
-      Buffer.from(masterMintPubkey.toBytes()),
-      EDITION,
-    ],
+    [PREFIX, Buffer.from(METADATA_PROGRAM_ID.toBytes()), Buffer.from(masterMintPubkey.toBytes()), EDITION],
     METADATA_PROGRAM_ID
   )
 
-  const [programPda, _] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_contract")],
-    PROGRAM_ID
-  )
+  const [programPda, _] = await PublicKey.findProgramAddress([Buffer.from("auction_contract")], PROGRAM_ID)
 
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_bank"),
-      auctionId,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("auction_bank"), auctionId, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
 
   const [auctionRootStatePubkey, _y] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_root_state"),
-      auctionId,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("auction_root_state"), auctionId, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
 
   const [auctionCycleStatePubkey, _z] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_cycle_state"),
-      Buffer.from(auctionRootStatePubkey.toBytes()),
-      Buffer.from(numberToBytes(1)),
-    ],
+    [Buffer.from("auction_cycle_state"), Buffer.from(auctionRootStatePubkey.toBytes()), Buffer.from(numberToBytes(1))],
     PROGRAM_ID
   )
 
-  let auctionData = Buffer.from(
-    serialize(Layout.INIT_AUCTION_SCHEMA, initAuctionArgs)
-  )
+  let auctionData = Buffer.from(serialize(Layout.INIT_AUCTION_SCHEMA, initAuctionArgs))
 
   const initializeAuctionInstruction = new TransactionInstruction({
     programId: PROGRAM_ID,

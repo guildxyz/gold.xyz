@@ -6,12 +6,7 @@ export class AuctionConfig {
   encorePeriod: BN
   numberOfCycles: BN | null
   minimumBidAmount: BN
-  constructor(args: {
-    cyclePeriod: BN
-    encorePeriod: BN
-    numberOfCycles: BN | null
-    minimumBidAmount: BN
-  }) {
+  constructor(args: { cyclePeriod: BN; encorePeriod: BN; numberOfCycles: BN | null; minimumBidAmount: BN }) {
     this.cyclePeriod = args.cyclePeriod
     this.encorePeriod = args.encorePeriod
     this.numberOfCycles = args.numberOfCycles
@@ -39,11 +34,7 @@ export class AuctionStatus {
   currentAuctionCycle: number
   isFrozen: boolean
   isActive: boolean
-  constructor(args: {
-    currentAuctionCycle: number
-    isFrozen: number
-    isActive: number
-  }) {
+  constructor(args: { currentAuctionCycle: number; isFrozen: number; isActive: number }) {
     this.currentAuctionCycle = args.currentAuctionCycle
     this.isFrozen = !!args.isFrozen
     this.isActive = !!args.isActive

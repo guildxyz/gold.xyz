@@ -8,12 +8,7 @@ export class MasterEditionAccounts {
   holding: PublicKey
   metadata: PublicKey
   edition: PublicKey
-  constructor(args: {
-    mint: PublicKey
-    holding: PublicKey
-    metadata: PublicKey
-    edition: PublicKey
-  }) {
+  constructor(args: { mint: PublicKey; holding: PublicKey; metadata: PublicKey; edition: PublicKey }) {
     this.mint = args.mint
     this.holding = args.holding
     this.metadata = args.metadata
@@ -21,77 +16,40 @@ export class MasterEditionAccounts {
   }
 }
 
-export async function getMasterAccounts(
-  connection: Connection,
-  auctionId: Uint8Array,
-  auctionOwnerPubkey: PublicKey
-) {
+export async function getMasterAccounts(connection: Connection, auctionId: Uint8Array, auctionOwnerPubkey: PublicKey) {
   const [mint, _d] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("master_mint"),
-      Buffer.from(auctionId),
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("master_mint"), Buffer.from(auctionId), Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
   const [holding, _e] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("master_holding"),
-      Buffer.from(auctionId),
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("master_holding"), Buffer.from(auctionId), Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
   const [metadata, _f] = await PublicKey.findProgramAddress(
-    [
-      PREFIX,
-      Buffer.from(METADATA_PROGRAM_ID.toBytes()),
-      Buffer.from(mint.toBytes()),
-    ],
+    [PREFIX, Buffer.from(METADATA_PROGRAM_ID.toBytes()), Buffer.from(mint.toBytes())],
     METADATA_PROGRAM_ID
   )
   const [edition, _g] = await PublicKey.findProgramAddress(
-    [
-      PREFIX,
-      Buffer.from(METADATA_PROGRAM_ID.toBytes()),
-      Buffer.from(mint.toBytes()),
-      EDITION,
-    ],
+    [PREFIX, Buffer.from(METADATA_PROGRAM_ID.toBytes()), Buffer.from(mint.toBytes()), EDITION],
     METADATA_PROGRAM_ID
   )
 
   return new MasterEditionAccounts({ mint, holding, metadata, edition })
 }
 
-export async function getMasterMetadata(
-  connection: Connection,
-  auctionOwnerPubkey: PublicKey,
-  auctionId: Uint8Array
-) {
+export async function getMasterMetadata(connection: Connection, auctionOwnerPubkey: PublicKey, auctionId: Uint8Array) {
   const [masterMint, _a] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("master_mint"),
-      Buffer.from(auctionId),
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("master_mint"), Buffer.from(auctionId), Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
   const [masterMetadataPubkey, _b] = await PublicKey.findProgramAddress(
-    [
-      PREFIX,
-      Buffer.from(METADATA_PROGRAM_ID.toBytes()),
-      Buffer.from(masterMint.toBytes()),
-    ],
+    [PREFIX, Buffer.from(METADATA_PROGRAM_ID.toBytes()), Buffer.from(masterMint.toBytes())],
     METADATA_PROGRAM_ID
   )
 
   let metadataAccount = await connection.getAccountInfo(masterMetadataPubkey)
   let metadataAccountData: Buffer = metadataAccount!.data
-  let metadata = deserializeUnchecked(
-    MetadataLayout.METADATA_SCHEMA,
-    MetadataLayout.Metadata,
-    metadataAccountData
-  )
+  let metadata = deserializeUnchecked(MetadataLayout.METADATA_SCHEMA, MetadataLayout.Metadata, metadataAccountData)
 
   const METADATA_REPLACE = new RegExp("\u0000", "g")
 

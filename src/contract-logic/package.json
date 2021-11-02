@@ -1,0 +1,24 @@
+{
+  "name": "goldxyz-solana-contract-logic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx ts-node test.ts",
+    "start": "npx ts-node index.ts"
+  },
+  "devDependencies": {
+    "ts-md5": "^1.2.9",
+    "ts-node": "^10.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgoraSpaceDAO/gold.xyz.git"
+  },
+  "author": "zgen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AgoraSpaceDAO/gold.xyz/issues"
+  },
+  "homepage": "https://github.com/AgoraSpaceDAO/gold.xyz#readme"
+}

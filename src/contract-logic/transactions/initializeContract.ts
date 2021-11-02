@@ -1,10 +1,4 @@
-import {
-  Keypair,
-  PublicKey,
-  SystemProgram,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js"
+import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { CONNECTION, PROGRAM_ID } from "../consts"
 
 export async function initContract(contractAdmin: Keypair) {
@@ -29,10 +23,9 @@ export async function initContract(contractAdmin: Keypair) {
   })
   // send the transaction via CONNECTION
   await CONNECTION.confirmTransaction(
-    await CONNECTION.sendTransaction(
-      new Transaction().add(initializeContractInstruction),
-      [contractAdmin],
-      { skipPreflight: false, preflightCommitment: "singleGossip" }
-    )
+    await CONNECTION.sendTransaction(new Transaction().add(initializeContractInstruction), [contractAdmin], {
+      skipPreflight: false,
+      preflightCommitment: "singleGossip",
+    })
   )
 }

@@ -1,9 +1,4 @@
-import {
-  PublicKey,
-  SystemProgram,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js"
+import { PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts"
@@ -21,29 +16,16 @@ export async function claimFunds(
     PROGRAM_ID
   )
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_bank"),
-      auctionIdBuffer,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("auction_bank"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
   const [auctionRootStatePubkey, _z] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("auction_root_state"),
-      auctionIdBuffer,
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
+    [Buffer.from("auction_root_state"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
-  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(
-    auctionRootStatePubkey
-  )
+  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(auctionRootStatePubkey)
 
-  const claimFundsArgs = new Layout.ClaimFundsArgs({
-    auctionId: auctionIdBuffer,
-    amount: amount,
-  })
+  const claimFundsArgs = new Layout.ClaimFundsArgs({ auctionId: auctionIdBuffer, amount: amount })
   let auctionData = Buffer.from(serialize(Layout.CLAIM_FUNDS_SCHEMA, claimFundsArgs))
 
   const claimFundsInstruction = new TransactionInstruction({
