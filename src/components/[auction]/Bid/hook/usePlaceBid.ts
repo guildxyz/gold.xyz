@@ -1,5 +1,6 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import placeBid from "contract-logic/placeBid"
+import useAuction from "components/[auction]/hooks/useAuction"
+import { placeBid } from "contract-logic/transactions/bid"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
@@ -13,12 +14,18 @@ const usePlaceBid = (setValue) => {
   const toast = useToast()
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  const { publicKey } = useWallet()
   const { connection } = useConnection()
-  const { sendTransaction } = useWallet()
+  const { sendTransaction, publicKey } = useWallet()
+  const auction = useAuction()
 
   const handlePlaceBid = async ({ amount }: Data) => {
-    const tx = await placeBid(amount)
+    const tx = await placeBid(
+      connection,
+      auction.id,
+      auction.ownerPubkey,
+      amount,
+      publicKey
+    )
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
@@ -43,11 +50,11 @@ const usePlaceBid = (setValue) => {
       })
       setValue("amount", "")
       const newBid = {
-        bidAmount: parseInt(amount),
+        amount: parseInt(amount),
         bidderPubkey: publicKey.toBase58(),
       }
       mutate(
-        ["auction", router.query.auction],
+        ["auction", connection, router.query.auction],
         async (prevData) => ({
           ...prevData,
           bids: [newBid, ...(prevData?.bids || [])],

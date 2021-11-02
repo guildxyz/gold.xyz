@@ -1,17 +1,14 @@
-/* eslint-disable */
 import { PublicKey } from "@solana/web3.js"
 import { BigNumber } from "bignumber.js"
 import { BinaryReader, BinaryWriter } from "borsh"
-import base58 from "bs58"
-
-type StringPublicKey = string
+import { parseAuctionId } from "../utils/parseAuctionId"
 
 export class Creator {
-  address: StringPublicKey
+  address: PublicKey
   verified: number
   share: number
 
-  constructor(args: { address: StringPublicKey; verified: number; share: number }) {
+  constructor(args: { address: PublicKey; verified: number; share: number }) {
     this.address = args.address
     this.verified = args.verified
     this.share = args.share
@@ -148,7 +145,7 @@ export const INIT_AUCTION_SCHEMA = new Map<any, any>([
     {
       kind: "struct",
       fields: [
-        ["address", "pubkeyAsString"],
+        ["address", "borshPubkey"],
         ["verified", "u8"],
         ["share", "u8"],
       ],
@@ -247,8 +244,8 @@ export const BID_SCHEMA = new Map<any, any>([
 ])
 
 export class AuctionPool {
-  pool: Map<string, StringPublicKey>
-  constructor(args: { pool: Map<string, StringPublicKey> }) {
+  pool: Map<string, PublicKey>
+  constructor(args: { pool: Map<string, PublicKey> }) {
     this.pool = args.pool
   }
 }
@@ -273,16 +270,14 @@ export const extendBorsh = () => {
     const writer = this as unknown as BinaryWriter
     writer.writeFixedArray(value.toBuffer())
   }
-  ;(BinaryReader.prototype as any).readPubkeyAsString = function () {
+  ;(BinaryReader.prototype as any).readBorshPubkey = function () {
     const reader = this as unknown as BinaryReader
     const array = reader.readFixedArray(32)
-    return base58.encode(array) as StringPublicKey
+    return new PublicKey(array)
   }
-  ;(BinaryWriter.prototype as any).writePubkeyAsString = function (
-    value: StringPublicKey
-  ) {
+  ;(BinaryWriter.prototype as any).writeBorshPubkey = function (value: PublicKey) {
     const writer = this as unknown as BinaryWriter
-    writer.writeFixedArray(base58.decode(value))
+    writer.writeFixedArray(value.toBytes())
   }
 }
 
@@ -294,9 +289,10 @@ export const extendMapBorsh = () => {
     const len = reader.readU32()
     let auctionPool = new Map()
     for (let i = 0; i < len; i++) {
-      const auctionId = reader.readFixedArray(32).toString()
+      const paddedId = reader.readFixedArray(32)
+      const auctionId = parseAuctionId(paddedId)
       const array = reader.readFixedArray(32)
-      const pubkey = base58.encode(array) as StringPublicKey
+      const pubkey = new PublicKey(array)
       auctionPool.set(auctionId, pubkey)
     }
     return auctionPool

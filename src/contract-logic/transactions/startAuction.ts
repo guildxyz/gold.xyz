@@ -7,75 +7,64 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { AuctionBody } from "types"
 import {
-  auctionOwner,
-  contractAdmin,
+  CONTRACT_ADMIN_PUBKEY,
   EDITION,
   METADATA_PROGRAM_ID,
   PREFIX,
-  programId,
-} from "./config"
-import * as Layout from "./config/layout"
-import numberToBytes from "./utils/numberToBytes"
-import padTo32Bytes from "./utils/padTo32Bytes"
+  PROGRAM_ID,
+} from "../consts"
+import * as Layout from "../layouts"
+import { Auction } from "../queries/getAuctions"
+import { numberToBytes } from "../utils/numberToBytes"
+import { padTo32Bytes } from "../utils/padTo32Bytes"
 
-async function startAuction({
-  nftData: MasterNftData,
-  name: stringAuctionName,
-  cyclePeriod,
-  numberOfCycles,
-  minBid,
-}: AuctionBody): Promise<Transaction> {
-  const auctionId = padTo32Bytes(stringAuctionName)
-  const auctionName = padTo32Bytes(stringAuctionName)
-  console.log({
-    MasterNftData,
-    cyclePeriod,
-    numberOfCycles,
-    minBid,
-    auctionId,
-    auctionName,
-  })
-
+export async function startAuction(auction: Auction): Promise<Transaction> {
+  const auctionId = padTo32Bytes(auction.id)
   const data = new Layout.Data({
-    name: MasterNftData.name,
-    symbol: MasterNftData.symbol,
-    uri: MasterNftData.uri,
+    name: auction.nftData.name,
+    symbol: auction.nftData.symbol,
+    uri: auction.nftData.uri,
     sellerFeeBasisPoints: 10,
     creators: null,
   })
   const metadataArgs = new Layout.CreateMetadataArgs({ data: data, isMutable: true })
-  const auctionConfig = new Layout.AuctionConfig({ cyclePeriod, numberOfCycles })
+  const auctionConfig = new Layout.AuctionConfig({
+    cyclePeriod: auction.cyclePeriod,
+    numberOfCycles: auction.numberOfCycles,
+  })
   const initAuctionArgs = new Layout.InitializeAuctionArgs({
-    auctionId: auctionId,
-    auctionName: auctionName,
+    auctionId,
+    auctionName: padTo32Bytes(auction.name),
     auctionConfig: auctionConfig,
     metadataArgs: metadataArgs,
     auctionStartTimestamp: null,
   })
+  const auctionOwnerPubkey = auction.ownerPubkey
 
   const [auctionPoolPubkey, _b] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_pool"), Buffer.from(contractAdmin.publicKey.toBytes())],
-    programId
+    [Buffer.from("auction_pool"), Buffer.from(CONTRACT_ADMIN_PUBKEY.toBytes())],
+    PROGRAM_ID
   )
 
   const [masterMintPubkey, _d] = await PublicKey.findProgramAddress(
     [
       Buffer.from("master_mint"),
-      Buffer.from(auctionId),
-      Buffer.from(auctionOwner.publicKey.toBytes()),
+      auctionId,
+      Buffer.from(auctionOwnerPubkey.toBytes()),
     ],
-    programId
+    PROGRAM_ID
   )
+
   const [masterHoldingPubkey, _e] = await PublicKey.findProgramAddress(
     [
       Buffer.from("master_holding"),
-      Buffer.from(auctionId),
-      Buffer.from(auctionOwner.publicKey.toBytes()),
+      auctionId,
+      Buffer.from(auctionOwnerPubkey.toBytes()),
     ],
-    programId
+    PROGRAM_ID
   )
+
   const [masterMetadataPubkey, _f] = await PublicKey.findProgramAddress(
     [
       PREFIX,
@@ -84,6 +73,7 @@ async function startAuction({
     ],
     METADATA_PROGRAM_ID
   )
+
   const [masterEditionPubkey, _g] = await PublicKey.findProgramAddress(
     [
       PREFIX,
@@ -96,42 +86,45 @@ async function startAuction({
 
   const [programPda, _] = await PublicKey.findProgramAddress(
     [Buffer.from("auction_contract")],
-    programId
+    PROGRAM_ID
   )
+
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
     [
       Buffer.from("auction_bank"),
-      Buffer.from(auctionId),
-      Buffer.from(auctionOwner.publicKey.toBytes()),
+      auctionId,
+      Buffer.from(auctionOwnerPubkey.toBytes()),
     ],
-    programId
+    PROGRAM_ID
   )
+
   const [auctionRootStatePubkey, _y] = await PublicKey.findProgramAddress(
     [
       Buffer.from("auction_root_state"),
-      Buffer.from(auctionId),
-      Buffer.from(auctionOwner.publicKey.toBytes()),
+      auctionId,
+      Buffer.from(auctionOwnerPubkey.toBytes()),
     ],
-    programId
+    PROGRAM_ID
   )
+
   const [auctionCycleStatePubkey, _z] = await PublicKey.findProgramAddress(
     [
       Buffer.from("auction_cycle_state"),
       Buffer.from(auctionRootStatePubkey.toBytes()),
       Buffer.from(numberToBytes(1)),
     ],
-    programId
+    PROGRAM_ID
   )
 
-  const auctionData = Buffer.from(
+  let auctionData = Buffer.from(
     serialize(Layout.INIT_AUCTION_SCHEMA, initAuctionArgs)
   )
 
   const initializeAuctionInstruction = new TransactionInstruction({
-    programId,
+    programId: PROGRAM_ID,
     data: auctionData,
     keys: [
-      { pubkey: auctionOwner.publicKey, isSigner: true, isWritable: true },
+      { pubkey: auctionOwnerPubkey, isSigner: true, isWritable: true },
       { pubkey: masterEditionPubkey, isSigner: false, isWritable: true },
       { pubkey: masterHoldingPubkey, isSigner: false, isWritable: true },
       { pubkey: masterMetadataPubkey, isSigner: false, isWritable: true },
@@ -150,5 +143,3 @@ async function startAuction({
 
   return new Transaction().add(initializeAuctionInstruction)
 }
-
-export default startAuction

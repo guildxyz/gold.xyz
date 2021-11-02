@@ -61,9 +61,11 @@ const Page = (): JSX.Element => {
             </HStack>
           }
           fallbackText={
-            auctions?.length
+            !publicKey
+              ? "Connect your wallet to view auctions"
+              : auctions?.length
               ? `No results for ${searchInput}`
-              : "Connect your wallet to view auctions"
+              : "There're no auctions yet"
           }
         >
           {filteredAuctions?.length &&

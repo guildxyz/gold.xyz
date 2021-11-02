@@ -1,26 +1,34 @@
-import { useWallet } from "@solana/wallet-adapter-react"
-import getAuction from "contract-logic/getAuction"
+import { useConnection } from "@solana/wallet-adapter-react"
+import { Auction, getAuction } from "contract-logic/queries/getAuctions"
 import { useRouter } from "next/router"
 import useSWR from "swr"
-import { Auction } from "types"
 
-const handleGetAuction = async (_, name) => {
-  const auction = await getAuction(name)
+const handleGetAuction = async (_, connection, id) => {
+  const auction = await getAuction(connection, id)
   return {
     ...auction,
-    largestBid: auction?.bids?.length
-      ? Math.max(...auction?.bids?.map((bid) => bid.bidAmount))
-      : 0,
+    largestBid: auction?.bids?.[0]?.amount?.toNumber() ?? 0,
+    // ? Math.max(...auction?.bids?.map((bid) => bid.amount))
+    // : 0,
   }
 }
 
 const useAuction = (): Auction & { largestBid: number } => {
-  const { publicKey } = useWallet()
+  const { connection } = useConnection()
   const router = useRouter()
 
-  const { data } = useSWR(["auction", router.query.auction], handleGetAuction, {
-    revalidateOnFocus: false,
-  })
+  const shouldFetch = connection
+
+  const { data } = useSWR(
+    shouldFetch ? ["auction", connection, router.query.auction] : null,
+    handleGetAuction,
+    {
+      revalidateOnFocus: false,
+    }
+  )
+  // useEffect(() => {
+  //   console.log("data", data)
+  // }, [data])
 
   return data
 }

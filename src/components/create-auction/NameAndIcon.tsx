@@ -1,11 +1,20 @@
 import { FormControl, FormErrorMessage, HStack, Input } from "@chakra-ui/react"
-import { useFormContext } from "react-hook-form"
+import { useEffect } from "react"
+import { useFormContext, useWatch } from "react-hook-form"
+import slugify from "utils/slugify"
 
 const NameAndIcon = () => {
   const {
     register,
     formState: { errors },
+    setValue,
   } = useFormContext()
+
+  const name = useWatch({ name: "name" })
+
+  useEffect(() => {
+    if (name) setValue("id", slugify(name))
+  }, [name])
 
   return (
     <FormControl isRequired isInvalid={errors?.name}>

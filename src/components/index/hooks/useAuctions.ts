@@ -1,16 +1,17 @@
-import { useWallet } from "@solana/wallet-adapter-react"
-import getAuctions from "contract-logic/getAuctions"
+import { useConnection } from "@solana/wallet-adapter-react"
+import { AuctionBase, getAuctions } from "contract-logic/queries/getAuctions"
 import useSWR from "swr"
-import { Auction } from "types"
 
-const useAuctions = (): Auction[] => {
-  const { publicKey } = useWallet()
+const handleGetAuctions = (_, connection) => getAuctions(connection)
 
-  const shouldFetch = !!publicKey
+const useAuctions = (): AuctionBase[] => {
+  const { connection } = useConnection()
+
+  const shouldFetch = connection
 
   const { data } = useSWR(
-    shouldFetch ? ["auctions", publicKey] : null,
-    getAuctions,
+    shouldFetch ? ["auctions", connection] : null,
+    handleGetAuctions,
     {
       refreshInterval: 10000,
     }

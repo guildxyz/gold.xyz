@@ -1,17 +1,16 @@
-/* eslint-disable */
+import { PublicKey } from "@solana/web3.js"
 import BN from "bn.js"
-type StringPublicKey = string
 
 export class AuctionConfig {
-  cyclePeriod: number
-  encorePeriod: number
-  numberOfCycles: number | null
-  minimumBidAmount: number
+  cyclePeriod: BN
+  encorePeriod: BN
+  numberOfCycles: BN | null
+  minimumBidAmount: BN
   constructor(args: {
-    cyclePeriod: number
-    encorePeriod: number
-    numberOfCycles: number | null
-    minimumBidAmount: number
+    cyclePeriod: BN
+    encorePeriod: BN
+    numberOfCycles: BN | null
+    minimumBidAmount: BN
   }) {
     this.cyclePeriod = args.cyclePeriod
     this.encorePeriod = args.encorePeriod
@@ -20,18 +19,18 @@ export class AuctionConfig {
   }
 }
 
-export class BidData {
-  bidderPubkey: StringPublicKey
-  bidAmount: number
-  constructor(args: { bidderPubkey: StringPublicKey; bidAmount: number }) {
+export class Bid {
+  bidderPubkey: PublicKey
+  amount: BN
+  constructor(args: { amount: BN; bidderPubkey: PublicKey }) {
+    this.amount = args.amount
     this.bidderPubkey = args.bidderPubkey
-    this.bidAmount = args.bidAmount
   }
 }
 
 export class NftData {
-  masterEdition: StringPublicKey
-  constructor(args: { masterEdition: StringPublicKey }) {
+  masterEdition: PublicKey
+  constructor(args: { masterEdition: PublicKey }) {
     this.masterEdition = args.masterEdition
   }
 }
@@ -53,13 +52,13 @@ export class AuctionStatus {
 
 export class AuctionRootState {
   auctionName: Uint8Array
-  auctionOwner: StringPublicKey
+  auctionOwner: PublicKey
   config: AuctionConfig
   nftData: NftData
   status: AuctionStatus
   constructor(args: {
     auctionName: Uint8Array
-    auctionOwner: StringPublicKey
+    auctionOwner: PublicKey
     config: AuctionConfig
     nftData: NftData
     status: AuctionStatus
@@ -79,7 +78,7 @@ export const AUCTION_ROOT_STATE_SCHEMA = new Map<any, any>([
       kind: "struct",
       fields: [
         ["auctionName", [32]],
-        ["auctionOwner", "pubkeyAsString"],
+        ["auctionOwner", "borshPubkey"],
         ["config", AuctionConfig],
         ["nftData", NftData],
         ["status", AuctionStatus],
@@ -113,7 +112,7 @@ export const AUCTION_ROOT_STATE_SCHEMA = new Map<any, any>([
     NftData,
     {
       kind: "struct",
-      fields: [["masterEdition", "pubkeyAsString"]],
+      fields: [["masterEdition", "borshPubkey"]],
     },
   ],
 ])
@@ -121,8 +120,8 @@ export const AUCTION_ROOT_STATE_SCHEMA = new Map<any, any>([
 export class AuctionCycleState {
   startTime: BN
   endTime: BN
-  bidHistory: BidData[]
-  constructor(args: { startTime: BN; endTime: BN; bidHistory: BidData[] }) {
+  bidHistory: Bid[]
+  constructor(args: { startTime: BN; endTime: BN; bidHistory: Bid[] }) {
     this.startTime = args.startTime
     this.endTime = args.endTime
     this.bidHistory = args.bidHistory
@@ -136,17 +135,17 @@ export const AUCTION_CYCLE_STATE_SCHEMA = new Map<any, any>([
       fields: [
         ["startTime", "u64"],
         ["endTime", "u64"],
-        ["bidHistory", [BidData]],
+        ["bidHistory", [Bid]],
       ],
     },
   ],
   [
-    BidData,
+    Bid,
     {
       kind: "struct",
       fields: [
-        ["bidderPubkey", "pubkeyAsString"],
-        ["bidAmount", "u64"],
+        ["bidderPubkey", "borshPubkey"],
+        ["amount", "u64"],
       ],
     },
   ],

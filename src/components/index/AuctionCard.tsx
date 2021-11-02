@@ -1,10 +1,10 @@
 import { SimpleGrid, Text, useColorMode } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import Link from "components/common/Link"
-import { Auction } from "types"
+import { AuctionBase } from "contract-logic/queries/getAuctions"
 
 type Props = {
-  auction: Auction
+  auction: AuctionBase
 }
 
 const AuctionCard = ({ auction }: Props): JSX.Element => {
@@ -12,7 +12,7 @@ const AuctionCard = ({ auction }: Props): JSX.Element => {
 
   return (
     <Link
-      href={`/${auction.name}`}
+      href={`/${auction.id}`}
       _hover={{ textDecor: "none" }}
       borderRadius="2xl"
       w="full"

@@ -1,9 +1,9 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import startAuction from "contract-logic/startAuction"
+import { Auction } from "contract-logic/queries/getAuctions"
+import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useEffect, useState } from "react"
-import { AuctionBody } from "types"
 
 const DAY_IN_SECONDS = 86400
 
@@ -20,12 +20,13 @@ const uploadImage = (data: FileList): Promise<ImageResponse> => {
 }
 
 const useAuctionSubmit = () => {
-  const [data, setData] = useState<AuctionBody>()
+  const [data, setData] = useState<Auction>()
   const toast = useToast()
   const { connection } = useConnection()
-  const { sendTransaction } = useWallet()
+  const { sendTransaction, publicKey } = useWallet()
 
-  const handleStartAuction = async (data_: AuctionBody) => {
+  const handleStartAuction = async (data_: Auction) => {
+    console.log(data_)
     const tx = await startAuction(data_)
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
@@ -38,7 +39,7 @@ const useAuctionSubmit = () => {
     console.log("success", "Transaction successful!", signature)
   }
 
-  const { onSubmit, response, error, isLoading } = useSubmit<AuctionBody, any>(
+  const { onSubmit, response, error, isLoading } = useSubmit<Auction, any>(
     handleStartAuction,
     {
       onError: (e) =>
@@ -77,6 +78,7 @@ const useAuctionSubmit = () => {
       setData({
         ..._data,
         cyclePeriod: (_data.customCyclePeriod ?? _data.cyclePeriod) * DAY_IN_SECONDS,
+        ownerPubkey: publicKey,
       })
       onSubmitImage(_data.nftImage)
     },
