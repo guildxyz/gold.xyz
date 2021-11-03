@@ -7,14 +7,14 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js"
 //export const PROGRAM_ID = new PublicKey("EYWyXhivnRcNfEPejGvprRhJ9PzwQpP5G558uESR6EmY");
 //export const METADATA_PROGRAM_ID = new PublicKey("4vCSqWXmDKtX7QN237mr4nMmJ9Sbsn6ceswEWv8cuQ23");
 // gyozo localnet
-export const PROGRAM_ID = new PublicKey("C49m9xTNShV9Ab1YwhgGqN3tv6bM3mYFVcdPrLxiZj2V")
-export const METADATA_PROGRAM_ID = new PublicKey("4AokZ7xLLA4FJu5SciX9tAMjCdusFmiQXbJ5tpeF65qo")
-export const CONNECTION = new Connection("http://localhost:8899", "singleGossip")
+//export const PROGRAM_ID = new PublicKey("C49m9xTNShV9Ab1YwhgGqN3tv6bM3mYFVcdPrLxiZj2V")
+//export const METADATA_PROGRAM_ID = new PublicKey("4AokZ7xLLA4FJu5SciX9tAMjCdusFmiQXbJ5tpeF65qo")
+//export const CONNECTION = new Connection("http://localhost:8899", "singleGossip")
 
 // testnet
-//export const PROGRAM_ID = new PublicKey("C49m9xTNShV9Ab1YwhgGqN3tv6bM3mYFVcdPrLxiZj2V")
-//export const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s")
-//export const CONNECTION = new Connection("https://api.testnet.solana.com", "singleGossip")
+export const PROGRAM_ID = new PublicKey("C49m9xTNShV9Ab1YwhgGqN3tv6bM3mYFVcdPrLxiZj2V")
+export const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s")
+export const CONNECTION = new Connection("https://api.testnet.solana.com", "singleGossip")
 
 export const PREFIX = Buffer.from("metadata")
 export const EDITION = Buffer.from("edition")

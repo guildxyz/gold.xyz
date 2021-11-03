@@ -7,7 +7,7 @@ import { claimFunds } from "./transactions/claimFunds"
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
-  await init(auctionOwner.publicKey)
+  //await init(auctionOwner.publicKey)
   // READ AUCTION STATE
   let auctionBaseArray = await getAuctions(CONNECTION)
   console.log("getAuctions:", auctionBaseArray)
@@ -31,7 +31,7 @@ import { claimFunds } from "./transactions/claimFunds"
   // };
   // let startAuctionTransaction = await startAuction(newAuction);
   // await sendTransaction(startAuctionTransaction, auctionOwner);
-  const auction_id = "ordinary-wizarding-level"
+  const auction_id = "rust-evangelism-strike-force"
 
   var auction = await getAuction(CONNECTION, auction_id)
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)
@@ -43,8 +43,8 @@ import { claimFunds } from "./transactions/claimFunds"
   await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 100000000))
   let bidder = new Keypair()
   console.log("NEW BIDDER: ", bidder.publicKey.toString())
-  await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(bidder.publicKey, 100000000))
-  await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 100000000))
+  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(bidder.publicKey, 100000000))
+  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 100000000))
   // PLACE A BID
   //let placeBidTransaction = await placeBid(
   //  CONNECTION,
@@ -67,7 +67,7 @@ import { claimFunds } from "./transactions/claimFunds"
   //await sendTransaction(closeCycleTransaction, someUser);
   //console.log("successfully closed auction cycle");
 
-  let claimFundsTransaction = await claimFunds(CONNECTION, CONTRACT_ADMIN_PUBKEY, auctionOwnerPubkey, auction.id, 1000)
-  await sendTransaction(claimFundsTransaction, auctionOwner)
+  //let claimFundsTransaction = await claimFunds(CONNECTION, CONTRACT_ADMIN_PUBKEY, auctionOwnerPubkey, auction.id, 1000)
+  //await sendTransaction(claimFundsTransaction, auctionOwner)
   //console.log("successfully claimed funds");
 })()
