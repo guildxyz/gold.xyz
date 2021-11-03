@@ -1,4 +1,4 @@
-import { PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js"
+import { Connection, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts"
@@ -7,6 +7,7 @@ import { getCurrentCycleStatePubkey } from "../queries/readCycleState"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 
 export async function placeBid(
+  connection: Connection,
   auctionId: string,
   auctionOwnerPubkey: PublicKey,
   amount: number,
@@ -22,9 +23,9 @@ export async function placeBid(
     PROGRAM_ID
   )
 
-  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(auctionRootStatePubkey)
+  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(connection, auctionRootStatePubkey)
 
-  const topBidder = await getTopBidder(auctionCycleStatePubkey)
+  const topBidder = await getTopBidder(connection, auctionCycleStatePubkey)
 
   const bidArgs = new Layout.BidArgs({
     auctionId: auctionIdBuffer,

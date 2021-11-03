@@ -1,5 +1,12 @@
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
-import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction, TransactionInstruction } from "@solana/web3.js"
+import {
+  Connection,
+  PublicKey,
+  SystemProgram,
+  SYSVAR_RENT_PUBKEY,
+  Transaction,
+  TransactionInstruction,
+} from "@solana/web3.js"
 import { serialize } from "borsh"
 import { EDITION, EDITION_MARKER_BIT_SIZE, METADATA_PROGRAM_ID, PREFIX, PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts"
@@ -12,6 +19,7 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 // auctionOwnerPubkey from cached state data
 // currentEdition from cached state data
 export async function closeCycle(
+  connection: Connection,
   auctionOwnerPubkey: PublicKey,
   userPubkey: PublicKey,
   auctionId: string,
@@ -27,12 +35,12 @@ export async function closeCycle(
     PROGRAM_ID
   )
 
-  const currentAuctionCycleStatePubkey = await getCurrentCycleStatePubkey(auctionRootStatePubkey)
-  const nextAuctionCycleStatePubkey = await getNextCycleStatePubkey(auctionRootStatePubkey)
+  const currentAuctionCycleStatePubkey = await getCurrentCycleStatePubkey(connection, auctionRootStatePubkey)
+  const nextAuctionCycleStatePubkey = await getNextCycleStatePubkey(connection, auctionRootStatePubkey)
 
-  const topBidder = await getTopBidder(currentAuctionCycleStatePubkey)
+  const topBidder = await getTopBidder(connection, currentAuctionCycleStatePubkey)
 
-  const masterAccounts = await getMasterAccounts(auctionIdBuffer, auctionOwnerPubkey)
+  const masterAccounts = await getMasterAccounts(connection, auctionIdBuffer, auctionOwnerPubkey)
   const childAccounts = await getChildAccounts(auctionIdBuffer, auctionOwnerPubkey, nextEdition)
 
   const editionStr = Math.trunc(nextEdition / EDITION_MARKER_BIT_SIZE).toString()

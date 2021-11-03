@@ -1,4 +1,4 @@
-import { PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
+import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts"
@@ -6,7 +6,11 @@ import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleStatePubkey } from "../queries/readCycleState"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 
-export async function freeze(auctionOwnerPubkey: PublicKey, auctionId: string): Promise<Transaction> {
+export async function freeze(
+  connection: Connection,
+  auctionOwnerPubkey: PublicKey,
+  auctionId: string
+): Promise<Transaction> {
   const auctionIdBuffer = padTo32Bytes(auctionId)
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
     [Buffer.from("auction_bank"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
@@ -16,9 +20,9 @@ export async function freeze(auctionOwnerPubkey: PublicKey, auctionId: string): 
     [Buffer.from("auction_root_state"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
-  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(auctionRootStatePubkey)
+  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(connection, auctionRootStatePubkey)
 
-  const topBidder = await getTopBidder(auctionCycleStatePubkey)
+  const topBidder = await getTopBidder(connection, auctionCycleStatePubkey)
 
   const freezeArgs = new Layout.FreezeArgs({ auctionId: auctionIdBuffer })
   let auctionData = Buffer.from(serialize(Layout.FREEZE_SCHEMA, freezeArgs))
@@ -35,5 +39,5 @@ export async function freeze(auctionOwnerPubkey: PublicKey, auctionId: string): 
     ],
   })
 
-  await new Transaction().add(freezeInstruction)
+  return new Transaction().add(freezeInstruction)
 }

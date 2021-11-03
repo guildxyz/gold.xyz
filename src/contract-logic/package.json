@@ -8,6 +8,7 @@
     "start": "npx ts-node index.ts"
   },
   "devDependencies": {
+    "@types/node": "^16.11.6",
     "ts-md5": "^1.2.9",
     "ts-node": "^10.3.0"
   },
