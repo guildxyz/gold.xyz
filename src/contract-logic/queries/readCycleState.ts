@@ -65,7 +65,7 @@ export async function getCurrentCycleStatePubkey(connection: Connection, auction
     auctionRootStateAccountData
   )
 
-  const cycle_number = auctionRootState.status.currentAuctionCycle
+  const cycle_number = auctionRootState.status.currentAuctionCycle.toNumber()
   const [auctionCycleStatePubkey, _z] = await PublicKey.findProgramAddress(
     [
       Buffer.from("auction_cycle_state"),

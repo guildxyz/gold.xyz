@@ -31,10 +31,10 @@ export class NftData {
 }
 
 export class AuctionStatus {
-  currentAuctionCycle: number
+  currentAuctionCycle: BN
   isFrozen: boolean
   isActive: boolean
-  constructor(args: { currentAuctionCycle: number; isFrozen: number; isActive: number }) {
+  constructor(args: { currentAuctionCycle: BN; isFrozen: number; isActive: number }) {
     this.currentAuctionCycle = args.currentAuctionCycle
     this.isFrozen = !!args.isFrozen
     this.isActive = !!args.isActive

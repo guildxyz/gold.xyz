@@ -29,6 +29,8 @@ export type Auction = AuctionBase & {
   minBid: number
   startTimestamp: number
   endTimestamp: number
+  isActive: boolean
+  isFrozen: boolean
 }
 
 export async function getAuctions(connection: Connection): Promise<Array<AuctionBase>> {
@@ -115,10 +117,12 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
     },
     bids: auctionCycleStateDeserialized.bidHistory,
     cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
-    currentCycle: +currentChildEdition + 1, // ?
+    currentCycle: +auctionRootStateDeserialized.status.currentAuctionCycle.toNumber() + 1, //+currentChildEdition + 1, // ?
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
     minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber(),
     startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(),
     endTimestamp: auctionCycleStateDeserialized.endTime.toNumber(),
+    isActive: auctionRootStateDeserialized.status.isActive,
+    isFrozen: auctionRootStateDeserialized.status.isFrozen,
   }
 }
