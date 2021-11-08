@@ -101,10 +101,8 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
   const currentCycle = auctionRootStateDeserialized.status.currentAuctionCycle.toNumber()
   let uri = masterMetadata.uri
 
-  // TODO use regex? this is not very flexible
-  let uri_split = uri.split(".")
-  uri_split[uri_split.length - 2] = currentCycle.toString()
-  uri = uri_split.join(".")
+  const regex = /([^\/]+\/*\/)([^/]*)(\.(jpeg|png|svg|gif|jpg))/
+  uri = uri.replace(regex, "$1" + currentCycle + "$3")
 
   return {
     id: id,
