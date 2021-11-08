@@ -31,7 +31,7 @@ import { claimFunds } from "./transactions/claimFunds"
   // };
   // let startAuctionTransaction = await startAuction(newAuction);
   // await sendTransaction(startAuctionTransaction, auctionOwner);
-  const auction_id = "hello-auction"
+  const auction_id = "asd"
 
   var auction = await getAuction(CONNECTION, auction_id)
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)

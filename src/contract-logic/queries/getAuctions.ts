@@ -97,27 +97,27 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
 
   const currentChildEdition = masterEditionDeserialized.supply.toNumber()
   const auctionOwnerPubkey = new PublicKey(auctionRootStateDeserialized.auctionOwner)
-  // TODO read only master metadata -> get url
-  // TODO append edition number to url to get the specific images
-  var metadata
-  if (currentChildEdition == 0) {
-    metadata = await getMasterMetadata(connection, auctionOwnerPubkey, auctionId)
-  } else {
-    // we have minted a child nft so return with master's data
-    metadata = await getChildMetadata(auctionOwnerPubkey, auctionId, currentChildEdition)
-  }
+  const masterMetadata = await getMasterMetadata(connection, auctionOwnerPubkey, auctionId)
+  const currentCycle = auctionRootStateDeserialized.status.currentAuctionCycle.toNumber()
+  let uri = masterMetadata.uri
+
+  // TODO use regex? this is not very flexible
+  let uri_split = uri.split(".")
+  uri_split[uri_split.length - 2] = currentCycle.toString()
+  uri = uri_split.join(".")
+
   return {
     id: id,
     name: parseAuctionId(auctionRootStateDeserialized.auctionName),
     ownerPubkey: auctionOwnerPubkey,
     nftData: {
-      name: metadata.name,
-      symbol: metadata.symbol,
-      uri: metadata.uri,
+      name: masterMetadata.name,
+      symbol: masterMetadata.symbol,
+      uri,
     },
     bids: auctionCycleStateDeserialized.bidHistory,
     cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
-    currentCycle: +auctionRootStateDeserialized.status.currentAuctionCycle.toNumber() + 1, //+currentChildEdition + 1, // ?
+    currentCycle: +currentCycle, // + 1 //+currentChildEdition + 1, // ?
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
     minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber(),
     startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(),
