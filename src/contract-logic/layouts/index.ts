@@ -174,30 +174,6 @@ export const FREEZE_SCHEMA = new Map<any, any>([
   ],
 ])
 
-export class ClaimFundsArgs {
-  instruction: number = 5
-  auctionId: Uint8Array // 32 bytes long
-  amount: number
-  constructor(args: { auctionId: Uint8Array; amount: number }) {
-    this.auctionId = args.auctionId
-    this.amount = args.amount
-  }
-}
-
-export const CLAIM_FUNDS_SCHEMA = new Map<any, any>([
-  [
-    ClaimFundsArgs,
-    {
-      kind: "struct",
-      fields: [
-        ["instruction", "u8"],
-        ["auctionId", [32]],
-        ["amount", "u64"],
-      ],
-    },
-  ],
-])
-
 export class CloseAuctionCycleArgs {
   instruction: number = 3
   auctionId: Uint8Array // 32 bytes long
@@ -238,6 +214,54 @@ export const BID_SCHEMA = new Map<any, any>([
         ["instruction", "u8"],
         ["auctionId", [32]],
         ["amount", "u64"],
+      ],
+    },
+  ],
+])
+
+export class ClaimFundsArgs {
+  instruction: number = 5
+  auctionId: Uint8Array // 32 bytes long
+  amount: number
+  constructor(args: { auctionId: Uint8Array; amount: number }) {
+    this.auctionId = args.auctionId
+    this.amount = args.amount
+  }
+}
+
+export const CLAIM_FUNDS_SCHEMA = new Map<any, any>([
+  [
+    ClaimFundsArgs,
+    {
+      kind: "struct",
+      fields: [
+        ["instruction", "u8"],
+        ["auctionId", [32]],
+        ["amount", "u64"],
+      ],
+    },
+  ],
+])
+
+export class DeleteAuctionArgs {
+  instruction: number = 6
+  auctionId: Uint8Array // 32 bytes long
+  num_of_cycles_to_delete: number
+  constructor(args: { auctionId: Uint8Array; num_of_cycles_to_delete: number }) {
+    this.auctionId = args.auctionId
+    this.num_of_cycles_to_delete = args.num_of_cycles_to_delete
+  }
+}
+
+export const DELETE_AUCTION_SCHEMA = new Map<any, any>([
+  [
+    DeleteAuctionArgs,
+    {
+      kind: "struct",
+      fields: [
+        ["instruction", "u8"],
+        ["auctionId", [32]],
+        ["num_of_cycles_to_delete", "u64"],
       ],
     },
   ],

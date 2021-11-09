@@ -2,7 +2,7 @@ import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { initContract } from "./transactions/initializeContract"
 
-function sleep(ms: number) {
+export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 

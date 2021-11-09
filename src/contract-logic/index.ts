@@ -1,8 +1,10 @@
 import { Keypair, PublicKey } from "@solana/web3.js"
-import { CONNECTION, CONTRACT_ADMIN_PUBKEY } from "./consts"
-import { getAuction, getAuctions } from "./queries/getAuctions"
-import { init, SECRET2, SECRET3, sendTransaction } from "./test"
-import { claimFunds } from "./transactions/claimFunds"
+import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
+import { Auction, getAuction, getAuctions } from "./queries/getAuctions"
+import { SECRET2, SECRET3, sendTransaction } from "./test"
+import { deleteAuction } from "./transactions/deleteAuction"
+import { startAuction } from "./transactions/startAuction"
+
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
@@ -12,31 +14,32 @@ import { claimFunds } from "./transactions/claimFunds"
   let auctionBaseArray = await getAuctions(CONNECTION)
   console.log("getAuctions:", auctionBaseArray)
   // START A NEW AUCTION
-  // let newAuction: Auction = {
-  // 	id: "ordinary-wizarding-level",
-  // 	name: "Ordinary Wizarding Level",
-  // 	ownerPubkey: auctionOwner.publicKey,
-  // 	nftData: {
-  // 		name: "Ordinary Wizarding Level",
-  // 		symbol: "OWL",
-  // 		uri: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Awesome-Sunset-Beaches-Images.jpg",
-  // 	},
-  // 	bids: [],
-  // 	cyclePeriod: 60,
-  // 	currentCycle: 1,
-  // 	numberOfCycles: 15,
-  // 	minBid: 2000,
-  // 	startTimestamp: 100000000,
-  // 	endTimestamp: 100010000,
-  // };
-  // let startAuctionTransaction = await startAuction(newAuction);
-  // await sendTransaction(startAuctionTransaction, auctionOwner);
-  const auction_id = "asd"
+  let newAuction: Auction = {
+    id: "asdasd",
+    name: "Asd",
+    ownerPubkey: auctionOwner.publicKey,
+    nftData: {
+      name: "Asd",
+      symbol: "ASD",
+      uri: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Awesome-Sunset-Beaches-Images.jpg",
+    },
+    bids: [],
+    cyclePeriod: 5,
+    currentCycle: 1,
+    numberOfCycles: 15,
+    minBid: 2000,
+    startTimestamp: 100000000,
+    endTimestamp: 100010000,
+    isActive: true,
+    isFrozen: false,
+  }
+  let startAuctionTransaction = await startAuction(newAuction)
+  //await sendTransaction(startAuctionTransaction, auctionOwner);
 
-  var auction = await getAuction(CONNECTION, auction_id)
+  var auction = await getAuction(CONNECTION, newAuction.id)
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)
   console.log("AUCTION OWNER: ", auctionOwnerPubkey.toString())
-  console.log('getAuction("', auction_id, '")', auction)
+  console.log('getAuction("', newAuction.id, '")', auction)
   // AIRDROP TO BIDDER
   let someUser = Keypair.fromSecretKey(SECRET3)
   console.log("SOME USER: ", someUser.publicKey.toString())
@@ -55,19 +58,39 @@ import { claimFunds } from "./transactions/claimFunds"
   //);
   //await sendTransaction(placeBidTransaction, bidder);
   //console.log("successfully placed a bid");
+
   // CLOSE AUCTION CYCLE
+  //for (let i = 3; i < 5; ++i){
+  //  await(await sleep(10000));
+  //  let closeCycleTransaction = await closeCycle(
+  //    CONNECTION,
+  //    auctionOwnerPubkey,
+  //    someUser.publicKey,
+  //    auction.id,
+  //    i+1,
+  //  );
+  //  await sendTransaction(closeCycleTransaction, someUser);
+  //  console.log("successfully closed auction cycle: ", i+1);
+  //}
 
-  //let closeCycleTransaction = await closeCycle(
-  //  CONNECTION,
-  //	auctionOwnerPubkey,
-  //	someUser.publicKey,
-  //	auction.id,
-  //	auction.currentCycle,
-  //);
-  //await sendTransaction(closeCycleTransaction, someUser);
-  //console.log("successfully closed auction cycle");
+  // FREEZE AUCTION
+  //let freezeTransaction = await freeze(CONNECTION, auctionOwnerPubkey, auction.id)
+  //await sendTransaction(freezeTransaction, auctionOwner)
+  //console.log("successfully frozen auction");
 
+  // CLAIM FUNDS
   //let claimFundsTransaction = await claimFunds(CONNECTION, CONTRACT_ADMIN_PUBKEY, auctionOwnerPubkey, auction.id, 1000)
   //await sendTransaction(claimFundsTransaction, auctionOwner)
   //console.log("successfully claimed funds");
+
+  // DELETE AUCTION
+  let deleteAuctionTransaction = await deleteAuction(
+    CONNECTION,
+    CONTRACT_ADMIN_KEYPAIR,
+    auction.id,
+    auctionOwnerPubkey,
+    100
+  )
+  await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
+  console.log("successfully deleted auction")
 })()

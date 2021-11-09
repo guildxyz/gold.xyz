@@ -8,13 +8,13 @@ export async function readNthCycleState(
   connection: Connection,
   auctionOwnerPubkey: PublicKey,
   auctionId: Uint8Array,
-  N: number
+  n: number
 ) {
   const [auctionRootStatePubkey, _y] = await PublicKey.findProgramAddress(
     [Buffer.from("auction_root_state"), Buffer.from(auctionId), Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
   )
-  const nthAuctionCycleStatePubkey = await getNthCycleStatePubkey(auctionRootStatePubkey, N)
+  const nthAuctionCycleStatePubkey = await getNthCycleStatePubkey(auctionRootStatePubkey, n)
   const nthAuctionCycleStateAccountInfo = await connection.getAccountInfo(nthAuctionCycleStatePubkey)
   const nthAuctionCycleStateData: Buffer = nthAuctionCycleStateAccountInfo!.data
   const nthAuctionCycleStateDeserialized = deserializeUnchecked(
@@ -26,9 +26,9 @@ export async function readNthCycleState(
   return nthAuctionCycleStateDeserialized
 }
 
-export async function getNthCycleStatePubkey(auctionRootStatePubkey: PublicKey, N: number) {
+export async function getNthCycleStatePubkey(auctionRootStatePubkey: PublicKey, n: number) {
   const [auctionCycleStatePubkey, _z] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_cycle_state"), Buffer.from(auctionRootStatePubkey.toBytes()), Buffer.from(numberToBytes(N))],
+    [Buffer.from("auction_cycle_state"), Buffer.from(auctionRootStatePubkey.toBytes()), Buffer.from(numberToBytes(n))],
     PROGRAM_ID
   )
   return auctionCycleStatePubkey
@@ -89,4 +89,16 @@ export async function getCurrentCycleState(connection: Connection, auctionRootSt
     auctionCycleStateAccountData
   )
   return auctionCycleState
+}
+
+export async function getCurrentCycleNumber(connection: Connection, auctionRootStatePubkey: PublicKey) {
+  const auctionRootStateAccount = await connection.getAccountInfo(auctionRootStatePubkey)
+  const auctionRootStateAccountData: Buffer = auctionRootStateAccount!.data
+  const auctionRootState = deserializeUnchecked(
+    StateLayout.AUCTION_ROOT_STATE_SCHEMA,
+    StateLayout.AuctionRootState,
+    auctionRootStateAccountData
+  )
+
+  return auctionRootState.status.currentAuctionCycle.toNumber()
 }

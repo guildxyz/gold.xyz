@@ -25,7 +25,7 @@ export async function closeCycle(
   auctionId: string,
   nextEdition: number
 ): Promise<Transaction> {
-  let auctionIdBuffer = padTo32Bytes(auctionId)
+  const auctionIdBuffer = padTo32Bytes(auctionId)
   const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
     [Buffer.from("auction_bank"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
     PROGRAM_ID
@@ -57,6 +57,7 @@ export async function closeCycle(
 
   const [programPda, _] = await PublicKey.findProgramAddress([Buffer.from("auction_contract")], PROGRAM_ID)
 
+  console.log(auctionIdBuffer)
   const closeCycleArgs = new Layout.CloseAuctionCycleArgs({ auctionId: auctionIdBuffer })
   const auctionData = Buffer.from(serialize(Layout.CLOSE_CYCLE_SCHEMA, closeCycleArgs))
 

@@ -6,7 +6,6 @@ import * as StateLayout from "../layouts/state"
 import { Bid } from "../layouts/state"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
-import { getChildMetadata } from "./childEdition"
 import { getMasterMetadata } from "./masterEdition"
 import { getCurrentCycleState } from "./readCycleState"
 
@@ -114,7 +113,7 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
     },
     bids: auctionCycleStateDeserialized.bidHistory,
     cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
-    currentCycle: currentChildEdition, // +currentCycle + 1 //
+    currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
     minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber(),
     startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(),
