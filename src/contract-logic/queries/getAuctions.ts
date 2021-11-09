@@ -98,11 +98,10 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
   const currentChildEdition = masterEditionDeserialized.supply.toNumber()
   const auctionOwnerPubkey = new PublicKey(auctionRootStateDeserialized.auctionOwner)
   const masterMetadata = await getMasterMetadata(connection, auctionOwnerPubkey, auctionId)
-  const currentCycle = auctionRootStateDeserialized.status.currentAuctionCycle.toNumber()
-  let uri = masterMetadata.uri
-
-  const regex = /([^\/]+\/*\/)([^/]*)(\.(jpeg|png|svg|gif|jpg))/
-  uri = uri.replace(regex, "$1" + currentCycle + "$3")
+  //const currentCycle = auctionRootStateDeserialized.status.currentAuctionCycle.toNumber()
+  //let uri = masterMetadata.uri
+  //const regex = /([^\/]+\/*\/)([^/]*)(\.(jpeg|png|svg|gif|jpg))/
+  //uri = uri.replace(regex, "$1" + currentCycle + "$3")
 
   return {
     id: id,
@@ -111,11 +110,11 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
     nftData: {
       name: masterMetadata.name,
       symbol: masterMetadata.symbol,
-      uri,
+      uri: masterMetadata.uri,
     },
     bids: auctionCycleStateDeserialized.bidHistory,
     cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
-    currentCycle: +currentCycle, // + 1 //+currentChildEdition + 1, // ?
+    currentCycle: +currentChildEdition + 1, // +currentCycle + 1 // bidding to the next edition
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
     minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber(),
     startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(),
