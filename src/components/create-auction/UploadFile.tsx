@@ -5,46 +5,14 @@ import {
   FormLabel,
   Icon,
   Image,
-  InputGroup,
   Stack,
   Text,
   useColorMode,
 } from "@chakra-ui/react"
+import FileInput from "components/common/FileInput"
 import { File } from "phosphor-react"
-import { ReactNode, useRef, useState } from "react"
-import { useFormContext, UseFormRegisterReturn } from "react-hook-form"
-
-type FileUploadProps = {
-  register: UseFormRegisterReturn
-  accept?: string
-  children?: ReactNode
-}
-
-const FileUpload = (props: FileUploadProps) => {
-  const { register, accept, children } = props
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const { ref, ...rest } = register as {
-    ref: (instance: HTMLInputElement | null) => void
-  }
-
-  const handleClick = () => inputRef.current?.click()
-
-  return (
-    <InputGroup onClick={handleClick} flex="1">
-      <input
-        type="file"
-        hidden
-        accept={accept}
-        {...rest}
-        ref={(e) => {
-          ref(e)
-          inputRef.current = e
-        }}
-      />
-      <>{children}</>
-    </InputGroup>
-  )
-}
+import { useState } from "react"
+import { useFormContext } from "react-hook-form"
 
 const UploadFile = () => {
   const {
@@ -53,15 +21,16 @@ const UploadFile = () => {
   } = useFormContext()
   const [photoPreview, setPhotoPreview] = useState<string>()
 
-  const validateFiles = (value: FileList) => {
-    if (value.length < 1) return "File is required"
-    for (const actFile of Array.from(value)) {
-      const fsMb = actFile.size / (1024 * 1024)
-      const MAX_FILE_SIZE = 10
-      if (fsMb > MAX_FILE_SIZE) {
-        return "Max file size 10mb"
-      }
-    }
+  const validateFiles = (e: FileList) => {
+    const file = e?.[0]
+    if (!file) return "File is required"
+
+    const fsMb = file.size / (1024 * 1024)
+    const MAX_FILE_SIZE = 10
+    if (fsMb > MAX_FILE_SIZE) return "Max file size is 10mb"
+
+    // act's like onChange if it's valid
+    setPhotoPreview(URL.createObjectURL(file))
     return true
   }
 
@@ -71,14 +40,10 @@ const UploadFile = () => {
     <FormControl isInvalid={!!errors.nftImage} h="full" d="flex" flexDir="column">
       <FormLabel>Upload file</FormLabel>
 
-      <FileUpload
+      <FileInput
         accept={"image/*"}
         register={register("nftImage", {
           validate: validateFiles,
-          onChange: (e) => {
-            const file = e.target.files?.[0]
-            if (file) setPhotoPreview(URL.createObjectURL(file))
-          },
         })}
       >
         <Box
@@ -122,7 +87,7 @@ const UploadFile = () => {
             </Stack>
           )}
         </Box>
-      </FileUpload>
+      </FileInput>
 
       <FormErrorMessage>
         {errors.nftImage && errors?.nftImage.message}

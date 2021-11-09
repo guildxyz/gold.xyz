@@ -3,21 +3,10 @@ import { Auction } from "contract-logic/queries/getAuctions"
 import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
+import useUploadImage from "hooks/useUploadImage"
 import { useEffect, useState } from "react"
 
 const DAY_IN_SECONDS = 86400
-
-type ImageResponse = { publicUrl: string }
-
-const uploadImage = (data: FileList): Promise<ImageResponse> => {
-  const formData = new FormData()
-  formData.append("nftImage", data[0])
-
-  return fetch("/api/upload-image", {
-    method: "POST",
-    body: formData,
-  }).then((response) => response.json())
-}
 
 const useAuctionSubmit = () => {
   const [data, setData] = useState<Auction>()
@@ -56,14 +45,7 @@ const useAuctionSubmit = () => {
     response: imageResponse,
     error: imageError,
     isLoading: isImageLoading,
-  } = useSubmit<FileList, ImageResponse>(uploadImage, {
-    onError: (e) =>
-      toast({
-        title: "Error uploading image",
-        description: e.toString(),
-        status: "error",
-      }),
-  })
+  } = useUploadImage()
 
   useEffect(() => {
     if (imageResponse?.publicUrl)
