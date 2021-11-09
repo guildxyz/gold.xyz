@@ -114,7 +114,7 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
     },
     bids: auctionCycleStateDeserialized.bidHistory,
     cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
-    currentCycle: +currentChildEdition + 1, // +currentCycle + 1 // bidding to the next edition
+    currentCycle: currentChildEdition, // +currentCycle + 1 //
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
     minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber(),
     startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(),
