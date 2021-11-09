@@ -29,7 +29,10 @@ type Data = {
 
 handler.post(
   async (req: NextApiRequest & { file: any }, res: NextApiResponse<Data>) => {
-    const publicUrl = await uploadImage(req.file.originalname, req.file.buffer)
+    const publicUrl = await uploadImage(
+      `${req.body.folder}/0.${req.file.originalname.split(".").pop()}`,
+      req.file.buffer
+    )
     res.status(200).json({ publicUrl })
   }
 )

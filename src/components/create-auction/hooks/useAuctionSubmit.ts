@@ -62,7 +62,7 @@ const useAuctionSubmit = () => {
         cyclePeriod: (_data.customCyclePeriod ?? _data.cyclePeriod) * DAY_IN_SECONDS,
         ownerPubkey: publicKey,
       })
-      onSubmitImage(_data.nftImage)
+      onSubmitImage({ files: _data.nftImage, folder: _data.id })
     },
     error: error || imageError,
     isImageLoading,

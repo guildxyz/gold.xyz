@@ -1,11 +1,17 @@
 import useSubmit from "./useSubmit"
 import useToast from "./useToast"
 
+type ImageData = {
+  files: FileList
+  folder?: string
+}
+
 type ImageResponse = { publicUrl: string }
 
-const uploadImage = (data: FileList): Promise<ImageResponse> => {
+const uploadImage = ({ files, folder = "" }: ImageData): Promise<ImageResponse> => {
   const formData = new FormData()
-  formData.append("nftImage", data[0])
+  formData.append("nftImage", files[0])
+  formData.append("folder", folder)
 
   return fetch("/api/upload-image", {
     method: "POST",
@@ -18,7 +24,7 @@ const uploadImage = (data: FileList): Promise<ImageResponse> => {
 const useUploadImage = () => {
   const toast = useToast()
 
-  return useSubmit<FileList, ImageResponse>(uploadImage, {
+  return useSubmit<ImageData, ImageResponse>(uploadImage, {
     onError: (e) =>
       toast({
         title: "Error uploading image",
