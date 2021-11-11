@@ -1,6 +1,6 @@
 import { Connection, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { PROGRAM_ID } from "../consts"
+import { LAMPORTS, PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts"
 import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleStatePubkey } from "../queries/readCycleState"
@@ -10,7 +10,7 @@ export async function placeBid(
   connection: Connection,
   auctionId: string,
   auctionOwnerPubkey: PublicKey,
-  amount: number,
+  amount: number, // in SOL
   userPubkey: PublicKey
 ): Promise<Transaction> {
   const auctionIdBuffer = padTo32Bytes(auctionId)
@@ -29,7 +29,7 @@ export async function placeBid(
 
   const bidArgs = new Layout.BidArgs({
     auctionId: auctionIdBuffer,
-    amount,
+    amount: amount * LAMPORTS,
   })
 
   let auctionData = Buffer.from(serialize(Layout.BID_SCHEMA, bidArgs))

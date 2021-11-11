@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
-import { CONTRACT_ADMIN_PUBKEY, PROGRAM_ID } from "../consts"
+import { LAMPORTS, CONTRACT_ADMIN_PUBKEY, PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts/index"
 import * as StateLayout from "../layouts/state"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
@@ -115,13 +115,15 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
       symbol: masterMetadata.symbol,
       uri: masterMetadata.uri,
     },
-    bids: auctionCycleStateDeserialized.bidHistory.map((bid) => ({ ...bid, amount: bid.amount.toNumber() })).reverse(),
+    bids: auctionCycleStateDeserialized.bidHistory
+      .map((bid) => ({ ...bid, amount: bid.amount.toNumber() / LAMPORTS }))
+      .reverse(),
     cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
     currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
-    minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber(),
-    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber() * 1000,
-    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber() * 1000,
+    minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber() / LAMPORTS,
+    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(), // * 1000,
+    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber(), // * 1000,
     isActive: auctionRootStateDeserialized.status.isActive,
     isFrozen: auctionRootStateDeserialized.status.isFrozen,
   }

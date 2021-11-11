@@ -32,10 +32,10 @@ import { startAuction } from "./transactions/startAuction"
     isActive: true,
     isFrozen: false,
   }
-  let startAuctionTransaction = await startAuction(newAuction)
+  //let startAuctionTransaction = await startAuction(newAuction)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
 
-  var auction = await getAuction(CONNECTION, newAuction.id)
+  var auction = await getAuction(CONNECTION, "t") //newAuction.id)
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)
   console.log("AUCTION OWNER: ", auctionOwnerPubkey.toString())
   console.log('getAuction("', newAuction.id, '")', auction)
@@ -83,13 +83,13 @@ import { startAuction } from "./transactions/startAuction"
   //console.log("successfully claimed funds");
 
   // DELETE AUCTION
-  let deleteAuctionTransaction = await deleteAuction(
-    CONNECTION,
-    CONTRACT_ADMIN_KEYPAIR,
-    auction.id,
-    auctionOwnerPubkey,
-    100
-  )
-  await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
-  console.log("successfully deleted auction")
+  //let deleteAuctionTransaction = await deleteAuction(
+  //  CONNECTION,
+  //  CONTRACT_ADMIN_KEYPAIR,
+  //  auction.id,
+  //  auctionOwnerPubkey,
+  //  100
+  //)
+  //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
+  //console.log("successfully deleted auction")
 })()
