@@ -16,7 +16,7 @@ import usePlaceBid from "./hook/usePlaceBid"
 const Bid = () => {
   const data = useAuction()
   const minBid = useMemo(
-    () => (data?.largestBid ? data?.largestBid + 1 : data?.minBid),
+    () => (data?.bids?.[0]?.amount ? data?.bids?.[0]?.amount + 1 : data?.minBid),
     [data]
   )
   const toast = useToast()

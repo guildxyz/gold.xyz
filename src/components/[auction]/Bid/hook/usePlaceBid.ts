@@ -4,10 +4,12 @@ import { placeBid } from "contract-logic/transactions/bid"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
+import { useState } from "react"
 import { useSWRConfig } from "swr"
 
 type Data = {
-  amount: number
+  // string as it comes from the form
+  amount: string
 }
 
 const usePlaceBid = (setValue) => {
@@ -17,8 +19,10 @@ const usePlaceBid = (setValue) => {
   const { connection } = useConnection()
   const { sendTransaction, publicKey } = useWallet()
   const auction = useAuction()
+  const [amount, setAmount] = useState<number>()
 
-  const handlePlaceBid = async ({ amount }: Data) => {
+  const handlePlaceBid = async ({ amount: amount_ }: Data) => {
+    setAmount(parseInt(amount_))
     const tx = await placeBid(
       connection,
       auction.id,
@@ -43,25 +47,24 @@ const usePlaceBid = (setValue) => {
         title: "Error placing bid",
         status: "error",
       }),
-    onSuccess: (amount) => {
+    onSuccess: () => {
       toast({
         title: "Bid placed successfully",
         status: "success",
       })
-      setValue("amount", "")
       const newBid = {
-        amount: parseInt(amount),
-        bidderPubkey: publicKey.toBase58(),
+        amount,
+        bidderPubkey: publicKey,
       }
       mutate(
         ["auction", router.query.auction],
         async (prevData) => ({
           ...prevData,
           bids: [newBid, ...(prevData?.bids || [])],
-          largestBid: parseInt(amount),
         }),
         false
       )
+      setValue("amount", "")
     },
   })
 }

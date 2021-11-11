@@ -3,11 +3,15 @@ import { deserializeUnchecked } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY, PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts/index"
 import * as StateLayout from "../layouts/state"
-import { Bid } from "../layouts/state"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
 import { getMasterMetadata } from "./masterEdition"
 import { getCurrentCycleState } from "./readCycleState"
+
+export type Bid = {
+  bidderPubkey: PublicKey
+  amount: number
+}
 
 export type AuctionBase = {
   id: string
@@ -111,7 +115,7 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
       symbol: masterMetadata.symbol,
       uri: masterMetadata.uri,
     },
-    bids: auctionCycleStateDeserialized.bidHistory,
+    bids: auctionCycleStateDeserialized.bidHistory.map((bid) => ({ ...bid, amount: bid.amount.toNumber() })).reverse(),
     cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
     currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),

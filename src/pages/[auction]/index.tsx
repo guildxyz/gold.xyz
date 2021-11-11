@@ -45,7 +45,7 @@ const Page = (): JSX.Element => {
           <HStack divider={<Divider orientation="vertical" />} spacing="8">
             <Stat size="lg">
               <StatLabel>Current bid</StatLabel>
-              <StatNumber>{data?.largestBid} SOL</StatNumber>
+              <StatNumber>{data?.bids?.[0]?.amount} SOL</StatNumber>
             </Stat>
             <Stat size="lg">
               <StatLabel>Ends in</StatLabel>
@@ -68,7 +68,7 @@ const Page = (): JSX.Element => {
                 <Identicon address={bid.bidderPubkey.toString()} size={20} />
                 <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
                 <Text ml="auto" fontWeight="semibold">
-                  {bid.amount.toString()} SOL
+                  {bid.amount} SOL
                 </Text>
               </Flex>
             ))}

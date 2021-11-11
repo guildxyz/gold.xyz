@@ -45,7 +45,7 @@ const BidHistory = () => {
                   <Identicon address={bid.bidderPubkey.toString()} size={20} />
                   <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
                   <Text ml="auto" fontWeight="semibold">
-                    {bid.amount.toString()} SOL
+                    {bid.amount} SOL
                   </Text>
                 </Flex>
               ))}
