@@ -4,14 +4,18 @@ import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import useUploadImage from "hooks/useUploadImage"
+import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import { useSWRConfig } from "swr"
 
 const DAY_IN_SECONDS = 86400
 
-const useAuctionSubmit = () => {
+const useStartAuction = () => {
   const [data, setData] = useState<Auction>()
   const toast = useToast()
   const { connection } = useConnection()
+  const { mutate } = useSWRConfig()
+  const router = useRouter()
   const { sendTransaction, publicKey } = useWallet()
 
   const handleStartAuction = async (data_: Auction) => {
@@ -31,6 +35,15 @@ const useAuctionSubmit = () => {
   const { onSubmit, response, error, isLoading } = useSubmit<Auction, any>(
     handleStartAuction,
     {
+      onSuccess: () => {
+        toast({
+          title: `Auction successfully started!`,
+          description: "You're being redirected to it's page",
+          status: "success",
+        })
+        mutate("auctions")
+        router.push(`/${data.id}`)
+      },
       onError: (e) =>
         toast({
           title: "Error creating auction",
@@ -71,4 +84,4 @@ const useAuctionSubmit = () => {
   }
 }
 
-export default useAuctionSubmit
+export default useStartAuction

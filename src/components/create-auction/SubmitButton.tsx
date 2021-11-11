@@ -1,9 +1,9 @@
 import CtaButton from "components/common/CtaButton"
 import { useFormContext } from "react-hook-form"
-import useAuctionSubmit from "./hooks/useAuctionSubmit"
+import useStartAuction from "./hooks/useAuctionSubmit"
 
 const SubmitButton = () => {
-  const { onSubmit, isLoading, isImageLoading, response } = useAuctionSubmit()
+  const { onSubmit, isLoading, isImageLoading, response } = useStartAuction()
 
   const { handleSubmit } = useFormContext()
 
