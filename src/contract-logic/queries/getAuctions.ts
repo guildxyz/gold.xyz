@@ -1,6 +1,6 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
-import { LAMPORTS, CONTRACT_ADMIN_PUBKEY, PROGRAM_ID } from "../consts"
+import { CONTRACT_ADMIN_PUBKEY, LAMPORTS, PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts/index"
 import * as StateLayout from "../layouts/state"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
@@ -122,8 +122,8 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
     currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
     minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber() / LAMPORTS,
-    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(), // * 1000,
-    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber(), // * 1000,
+    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber() * 1000,
+    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber() * 1000,
     isActive: auctionRootStateDeserialized.status.isActive,
     isFrozen: auctionRootStateDeserialized.status.isFrozen,
   }

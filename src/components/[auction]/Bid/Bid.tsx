@@ -6,7 +6,9 @@ import {
   NumberInput,
   NumberInputField,
   Text,
+  Tooltip,
 } from "@chakra-ui/react"
+import { useWallet } from "@solana/wallet-adapter-react"
 import useToast from "hooks/useToast"
 import { useMemo, useRef } from "react"
 import { useController, useForm } from "react-hook-form"
@@ -15,6 +17,7 @@ import usePlaceBid from "./hook/usePlaceBid"
 
 const Bid = () => {
   const data = useAuction()
+  const { publicKey } = useWallet()
   const minBid = useMemo(
     () => (data?.bids?.[0]?.amount ? data?.bids?.[0]?.amount + 1 : data?.minBid),
     [data]
@@ -64,9 +67,21 @@ const Bid = () => {
           </InputRightElement>
         </InputGroup>
 
-        <Button type="submit" size="lg" flexShrink={0} isLoading={isLoading}>
-          Place bid
-        </Button>
+        <Tooltip
+          label="Wallet not connected"
+          isDisabled={!!publicKey}
+          shouldWrapChildren
+        >
+          <Button
+            type="submit"
+            size="lg"
+            flexShrink={0}
+            isLoading={isLoading}
+            disabled={!publicKey}
+          >
+            Place bid
+          </Button>
+        </Tooltip>
       </HStack>
     </form>
   )

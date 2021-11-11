@@ -7,9 +7,7 @@ const useAuctions = (): AuctionBase[] => {
 
   const handleGetAuctions = () => getAuctions(connection)
 
-  const shouldFetch = !!connection
-
-  const { data } = useSWR(shouldFetch ? "auctions" : null, handleGetAuctions)
+  const { data } = useSWR("auctions", handleGetAuctions)
 
   return data
 }

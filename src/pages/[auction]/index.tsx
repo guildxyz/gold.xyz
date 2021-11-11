@@ -11,10 +11,8 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
-import { useWallet } from "@solana/wallet-adapter-react"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
-import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
@@ -23,14 +21,6 @@ import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const data = useAuction()
-  const { publicKey } = useWallet()
-
-  if (!publicKey)
-    return (
-      <Layout title="Auction">
-        <WalletNotConnectedAlert />
-      </Layout>
-    )
 
   return (
     <Layout title={data?.name}>
