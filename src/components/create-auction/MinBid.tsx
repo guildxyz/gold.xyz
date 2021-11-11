@@ -16,15 +16,15 @@ const MinBid = () => {
   } = useFormContext()
 
   return (
-    <FormControl isInvalid={errors?.minBid} isRequired>
+    <FormControl isInvalid={errors?.minBid} isDisabled>
       <InputGroup size="lg" maxW="sm">
         <NumberInput w="full">
           <NumberInputField
             {...register("minBid", {
-              required: "This field is required.",
+              // required: "This field is required.",
             })}
             // borderRightRadius="0"
-            placeholder="0"
+            placeholder="0.1"
           />
           {/* <NumberInputStepper>
             <NumberIncrementStepper />

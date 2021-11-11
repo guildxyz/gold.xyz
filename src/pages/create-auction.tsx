@@ -1,4 +1,4 @@
-import { Divider, Flex, VStack } from "@chakra-ui/react"
+import { Divider, Flex, Tag, VStack } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
 import Section from "components/common/Section"
@@ -34,7 +34,14 @@ const CreateGuildPage = (): JSX.Element => {
                 <AssetSelector />
               </Section>
 
-              <Section title="Set the minimum price">
+              <Section
+                title={
+                  <>
+                    Set the minimum price
+                    <Tag ml="2">Coming soon</Tag>
+                  </>
+                }
+              >
                 <MinBid />
               </Section>
 
