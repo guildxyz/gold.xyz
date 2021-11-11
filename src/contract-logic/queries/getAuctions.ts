@@ -116,8 +116,8 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
     currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
     numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
     minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber(),
-    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber(),
-    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber(),
+    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber() * 1000,
+    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber() * 1000,
     isActive: auctionRootStateDeserialized.status.isActive,
     isFrozen: auctionRootStateDeserialized.status.isFrozen,
   }

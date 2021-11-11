@@ -17,19 +17,13 @@ import Layout from "components/common/Layout"
 import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
+import Countdown from "components/[auction]/Countdown"
 import useAuction from "components/[auction]/hooks/useAuction"
-import { useTimer } from "react-timer-hook"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const data = useAuction()
   const { publicKey } = useWallet()
-  const { seconds, minutes, hours } = useTimer({
-    expiryTimestamp: data?.startTimestamp
-      ? // WIP, this counts to the absolute end of the auction right now, not the actual cycle
-        new Date(data.startTimestamp + data.numberOfCycles * data.cyclePeriod * 1000)
-      : null,
-  })
 
   if (!publicKey)
     return (
@@ -43,9 +37,11 @@ const Page = (): JSX.Element => {
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing="12" alignItems="center">
         <Image src={data?.nftData?.uri} alt="NFT" borderRadius="xl" />
         <VStack alignItems="stretch" spacing="8">
-          <Heading as="h3" fontSize="4xl" fontFamily="display">{`${
-            data?.nftData?.name
-          } #${1}`}</Heading>
+          <Heading
+            as="h3"
+            fontSize="4xl"
+            fontFamily="display"
+          >{`${data?.nftData?.name} #${data?.currentCycle}`}</Heading>
           <HStack divider={<Divider orientation="vertical" />} spacing="8">
             <Stat size="lg">
               <StatLabel>Current bid</StatLabel>
@@ -53,7 +49,9 @@ const Page = (): JSX.Element => {
             </Stat>
             <Stat size="lg">
               <StatLabel>Ends in</StatLabel>
-              <StatNumber>{`${hours}:${minutes}:${seconds}`}</StatNumber>
+              <StatNumber>
+                <Countdown expiryTimestamp={data?.endTimestamp} />
+              </StatNumber>
             </Stat>
           </HStack>
           <Bid />
