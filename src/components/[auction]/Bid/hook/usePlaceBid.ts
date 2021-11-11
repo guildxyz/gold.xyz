@@ -54,7 +54,7 @@ const usePlaceBid = (setValue) => {
         bidderPubkey: publicKey.toBase58(),
       }
       mutate(
-        ["auction", connection, router.query.auction],
+        ["auction", router.query.auction],
         async (prevData) => ({
           ...prevData,
           bids: [newBid, ...(prevData?.bids || [])],

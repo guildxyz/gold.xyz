@@ -4,7 +4,6 @@ import { Auction, getAuction, getAuctions } from "./queries/getAuctions"
 import { SECRET2, SECRET3, sendTransaction } from "./test"
 import { deleteAuction } from "./transactions/deleteAuction"
 import { startAuction } from "./transactions/startAuction"
-
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
