@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
   Divider,
   Flex,
   Heading,
@@ -20,33 +23,45 @@ import useAuction from "components/[auction]/hooks/useAuction"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
-  const data = useAuction()
+  const { auction, error } = useAuction()
+
+  if (error)
+    return (
+      <Layout title="">
+        <Alert status="error" pb="5">
+          <AlertIcon />
+          <AlertTitle position="relative" top="4px">
+            Unable to load auction
+          </AlertTitle>
+        </Alert>
+      </Layout>
+    )
 
   return (
-    <Layout title={data?.name}>
+    <Layout title={auction?.name}>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing="12" alignItems="center">
-        <Image src={data?.nftData?.uri} alt="NFT" borderRadius="xl" />
+        <Image src={auction?.nftData?.uri} alt="NFT" borderRadius="xl" />
         <VStack alignItems="stretch" spacing="8">
           <Heading
             as="h3"
             fontSize="4xl"
             fontFamily="display"
-          >{`${data?.nftData?.name} #${data?.currentCycle}`}</Heading>
+          >{`${auction?.nftData?.name} #${auction?.currentCycle}`}</Heading>
           <HStack divider={<Divider orientation="vertical" />} spacing="8">
             <Stat size="lg">
               <StatLabel>Current bid</StatLabel>
-              <StatNumber>{data?.bids?.[0]?.amount} SOL</StatNumber>
+              <StatNumber>{auction?.bids?.[0]?.amount} SOL</StatNumber>
             </Stat>
             <Stat size="lg">
               <StatLabel>Ends in</StatLabel>
               <StatNumber>
-                <Countdown expiryTimestamp={data?.endTimestamp} />
+                <Countdown expiryTimestamp={auction?.endTimestamp} />
               </StatNumber>
             </Stat>
           </HStack>
           <Bid />
           <VStack>
-            {data?.bids?.slice(0, 2).map((bid) => (
+            {auction?.bids?.slice(0, 2).map((bid) => (
               <Flex
                 key={bid.amount.toString()}
                 bg="blackAlpha.300"

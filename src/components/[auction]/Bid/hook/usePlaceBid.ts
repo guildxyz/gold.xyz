@@ -18,7 +18,7 @@ const usePlaceBid = (setValue) => {
   const { mutate } = useSWRConfig()
   const { connection } = useConnection()
   const { sendTransaction, publicKey } = useWallet()
-  const auction = useAuction()
+  const { auction } = useAuction()
   const [amount, setAmount] = useState<number>()
 
   const handlePlaceBid = async ({ amount: amount_ }: Data) => {

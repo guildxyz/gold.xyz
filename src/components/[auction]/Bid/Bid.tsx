@@ -16,11 +16,12 @@ import useAuction from "../hooks/useAuction"
 import usePlaceBid from "./hook/usePlaceBid"
 
 const Bid = () => {
-  const data = useAuction()
+  const { auction } = useAuction()
   const { publicKey } = useWallet()
   const minBid = useMemo(
-    () => (data?.bids?.[0]?.amount ? data?.bids?.[0]?.amount + 1 : data?.minBid),
-    [data]
+    () =>
+      auction?.bids?.[0]?.amount ? auction?.bids?.[0]?.amount + 1 : auction?.minBid,
+    [auction]
   )
   const toast = useToast()
   const {

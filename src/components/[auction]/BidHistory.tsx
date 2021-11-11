@@ -16,10 +16,10 @@ import shortenHex from "utils/shortenHex"
 import useAuction from "./hooks/useAuction"
 
 const BidHistory = () => {
-  const data = useAuction()
+  const { auction } = useAuction()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  if (!data?.bids?.length) return null
+  if (!auction?.bids?.length) return null
 
   return (
     <>
@@ -33,7 +33,7 @@ const BidHistory = () => {
           <ModalCloseButton />
           <ModalBody>
             <VStack>
-              {data.bids.map((bid) => (
+              {auction.bids.map((bid) => (
                 <Flex
                   key={bid.amount.toString()}
                   bg="blackAlpha.300"
