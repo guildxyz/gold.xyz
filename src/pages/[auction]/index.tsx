@@ -2,6 +2,7 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
+  Center,
   Divider,
   Flex,
   Heading,
@@ -39,8 +40,20 @@ const Page = (): JSX.Element => {
 
   return (
     <Layout title={auction?.name}>
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing="12" alignItems="center">
-        <Image src={auction?.nftData?.uri} alt="NFT" borderRadius="xl" />
+      <SimpleGrid
+        templateColumns={{ base: "1fr", md: "5fr 4fr" }}
+        spacing="16"
+        alignItems="center"
+      >
+        <Center>
+          <Image
+            src={auction?.nftData?.uri}
+            alt="NFT"
+            borderRadius="xl"
+            maxH="calc(100vh - 400px)"
+            shadow="xl"
+          />
+        </Center>
         <VStack alignItems="stretch" spacing="8">
           <Heading
             as="h3"
@@ -50,7 +63,11 @@ const Page = (): JSX.Element => {
           <HStack divider={<Divider orientation="vertical" />} spacing="8">
             <Stat size="lg">
               <StatLabel>Current bid</StatLabel>
-              <StatNumber>{auction?.bids?.[0]?.amount} SOL</StatNumber>
+              <StatNumber>
+                {auction?.bids?.[0]?.amount
+                  ? `${auction?.bids?.[0]?.amount} SOL`
+                  : "-"}
+              </StatNumber>
             </Stat>
             <Stat size="lg">
               <StatLabel>Ends in</StatLabel>

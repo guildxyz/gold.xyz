@@ -41,7 +41,7 @@ const InfoMenu = () => {
             py="2"
             as="a"
             target="_blank"
-            href="https://github.com/AgoraSpaceDAO/frontend-boilerplate"
+            href="https://github.com/AgoraSpaceDAO/gold.xyz"
             rel="noopener"
             icon={<Code />}
           >
