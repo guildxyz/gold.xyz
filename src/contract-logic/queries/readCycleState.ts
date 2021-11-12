@@ -4,16 +4,7 @@ import { PROGRAM_ID } from "../consts"
 import * as StateLayout from "../layouts/state"
 import { numberToBytes } from "../utils/numberToBytes"
 
-export async function readNthCycleState(
-  connection: Connection,
-  auctionOwnerPubkey: PublicKey,
-  auctionId: Uint8Array,
-  n: number
-) {
-  const [auctionRootStatePubkey, _y] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_root_state"), Buffer.from(auctionId), Buffer.from(auctionOwnerPubkey.toBytes())],
-    PROGRAM_ID
-  )
+export async function readNthCycleState(connection: Connection, auctionRootStatePubkey: PublicKey, n: number) {
   const nthAuctionCycleStatePubkey = await getNthCycleStatePubkey(auctionRootStatePubkey, n)
   const nthAuctionCycleStateAccountInfo = await connection.getAccountInfo(nthAuctionCycleStatePubkey)
   const nthAuctionCycleStateData: Buffer = nthAuctionCycleStateAccountInfo!.data

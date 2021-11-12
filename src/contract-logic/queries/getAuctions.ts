@@ -7,6 +7,7 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
 import { getMasterMetadata } from "./masterEdition"
 import { getCurrentCycleState } from "./readCycleState"
+import { readNthCycleState } from "./readCycleState"
 
 export type Bid = {
   bidderPubkey: PublicKey
@@ -65,7 +66,7 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
   return auctionBaseArray
 }
 
-export async function getAuction(connection: Connection, id: string): Promise<Auction> {
+export async function getAuction(connection: Connection, id: string, n: number = 0): Promise<Auction> {
   // read auction pool
   const [auctionPoolPubkey, _b] = await PublicKey.findProgramAddress(
     [Buffer.from("auction_pool"), Buffer.from(CONTRACT_ADMIN_PUBKEY.toBytes())],
@@ -105,26 +106,48 @@ export async function getAuction(connection: Connection, id: string): Promise<Au
   //let uri = masterMetadata.uri
   //const regex = /([^\/]+\/*\/)([^/]*)(\.(jpeg|png|svg|gif|jpg))/
   //uri = uri.replace(regex, "$1" + currentCycle + "$3")
-
-  return {
-    id: id,
-    name: parseAuctionId(auctionRootStateDeserialized.auctionName),
-    ownerPubkey: auctionOwnerPubkey,
-    nftData: {
-      name: masterMetadata.name,
-      symbol: masterMetadata.symbol,
-      uri: masterMetadata.uri,
-    },
-    bids: auctionCycleStateDeserialized.bidHistory
-      .map((bid) => ({ ...bid, amount: bid.amount.toNumber() / LAMPORTS }))
-      .reverse(),
-    cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
-    currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
-    numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
-    minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber() / LAMPORTS,
-    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber() * 1000,
-    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber() * 1000,
-    isActive: auctionRootStateDeserialized.status.isActive,
-    isFrozen: auctionRootStateDeserialized.status.isFrozen,
+  if (n === 0) {
+    return {
+      id: id,
+      name: parseAuctionId(auctionRootStateDeserialized.auctionName),
+      ownerPubkey: auctionOwnerPubkey,
+      nftData: {
+        name: masterMetadata.name,
+        symbol: masterMetadata.symbol,
+        uri: masterMetadata.uri,
+      },
+      bids: auctionCycleStateDeserialized.bidHistory
+        .map((bid) => ({ ...bid, amount: bid.amount.toNumber() / LAMPORTS }))
+        .reverse(),
+      cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
+      currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
+      numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
+      minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber() / LAMPORTS,
+      startTimestamp: auctionCycleStateDeserialized.startTime.toNumber() * 1000,
+      endTimestamp: auctionCycleStateDeserialized.endTime.toNumber() * 1000,
+      isActive: auctionRootStateDeserialized.status.isActive,
+      isFrozen: auctionRootStateDeserialized.status.isFrozen,
+    }
+  } else {
+    const cycleStateData = await readNthCycleState(connection, auctionRootStatePubkey, n)
+    return {
+      id: id,
+      name: parseAuctionId(auctionRootStateDeserialized.auctionName),
+      ownerPubkey: auctionOwnerPubkey,
+      nftData: {
+        name: masterMetadata.name,
+        symbol: masterMetadata.symbol,
+        uri: masterMetadata.uri,
+      },
+      bids: cycleStateData.bidHistory.map((bid) => ({ ...bid, amount: bid.amount.toNumber() / LAMPORTS })).reverse(),
+      cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
+      currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
+      numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
+      minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber() / LAMPORTS,
+      startTimestamp: cycleStateData.startTime.toNumber() * 1000,
+      endTimestamp: cycleStateData.endTime.toNumber() * 1000,
+      isActive: auctionRootStateDeserialized.status.isActive,
+      isFrozen: auctionRootStateDeserialized.status.isFrozen,
+    }
   }
 }

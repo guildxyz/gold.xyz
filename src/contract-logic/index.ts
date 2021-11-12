@@ -38,28 +38,31 @@ import { placeBid } from "./transactions/bid"
 
   let auction_id = "asdasd"
   var auction = await getAuction(CONNECTION, auction_id)
+  console.log(await getAuction(CONNECTION, auction_id, 1))
+  console.log(await getAuction(CONNECTION, auction_id, 2))
+  console.log(await getAuction(CONNECTION, auction_id, 3))
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)
   console.log("AUCTION OWNER: ", auctionOwnerPubkey.toString())
   console.log('getAuction("', auction_id, '")', auction)
   // AIRDROP TO BIDDER
   let someUser = Keypair.fromSecretKey(SECRET3)
   console.log("SOME USER: ", someUser.publicKey.toString())
-  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 100_000_000))
-  //console.log(await CONNECTION.getBalance(someUser.publicKey));
   //let bidder = new Keypair()
   //console.log("NEW BIDDER: ", bidder.publicKey.toString())
-  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(bidder.publicKey, 10_000_000_000))
-  // PLACE A BID
+  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 5_000_000_000))
+  //console.log(await CONNECTION.getBalance(someUser.publicKey));
+  //// PLACE A BID
   //let placeBidTransaction = await placeBid(
   //  CONNECTION,
   //	auction.id,
   //	auctionOwnerPubkey,
-  //	0.05,
+  //	7.25,
   //	someUser.publicKey,
   //);
   //console.log("sending bid transaction");
   //await sendTransaction(placeBidTransaction, someUser);
   //console.log("successfully placed a bid");
+  //console.log(await CONNECTION.getBalance(someUser.publicKey));
 
   // CLOSE AUCTION CYCLE
   //for (let i = 3; i < 5; ++i){
