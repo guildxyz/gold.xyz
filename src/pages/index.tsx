@@ -6,6 +6,7 @@ import Layout from "components/common/Layout"
 import AuctionCard from "components/index/AuctionCard"
 import CategorySection from "components/index/CategorySection"
 import useAuctions from "components/index/hooks/useAuctions"
+import useUsersAuctions from "components/index/hooks/useUsersAuctions"
 import SearchBar from "components/index/SearchBar"
 import { useMemo, useState } from "react"
 
@@ -15,12 +16,16 @@ const filterByName = (name: string, searchInput: string) =>
 const Page = (): JSX.Element => {
   const [searchInput, setSearchInput] = useState("")
   const auctions = useAuctions()
-  const usersAuctions = []
+  const usersAuctions = useUsersAuctions()
   const { publicKey } = useWallet()
 
   const filteredAuctions = useMemo(
     () => auctions?.filter(({ name }) => filterByName(name, searchInput)),
     [auctions, searchInput]
+  )
+  const filteredUsersAuctions = useMemo(
+    () => usersAuctions?.filter(({ name }) => filterByName(name, searchInput)),
+    [usersAuctions, searchInput]
   )
 
   return (
@@ -31,7 +36,7 @@ const Page = (): JSX.Element => {
       <Stack spacing={12}>
         <CategorySection
           title={
-            !usersAuctions.length && publicKey
+            !usersAuctions?.length && publicKey
               ? "You don't have any auctions yet"
               : "Your auctions"
           }
@@ -41,8 +46,8 @@ const Page = (): JSX.Element => {
               : `No results for ${searchInput}`
           }
         >
-          {usersAuctions.length
-            ? usersAuctions
+          {usersAuctions?.length
+            ? filteredUsersAuctions
                 .map((auction) => <AuctionCard key={auction.id} auction={auction} />)
                 .concat(
                   <AddCard
