@@ -2,6 +2,7 @@
 import { HStack, Stack, Tag, Text } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import AddCard from "components/common/AddCard"
+import ExplorerCardMotionWrapper from "components/common/ExplorerCardMotionWrapper"
 import Layout from "components/common/Layout"
 import AuctionCard from "components/index/AuctionCard"
 import CategorySection from "components/index/CategorySection"
@@ -48,15 +49,21 @@ const Page = (): JSX.Element => {
         >
           {usersAuctions?.length
             ? filteredUsersAuctions
-                .map((auction) => <AuctionCard key={auction.id} auction={auction} />)
+                .map((auction) => (
+                  <ExplorerCardMotionWrapper key={auction.id}>
+                    <AuctionCard key={auction.id} auction={auction} />
+                  </ExplorerCardMotionWrapper>
+                ))
                 .concat(
-                  <AddCard
-                    key="create-auction"
-                    text="Open auction"
-                    link="/create-auction"
-                  />
+                  <ExplorerCardMotionWrapper key="create-auction">
+                    <AddCard text="Open auction" link="/create-auction" />
+                  </ExplorerCardMotionWrapper>
                 )
-            : publicKey && <AddCard text="Create auction" link="/create-auction" />}
+            : publicKey && (
+                <ExplorerCardMotionWrapper key="create-auction">
+                  <AddCard text="Create auction" link="/create-auction" />
+                </ExplorerCardMotionWrapper>
+              )}
         </CategorySection>
         <CategorySection
           title={
@@ -73,7 +80,9 @@ const Page = (): JSX.Element => {
         >
           {filteredAuctions?.length &&
             filteredAuctions.map((auction) => (
-              <AuctionCard key={auction.id} auction={auction} />
+              <ExplorerCardMotionWrapper key={auction.id}>
+                <AuctionCard auction={auction} />
+              </ExplorerCardMotionWrapper>
             ))}
         </CategorySection>
       </Stack>

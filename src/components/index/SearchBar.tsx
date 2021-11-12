@@ -20,6 +20,7 @@ const SearchBar = ({ setSearchInput }) => {
         whiteSpace="nowrap"
         textOverflow="ellipsis"
         colorScheme="primary"
+        id="searchBar"
         onChange={handleOnChange}
       />
     </InputGroup>
