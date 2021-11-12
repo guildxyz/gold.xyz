@@ -1,3 +1,4 @@
+import { Stat, StatHelpText, StatNumber } from "@chakra-ui/stat"
 import { useTimer } from "react-timer-hook"
 
 const Countdown = ({ expiryTimestamp }) => {
@@ -5,7 +6,22 @@ const Countdown = ({ expiryTimestamp }) => {
     expiryTimestamp: new Date(expiryTimestamp),
   })
 
-  return <>{`${hours}:${minutes}:${seconds}`}</>
+  return (
+    <>
+      <Stat>
+        <StatNumber>{hours}</StatNumber>
+        <StatHelpText>Hours</StatHelpText>
+      </Stat>
+      <Stat>
+        <StatNumber>{minutes}</StatNumber>
+        <StatHelpText>Minutes</StatHelpText>
+      </Stat>
+      <Stat>
+        <StatNumber>{seconds}</StatNumber>
+        <StatHelpText>Seconds</StatHelpText>
+      </Stat>
+    </>
+  )
 }
 
 export default Countdown

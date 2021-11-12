@@ -11,6 +11,7 @@ import {
   Image,
   SimpleGrid,
   Stat,
+  StatGroup,
   StatLabel,
   StatNumber,
   Tag,
@@ -23,6 +24,7 @@ import Layout from "components/common/Layout"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
+import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import shortenHex from "utils/shortenHex"
@@ -74,17 +76,15 @@ const Page = (): JSX.Element => {
           <HStack divider={<Divider orientation="vertical" />} spacing="8">
             <Stat size="lg">
               <StatLabel>{isActive ? "Current bid" : "Winning bid"}</StatLabel>
-              <StatNumber>
-                {bids?.[0]?.amount ? `${bids?.[0]?.amount} SOL` : "-"}
-              </StatNumber>
+              <HighestBid amount={bids?.[0]?.amount} />
             </Stat>
             <Stat size="lg">
               {isActive ? (
                 <>
                   <StatLabel>Ends in</StatLabel>
-                  <StatNumber>
+                  <StatGroup>
                     {<Countdown expiryTimestamp={endTimestamp} />}
-                  </StatNumber>
+                  </StatGroup>
                 </>
               ) : (
                 <>
