@@ -69,8 +69,8 @@ const Bid = () => {
         </InputGroup>
 
         <Tooltip
-          label="Wallet not connected"
-          isDisabled={!!publicKey}
+          label={auction?.isFrozen ? "Auction is frozen" : "Wallet not connected"}
+          isDisabled={!!publicKey && !auction?.isFrozen}
           shouldWrapChildren
         >
           <Button
@@ -78,7 +78,7 @@ const Bid = () => {
             size="lg"
             flexShrink={0}
             isLoading={isLoading}
-            disabled={!publicKey}
+            disabled={!publicKey || auction?.isFrozen}
           >
             Place bid
           </Button>

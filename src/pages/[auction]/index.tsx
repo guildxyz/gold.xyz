@@ -2,6 +2,7 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
+  Box,
   Center,
   Divider,
   Flex,
@@ -12,6 +13,7 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Tag,
   Text,
   VStack,
 } from "@chakra-ui/react"
@@ -38,8 +40,10 @@ const Page = (): JSX.Element => {
       </Layout>
     )
 
+  const { name, nftData, bids, currentCycle, endTimestamp, isActive } = auction ?? {}
+
   return (
-    <Layout title={auction?.name}>
+    <Layout title={name}>
       <SimpleGrid
         templateColumns={{ base: "1fr", md: "5fr 4fr" }}
         spacing="16"
@@ -47,7 +51,7 @@ const Page = (): JSX.Element => {
       >
         <Center>
           <Image
-            src={auction?.nftData?.uri}
+            src={nftData?.uri}
             alt="NFT"
             borderRadius="xl"
             maxH="calc(100vh - 400px)"
@@ -59,26 +63,43 @@ const Page = (): JSX.Element => {
             as="h3"
             fontSize="4xl"
             fontFamily="display"
-          >{`${auction?.nftData?.name} #${auction?.currentCycle}`}</Heading>
+          >{`${nftData?.name} #${currentCycle}`}</Heading>
           <HStack divider={<Divider orientation="vertical" />} spacing="8">
             <Stat size="lg">
-              <StatLabel>Current bid</StatLabel>
+              <StatLabel>{isActive ? "Current bid" : "Winning bid"}</StatLabel>
               <StatNumber>
-                {auction?.bids?.[0]?.amount
-                  ? `${auction?.bids?.[0]?.amount} SOL`
-                  : "-"}
+                {bids?.[0]?.amount ? `${bids?.[0]?.amount} SOL` : "-"}
               </StatNumber>
             </Stat>
             <Stat size="lg">
-              <StatLabel>Ends in</StatLabel>
-              <StatNumber>
-                <Countdown expiryTimestamp={auction?.endTimestamp} />
-              </StatNumber>
+              {isActive ? (
+                <>
+                  <StatLabel>Ends in</StatLabel>
+                  <StatNumber>
+                    {<Countdown expiryTimestamp={endTimestamp} />}
+                  </StatNumber>
+                </>
+              ) : (
+                <>
+                  <StatLabel>Winner</StatLabel>
+                  <StatNumber>
+                    {bids?.[0]?.bidderPubkey
+                      ? shortenHex(bids?.[0]?.bidderPubkey.toString())
+                      : "-"}
+                  </StatNumber>
+                </>
+              )}
             </Stat>
           </HStack>
-          <Bid />
+          {isActive ? (
+            <Bid />
+          ) : (
+            <Box>
+              <Tag size="lg">Auction ended</Tag>
+            </Box>
+          )}
           <VStack>
-            {auction?.bids?.slice(0, 2).map((bid) => (
+            {bids?.slice(0, 2).map((bid) => (
               <Flex
                 key={bid.amount.toString()}
                 bg="blackAlpha.300"

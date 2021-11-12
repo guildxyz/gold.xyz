@@ -22,7 +22,11 @@ const useAuction = () => {
     console.log("data", data)
   }, [data])
 
-  return { auction: data, isLoading: isValidating && !data, error }
+  return {
+    auction: data,
+    isLoading: isValidating && !data,
+    error,
+  }
 }
 
 export default useAuction
