@@ -13,32 +13,33 @@ import { startAuction } from "./transactions/startAuction"
   let auctionBaseArray = await getAuctions(CONNECTION)
   console.log("getAuctions:", auctionBaseArray)
   // START A NEW AUCTION
-  let newAuction: Auction = {
-    id: "asdasd",
-    name: "Asd",
-    ownerPubkey: auctionOwner.publicKey,
-    nftData: {
-      name: "Asd",
-      symbol: "ASD",
-      uri: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Awesome-Sunset-Beaches-Images.jpg",
-    },
-    bids: [],
-    cyclePeriod: 5,
-    currentCycle: 1,
-    numberOfCycles: 15,
-    minBid: 2000,
-    startTimestamp: 100000000,
-    endTimestamp: 100010000,
-    isActive: true,
-    isFrozen: false,
-  }
+  //let newAuction: Auction = {
+  //  id: "asdasd",
+  //  name: "Asd",
+  //  ownerPubkey: auctionOwner.publicKey,
+  //  nftData: {
+  //    name: "Asd",
+  //    symbol: "ASD",
+  //    uri: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Awesome-Sunset-Beaches-Images.jpg",
+  //  },
+  //  bids: [],
+  //  cyclePeriod: 5,
+  //  currentCycle: 1,
+  //  numberOfCycles: 15,
+  //  minBid: 2000,
+  //  startTimestamp: 100000000,
+  //  endTimestamp: 100010000,
+  //  isActive: true,
+  //  isFrozen: false,
+  //}
   //let startAuctionTransaction = await startAuction(newAuction)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
 
-  var auction = await getAuction(CONNECTION, "t") //newAuction.id)
+  let auction_id = "just-a-test-2"
+  var auction = await getAuction(CONNECTION, auction_id)
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)
   console.log("AUCTION OWNER: ", auctionOwnerPubkey.toString())
-  console.log('getAuction("', newAuction.id, '")', auction)
+  console.log('getAuction("', auction_id, '")', auction)
   // AIRDROP TO BIDDER
   let someUser = Keypair.fromSecretKey(SECRET3)
   console.log("SOME USER: ", someUser.publicKey.toString())
@@ -85,10 +86,8 @@ import { startAuction } from "./transactions/startAuction"
   // DELETE AUCTION
   //let deleteAuctionTransaction = await deleteAuction(
   //  CONNECTION,
-  //  CONTRACT_ADMIN_KEYPAIR,
   //  auction.id,
   //  auctionOwnerPubkey,
-  //  100
   //)
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("successfully deleted auction")

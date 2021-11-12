@@ -1,16 +1,14 @@
 import { Connection, Keypair, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { PROGRAM_ID } from "../consts"
+import { CONTRACT_ADMIN_KEYPAIR, NUM_OF_CYCLES_TO_DELETE, PROGRAM_ID } from "../consts"
 import * as Layout from "../layouts"
 import { getCurrentCycleNumber, getNthCycleStatePubkey } from "../queries/readCycleState"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 
 export async function deleteAuction(
   connection: Connection,
-  contractAdmin: Keypair,
   auctionId: string,
-  auctionOwnerPubkey: PublicKey,
-  num_of_cycles_to_delete: number
+  auctionOwnerPubkey: PublicKey
 ): Promise<Transaction> {
   const auctionIdBuffer = padTo32Bytes(auctionId)
 
@@ -19,7 +17,7 @@ export async function deleteAuction(
     PROGRAM_ID
   )
   const [auctionPoolPubkey, _b] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_pool"), Buffer.from(contractAdmin.publicKey.toBytes())],
+    [Buffer.from("auction_pool"), Buffer.from(CONTRACT_ADMIN_KEYPAIR.publicKey.toBytes())],
     PROGRAM_ID
   )
 
@@ -34,13 +32,13 @@ export async function deleteAuction(
 
   const deleteAuctionArgs = new Layout.DeleteAuctionArgs({
     auctionId: auctionIdBuffer,
-    num_of_cycles_to_delete: num_of_cycles_to_delete,
+    num_of_cycles_to_delete: NUM_OF_CYCLES_TO_DELETE,
   })
 
   let auctionData = Buffer.from(serialize(Layout.DELETE_AUCTION_SCHEMA, deleteAuctionArgs))
 
   let instructionKeys = [
-    { pubkey: contractAdmin.publicKey, isSigner: true, isWritable: true },
+    { pubkey: CONTRACT_ADMIN_KEYPAIR.publicKey, isSigner: true, isWritable: true },
     { pubkey: contractBankPubkey, isSigner: false, isWritable: false },
     { pubkey: auctionPoolPubkey, isSigner: false, isWritable: true },
     { pubkey: auctionOwnerPubkey, isSigner: false, isWritable: true },
@@ -49,7 +47,7 @@ export async function deleteAuction(
   ]
 
   const currentCycleNumber = await getCurrentCycleNumber(connection, auctionRootStatePubkey)
-  const cycleStatesToInclude = Math.min(currentCycleNumber, num_of_cycles_to_delete)
+  const cycleStatesToInclude = Math.min(currentCycleNumber, NUM_OF_CYCLES_TO_DELETE)
 
   for (let i = 0; i < cycleStatesToInclude; ++i) {
     let nthCycleStatePubkey = await getNthCycleStatePubkey(auctionRootStatePubkey, currentCycleNumber - i)

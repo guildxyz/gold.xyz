@@ -20,6 +20,7 @@ export const PREFIX = Buffer.from("metadata")
 export const EDITION = Buffer.from("edition")
 export const EDITION_MARKER_BIT_SIZE = 248
 export const LAMPORTS = 1_000_000_000
+export const NUM_OF_CYCLES_TO_DELETE = 30
 
 const SECRET1 = Uint8Array.from([
   81, 206, 2, 84, 194, 25, 213, 226, 169, 97, 254, 229, 43, 106, 226, 29, 181, 244, 192, 48, 232, 94, 249, 178, 120, 15,
