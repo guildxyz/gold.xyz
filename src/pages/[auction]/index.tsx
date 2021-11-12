@@ -17,16 +17,19 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
+import { useWallet } from "@solana/wallet-adapter-react"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
 import useAuction from "components/[auction]/hooks/useAuction"
+import SettingsMenu from "components/[auction]/SettingsMenu"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error } = useAuction()
+  const { publicKey } = useWallet()
 
   if (error)
     return (
@@ -40,10 +43,14 @@ const Page = (): JSX.Element => {
       </Layout>
     )
 
-  const { name, nftData, bids, currentCycle, endTimestamp, isActive } = auction ?? {}
+  const { name, nftData, bids, currentCycle, endTimestamp, isActive, ownerPubkey } =
+    auction ?? {}
 
   return (
-    <Layout title={name}>
+    <Layout
+      title={name}
+      action={publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
+    >
       <SimpleGrid
         templateColumns={{ base: "1fr", md: "5fr 4fr" }}
         spacing="16"
