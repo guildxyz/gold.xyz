@@ -1,17 +1,18 @@
 import { Keypair, PublicKey } from "@solana/web3.js"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { Auction, getAuction, getAuctions } from "./queries/getAuctions"
-import { SECRET2, SECRET3, sendTransaction } from "./test"
+import { SECRET2, SECRET3, sendTransaction, init } from "./test"
 import { deleteAuction } from "./transactions/deleteAuction"
 import { startAuction } from "./transactions/startAuction"
+import { placeBid } from "./transactions/bid"
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
   //await init(auctionOwner.publicKey)
   // READ AUCTION STATE
-  let auctionBaseArray = await getAuctions(CONNECTION)
-  console.log("getAuctions:", auctionBaseArray)
+  //let auctionBaseArray = await getAuctions(CONNECTION)
+  //console.log("getAuctions:", auctionBaseArray)
   // START A NEW AUCTION
   //let newAuction: Auction = {
   //  id: "asdasd",
@@ -23,7 +24,7 @@ import { startAuction } from "./transactions/startAuction"
   //    uri: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Awesome-Sunset-Beaches-Images.jpg",
   //  },
   //  bids: [],
-  //  cyclePeriod: 5,
+  //  cyclePeriod: 3600,
   //  currentCycle: 1,
   //  numberOfCycles: 15,
   //  minBid: 2000,
@@ -35,7 +36,7 @@ import { startAuction } from "./transactions/startAuction"
   //let startAuctionTransaction = await startAuction(newAuction)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
 
-  let auction_id = "just-a-test-2"
+  let auction_id = "asdasd"
   var auction = await getAuction(CONNECTION, auction_id)
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)
   console.log("AUCTION OWNER: ", auctionOwnerPubkey.toString())
@@ -43,20 +44,21 @@ import { startAuction } from "./transactions/startAuction"
   // AIRDROP TO BIDDER
   let someUser = Keypair.fromSecretKey(SECRET3)
   console.log("SOME USER: ", someUser.publicKey.toString())
-  await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 100000000))
-  let bidder = new Keypair()
-  console.log("NEW BIDDER: ", bidder.publicKey.toString())
-  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(bidder.publicKey, 100000000))
-  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 100000000))
+  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 100_000_000))
+  //console.log(await CONNECTION.getBalance(someUser.publicKey));
+  //let bidder = new Keypair()
+  //console.log("NEW BIDDER: ", bidder.publicKey.toString())
+  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(bidder.publicKey, 10_000_000_000))
   // PLACE A BID
   //let placeBidTransaction = await placeBid(
   //  CONNECTION,
   //	auction.id,
   //	auctionOwnerPubkey,
-  //	7600000,
-  //	bidder.publicKey,
+  //	0.05,
+  //	someUser.publicKey,
   //);
-  //await sendTransaction(placeBidTransaction, bidder);
+  //console.log("sending bid transaction");
+  //await sendTransaction(placeBidTransaction, someUser);
   //console.log("successfully placed a bid");
 
   // CLOSE AUCTION CYCLE
