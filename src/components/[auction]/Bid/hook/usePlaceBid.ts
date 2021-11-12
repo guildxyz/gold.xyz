@@ -22,7 +22,7 @@ const usePlaceBid = (setValue) => {
   const [amount, setAmount] = useState<number>()
 
   const handlePlaceBid = async ({ amount: amount_ }: Data) => {
-    setAmount(parseInt(amount_))
+    setAmount(parseFloat(amount_))
     const tx = await placeBid(
       connection,
       auction.id,
