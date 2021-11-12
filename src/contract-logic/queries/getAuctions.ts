@@ -141,7 +141,7 @@ export async function getAuction(connection: Connection, id: string, n: number =
       },
       bids: cycleStateData.bidHistory.map((bid) => ({ ...bid, amount: bid.amount.toNumber() / LAMPORTS })).reverse(),
       cyclePeriod: auctionRootStateDeserialized.config.cyclePeriod.toNumber(),
-      currentCycle: auctionRootStateDeserialized.status.currentAuctionCycle.toNumber(),
+      currentCycle: n,
       numberOfCycles: auctionRootStateDeserialized.config.numberOfCycles.toNumber(),
       minBid: auctionRootStateDeserialized.config.minimumBidAmount.toNumber() / LAMPORTS,
       startTimestamp: cycleStateData.startTime.toNumber() * 1000,
