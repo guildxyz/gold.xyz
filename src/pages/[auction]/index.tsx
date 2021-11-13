@@ -10,8 +10,8 @@ import {
   HStack,
   Image,
   SimpleGrid,
+  Skeleton,
   Stat,
-  StatGroup,
   StatLabel,
   StatNumber,
   Tag,
@@ -27,11 +27,13 @@ import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import SettingsMenu from "components/[auction]/SettingsMenu"
+import { useRouter } from "next/router"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error } = useAuction()
   const { publicKey } = useWallet()
+  const router = useRouter()
 
   if (error)
     return (
@@ -45,8 +47,15 @@ const Page = (): JSX.Element => {
       </Layout>
     )
 
-  const { name, nftData, bids, currentCycle, endTimestamp, isActive, ownerPubkey } =
-    auction ?? {}
+  const {
+    name = router.query.auction as string,
+    nftData,
+    bids,
+    currentCycle = 0,
+    endTimestamp,
+    isActive = true,
+    ownerPubkey,
+  } = auction ?? {}
 
   return (
     <Layout
@@ -65,26 +74,36 @@ const Page = (): JSX.Element => {
             borderRadius="xl"
             maxH="calc(100vh - 400px)"
             shadow="xl"
+            fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
           />
         </Center>
         <VStack alignItems="stretch" spacing="8">
-          <Heading
-            as="h3"
-            fontSize="4xl"
-            fontFamily="display"
-          >{`${nftData?.name} #${currentCycle}`}</Heading>
-          <HStack divider={<Divider orientation="vertical" />} spacing="8">
+          <Skeleton isLoaded={!!nftData} w="fit-content">
+            <Heading
+              as="h3"
+              fontSize="4xl"
+              fontFamily="display"
+              d="inline-block"
+            >{`${nftData?.name} #${currentCycle}`}</Heading>
+          </Skeleton>
+          <HStack
+            divider={<Divider orientation="vertical" />}
+            spacing="8"
+            alignItems="flex-start"
+          >
             <Stat size="lg">
               <StatLabel>{isActive ? "Current bid" : "Winning bid"}</StatLabel>
-              <HighestBid amount={bids?.[0]?.amount} />
+              <Skeleton isLoaded={!!bids}>
+                <HighestBid amount={bids?.[0]?.amount} />
+              </Skeleton>
             </Stat>
             <Stat size="lg">
               {isActive ? (
                 <>
                   <StatLabel>Ends in</StatLabel>
-                  <StatGroup>
-                    {<Countdown expiryTimestamp={endTimestamp} />}
-                  </StatGroup>
+                  <Skeleton isLoaded={!!endTimestamp}>
+                    <Countdown expiryTimestamp={endTimestamp} />
+                  </Skeleton>
                 </>
               ) : (
                 <>
