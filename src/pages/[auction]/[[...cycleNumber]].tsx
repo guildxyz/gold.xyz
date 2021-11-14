@@ -66,6 +66,8 @@ const Page = (): JSX.Element => {
     <Layout
       title={name}
       action={
+        publicKey &&
+        ownerPubkey &&
         publicKey?.toString() === ownerPubkey?.toString() &&
         isActive && <SettingsMenu />
       }
@@ -83,7 +85,6 @@ const Page = (): JSX.Element => {
         </Center>
         <VStack alignItems="stretch" spacing="8">
           <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
-            {currentCycle}
             {currentCycle > 1 && (
               <Link
                 fontSize="sm"
@@ -101,8 +102,8 @@ const Page = (): JSX.Element => {
                 href={`/${router.query.auction}/${currentCycle + 1}`}
                 ml="auto"
               >
-                <Icon as={CaretRight} mr="2" />
                 Next cycle
+                <Icon as={CaretRight} ml="2" />
               </Link>
             )}
           </HStack>

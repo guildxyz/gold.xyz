@@ -12,13 +12,17 @@ const NumberOfCycles = () => {
     register,
     watch,
     trigger,
+    setValue,
     formState: { errors },
   } = useFormContext()
 
   const maxSupply = watch("nftData.maxSupply")
 
   useEffect(() => {
-    if (maxSupply) trigger("numberOfCycles")
+    if (maxSupply) {
+      setValue("numberOfCycles", maxSupply)
+      trigger("numberOfCycles")
+    }
   }, [maxSupply])
 
   return (
