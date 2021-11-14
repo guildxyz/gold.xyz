@@ -14,7 +14,7 @@ const useAuction = () => {
   }
 
   const { data, isValidating, error } = useSWR(
-    ["auction", router.query.auction, router.query.cycleNumber],
+    ["auction", router.query.auction, router.query.cycleNumber?.[0]],
     handleGetAuction,
     {
       revalidateOnFocus: false,
