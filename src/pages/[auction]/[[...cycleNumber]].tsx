@@ -57,6 +57,7 @@ const Page = (): JSX.Element => {
     currentCycle = 0,
     endTimestamp,
     isActive = true,
+    isFrozen,
     ownerPubkey,
     numberOfCycles,
   } = auction ?? {}
@@ -64,7 +65,10 @@ const Page = (): JSX.Element => {
   return (
     <Layout
       title={name}
-      action={publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
+      action={
+        publicKey?.toString() === ownerPubkey?.toString() &&
+        isActive && <SettingsMenu />
+      }
     >
       <SimpleGrid
         templateColumns={{ base: "1fr", lg: "5fr 4fr" }}
@@ -94,7 +98,7 @@ const Page = (): JSX.Element => {
                 Prev cycle
               </Link>
             )}
-            {currentCycle < numberOfCycles && !isActive && (
+            {currentCycle < numberOfCycles && !isActive && !isFrozen && (
               <Link
                 fontSize="sm"
                 opacity="0.6"

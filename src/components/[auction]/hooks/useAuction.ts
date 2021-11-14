@@ -13,7 +13,7 @@ const useAuction = () => {
     return getAuction(connection, id, parseInt(cycleNumber))
   }
 
-  const { data, isValidating, error } = useSWR(
+  const { data, isValidating, error, mutate } = useSWR(
     ["auction", router.query.auction, router.query.cycleNumber?.[0]],
     handleGetAuction,
     {
@@ -29,6 +29,7 @@ const useAuction = () => {
     auction: data,
     isLoading: isValidating && !data,
     error,
+    mutate,
   }
 }
 
