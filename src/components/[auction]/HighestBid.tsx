@@ -6,7 +6,7 @@ type Props = {
 }
 
 const HighestBid = ({ amount }: Props) => {
-  const { data: solPrice } = useSWR("api/sol-price")
+  const { data: solPrice } = useSWR("/api/sol-price")
 
   if (!amount)
     return (
@@ -19,7 +19,7 @@ const HighestBid = ({ amount }: Props) => {
   return (
     <>
       <StatNumber>{`${amount} SOL`}</StatNumber>
-      <StatHelpText>{`$ ${solPrice * amount}`}</StatHelpText>
+      <StatHelpText>{`$ ${(solPrice * amount).toFixed(1)}`}</StatHelpText>
     </>
   )
 }

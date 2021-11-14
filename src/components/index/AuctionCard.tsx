@@ -24,7 +24,6 @@ const AuctionCard = ({ auction }: Props): JSX.Element => {
         py="7"
         w="full"
         h="full"
-        bg={colorMode === "light" ? "white" : "gray.700"}
         justifyContent="center"
         _before={{
           content: `""`,

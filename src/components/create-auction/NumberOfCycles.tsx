@@ -18,7 +18,7 @@ const NumberOfCycles = () => {
   const maxSupply = watch("nftData.maxSupply")
 
   useEffect(() => {
-    trigger("numberOfCycles")
+    if (maxSupply) trigger("numberOfCycles")
   }, [maxSupply])
 
   return (

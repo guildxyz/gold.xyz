@@ -70,11 +70,7 @@ const Page = (): JSX.Element => {
         isActive && <SettingsMenu />
       }
     >
-      <SimpleGrid
-        templateColumns={{ base: "1fr", lg: "5fr 4fr" }}
-        spacing="16"
-        alignItems="center"
-      >
+      <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
         <Center>
           <Image
             src={nftData?.uri}
