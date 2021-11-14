@@ -20,7 +20,9 @@ const Bid = () => {
   const { publicKey } = useWallet()
   const minBid = useMemo(
     () =>
-      auction?.bids?.[0]?.amount ? auction?.bids?.[0]?.amount + 1 : auction?.minBid,
+      auction?.bids?.[0]?.amount
+        ? auction?.bids?.[0]?.amount + 0.01
+        : auction?.minBid,
     [auction]
   )
   const toast = useToast()
@@ -59,7 +61,10 @@ const Bid = () => {
       <HStack spacing="3">
         <InputGroup size="lg">
           <NumberInput w="full" {...field}>
-            <NumberInputField ref={inputRef} placeholder={`min: ${minBid}`} />
+            <NumberInputField
+              ref={inputRef}
+              placeholder={minBid && `min: ${minBid}`}
+            />
           </NumberInput>
           <InputRightElement>
             <Text colorScheme="gray" mr="4">

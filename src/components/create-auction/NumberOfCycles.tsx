@@ -4,13 +4,22 @@ import {
   NumberInput,
   NumberInputField,
 } from "@chakra-ui/react"
+import { useEffect } from "react"
 import { useFormContext } from "react-hook-form"
 
 const NumberOfCycles = () => {
   const {
     register,
+    watch,
+    trigger,
     formState: { errors },
   } = useFormContext()
+
+  const maxSupply = watch("nftData.maxSupply")
+
+  useEffect(() => {
+    trigger("numberOfCycles")
+  }, [maxSupply])
 
   return (
     <FormControl isInvalid={errors?.numberOfCycles} isRequired>
@@ -19,6 +28,10 @@ const NumberOfCycles = () => {
         <NumberInputField
           {...register("numberOfCycles", {
             required: "This field is required.",
+            max: {
+              value: maxSupply,
+              message: "Can't exceed max NFT supply",
+            },
           })}
           placeholder="0"
         />

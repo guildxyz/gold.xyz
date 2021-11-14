@@ -67,7 +67,7 @@ const Page = (): JSX.Element => {
       action={publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
     >
       <SimpleGrid
-        templateColumns={{ base: "1fr", md: "5fr 4fr" }}
+        templateColumns={{ base: "1fr", lg: "5fr 4fr" }}
         spacing="16"
         alignItems="center"
       >
@@ -82,7 +82,7 @@ const Page = (): JSX.Element => {
           />
         </Center>
         <VStack alignItems="stretch" spacing="8">
-          <HStack justifyContent="space-between" mb="-3" w="full">
+          <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
             {currentCycle}
             {currentCycle > 1 && (
               <Link

@@ -24,7 +24,7 @@ const MinBid = () => {
               // required: "This field is required.",
             })}
             // borderRightRadius="0"
-            placeholder="0.1"
+            placeholder="0.01"
           />
           {/* <NumberInputStepper>
             <NumberIncrementStepper />
