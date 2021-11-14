@@ -8,10 +8,13 @@ const useAuction = () => {
   const { connection } = useConnection()
   const router = useRouter()
 
-  const handleGetAuction = async (_, id) => getAuction(connection, id)
+  const handleGetAuction = async (_, id: string, cycleNumber: string) => {
+    if (!cycleNumber) return getAuction(connection, id)
+    return getAuction(connection, id, parseInt(cycleNumber))
+  }
 
   const { data, isValidating, error } = useSWR(
-    ["auction", router.query.auction],
+    ["auction", router.query.auction, router.query.cycleNumber],
     handleGetAuction,
     {
       revalidateOnFocus: false,

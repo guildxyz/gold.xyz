@@ -98,7 +98,7 @@ const Page = (): JSX.Element => {
               <Link
                 fontSize="sm"
                 opacity="0.6"
-                href={`/${router.query.auction}/${currentCycle}`}
+                href={`/${router.query.auction}/${currentCycle + 1}`}
                 ml="auto"
               >
                 <Icon as={CaretRight} mr="2" />
@@ -107,9 +107,12 @@ const Page = (): JSX.Element => {
             )}
           </HStack>
           <Skeleton isLoaded={!!nftData} w="fit-content">
-            <Heading as="h3" fontSize="4xl" fontFamily="display" d="inline-block">
-              {`${nftData?.name} #${currentCycle}`}
-            </Heading>
+            <Heading
+              as="h3"
+              fontSize="4xl"
+              fontFamily="display"
+              d="inline-block"
+            >{`${nftData?.name} #${currentCycle}`}</Heading>
           </Skeleton>
           <HStack
             divider={<Divider orientation="vertical" />}
