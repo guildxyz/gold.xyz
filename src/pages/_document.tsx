@@ -17,6 +17,14 @@ class MyDocument extends Document {
             href="/fonts/fonts.css"
             crossOrigin="anonymous"
           />
+          {process.env.NODE_ENV === "production" && (
+            <script
+              async
+              defer
+              data-website-id="2cb2b1b0-2dcb-4852-b524-de7b79e9985e"
+              src="https://stats.gold.xyz/umami.js"
+            ></script>
+          )}
         </Head>
         <body>
           <Main />
