@@ -8,8 +8,10 @@ import {
   Flex,
   Heading,
   HStack,
+  Icon,
   Image,
   SimpleGrid,
+  Skeleton,
   Stat,
   StatLabel,
   StatNumber,
@@ -20,16 +22,21 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
+import Link from "components/common/Link"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
+import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import SettingsMenu from "components/[auction]/SettingsMenu"
+import { useRouter } from "next/router"
+import { CaretLeft, CaretRight } from "phosphor-react"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error } = useAuction()
   const { publicKey } = useWallet()
+  const router = useRouter()
 
   if (error)
     return (
@@ -43,19 +50,29 @@ const Page = (): JSX.Element => {
       </Layout>
     )
 
-  const { name, nftData, bids, currentCycle, endTimestamp, isActive, ownerPubkey } =
-    auction ?? {}
+  const {
+    name = router.query.auction as string,
+    nftData,
+    bids,
+    currentCycle = 0,
+    endTimestamp,
+    isActive = true,
+    isFrozen,
+    ownerPubkey,
+    numberOfCycles,
+  } = auction ?? {}
 
   return (
     <Layout
       title={name}
-      action={publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
+      action={
+        publicKey &&
+        ownerPubkey &&
+        publicKey?.toString() === ownerPubkey?.toString() &&
+        isActive && <SettingsMenu />
+      }
     >
-      <SimpleGrid
-        templateColumns={{ base: "1fr", md: "5fr 4fr" }}
-        spacing="16"
-        alignItems="center"
-      >
+      <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
         <Center>
           <Image
             src={nftData?.uri}
@@ -63,28 +80,59 @@ const Page = (): JSX.Element => {
             borderRadius="xl"
             maxH="calc(100vh - 400px)"
             shadow="xl"
+            fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
           />
         </Center>
         <VStack alignItems="stretch" spacing="8">
-          <Heading
-            as="h3"
-            fontSize="4xl"
-            fontFamily="display"
-          >{`${nftData?.name} #${currentCycle}`}</Heading>
-          <HStack divider={<Divider orientation="vertical" />} spacing="8">
+          <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
+            {currentCycle > 1 && (
+              <Link
+                fontSize="sm"
+                opacity="0.6"
+                href={`/${router.query.auction}/${currentCycle - 1}`}
+              >
+                <Icon as={CaretLeft} mr="2" />
+                Prev cycle
+              </Link>
+            )}
+            {currentCycle < numberOfCycles && !isActive && !isFrozen && (
+              <Link
+                fontSize="sm"
+                opacity="0.6"
+                href={`/${router.query.auction}/${currentCycle + 1}`}
+                ml="auto"
+              >
+                Next cycle
+                <Icon as={CaretRight} ml="2" />
+              </Link>
+            )}
+          </HStack>
+          <Skeleton isLoaded={!!nftData} w="fit-content">
+            <Heading
+              as="h3"
+              fontSize="4xl"
+              fontFamily="display"
+              d="inline-block"
+            >{`${nftData?.name} #${currentCycle}`}</Heading>
+          </Skeleton>
+          <HStack
+            divider={<Divider orientation="vertical" />}
+            spacing="8"
+            alignItems="flex-start"
+          >
             <Stat size="lg">
               <StatLabel>{isActive ? "Current bid" : "Winning bid"}</StatLabel>
-              <StatNumber>
-                {bids?.[0]?.amount ? `${bids?.[0]?.amount} SOL` : "-"}
-              </StatNumber>
+              <Skeleton isLoaded={!!bids}>
+                <HighestBid amount={bids?.[0]?.amount} />
+              </Skeleton>
             </Stat>
             <Stat size="lg">
               {isActive ? (
                 <>
                   <StatLabel>Ends in</StatLabel>
-                  <StatNumber>
-                    {<Countdown expiryTimestamp={endTimestamp} />}
-                  </StatNumber>
+                  <Skeleton isLoaded={!!endTimestamp}>
+                    <Countdown expiryTimestamp={endTimestamp} />
+                  </Skeleton>
                 </>
               ) : (
                 <>

@@ -3,11 +3,8 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
   SimpleGrid,
 } from "@chakra-ui/react"
 import UploadFile from "components/create-auction/UploadFile"
@@ -50,10 +47,10 @@ const NFTData = () => {
                 required: "This field is required.",
               })}
             />
-            <NumberInputStepper>
+            {/* <NumberInputStepper>
               <NumberIncrementStepper />
               <NumberDecrementStepper />
-            </NumberInputStepper>
+            </NumberInputStepper> */}
           </NumberInput>
           <FormErrorMessage>{errors?.nftData?.maxSupply?.message}</FormErrorMessage>
         </FormControl>

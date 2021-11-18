@@ -1,11 +1,10 @@
-// import fetchData from "components/index/utils/fetchData"
 import { HStack, Stack, Tag, Text } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import AddCard from "components/common/AddCard"
-import ExplorerCardMotionWrapper from "components/common/ExplorerCardMotionWrapper"
 import Layout from "components/common/Layout"
 import AuctionCard from "components/index/AuctionCard"
 import CategorySection from "components/index/CategorySection"
+import ExplorerCardMotionWrapper from "components/index/ExplorerCardMotionWrapper"
 import useAuctions from "components/index/hooks/useAuctions"
 import useUsersAuctions from "components/index/hooks/useUsersAuctions"
 import SearchBar from "components/index/SearchBar"
@@ -16,7 +15,7 @@ const filterByName = (name: string, searchInput: string) =>
 
 const Page = (): JSX.Element => {
   const [searchInput, setSearchInput] = useState("")
-  const auctions = useAuctions()
+  const { auctions, isLoading } = useAuctions()
   const usersAuctions = useUsersAuctions()
   const { publicKey } = useWallet()
 
@@ -37,11 +36,12 @@ const Page = (): JSX.Element => {
       <Stack spacing={12}>
         <CategorySection
           title={
-            !usersAuctions?.length && publicKey
+            publicKey && !usersAuctions?.length && !isLoading
               ? "You don't have any auctions yet"
               : "Your auctions"
           }
-          fallbackText={
+          isLoading={isLoading}
+          fallback={
             !publicKey
               ? "Connect your wallet to view your auctions"
               : `No results for ${searchInput}`
@@ -72,7 +72,8 @@ const Page = (): JSX.Element => {
               {auctions?.length && <Tag size="sm">{auctions?.length}</Tag>}
             </HStack>
           }
-          fallbackText={
+          isLoading={isLoading}
+          fallback={
             auctions?.length
               ? `No results for ${searchInput}`
               : "Unable to load auctions"

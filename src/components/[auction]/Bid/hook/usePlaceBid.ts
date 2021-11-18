@@ -5,7 +5,6 @@ import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useState } from "react"
-import { useSWRConfig } from "swr"
 
 type Data = {
   // string as it comes from the form
@@ -15,19 +14,19 @@ type Data = {
 const usePlaceBid = (setValue) => {
   const toast = useToast()
   const router = useRouter()
-  const { mutate } = useSWRConfig()
   const { connection } = useConnection()
   const { sendTransaction, publicKey } = useWallet()
-  const { auction } = useAuction()
+  const { auction, mutate } = useAuction()
   const [amount, setAmount] = useState<number>()
 
-  const handlePlaceBid = async ({ amount: amount_ }: Data) => {
-    setAmount(parseInt(amount_))
+  const handlePlaceBid = async ({ amount: inputAmount }: Data) => {
+    const amount_ = parseFloat(inputAmount)
+    setAmount(amount_)
     const tx = await placeBid(
       connection,
       auction.id,
       auction.ownerPubkey,
-      amount,
+      amount_,
       publicKey
     )
     console.log(tx)
@@ -57,7 +56,6 @@ const usePlaceBid = (setValue) => {
         bidderPubkey: publicKey,
       }
       mutate(
-        ["auction", router.query.auction],
         async (prevData) => ({
           ...prevData,
           bids: [newBid, ...(prevData?.bids || [])],

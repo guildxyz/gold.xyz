@@ -9,7 +9,7 @@ const handleGetAuctions = (_, auctions, publicKey) =>
   )
 
 const useUsersAuctions = (): AuctionBase[] => {
-  const auctions = useAuctions()
+  const { auctions } = useAuctions()
   const { publicKey } = useWallet()
 
   const shouldFetch = auctions?.length && publicKey

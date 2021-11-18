@@ -22,7 +22,7 @@ const CreateGuildPage = (): JSX.Element => {
 
   return (
     <FormProvider {...methods}>
-      <Layout title="Start auction">
+      <Layout title="Start auction" maxWidth="container.lg">
         {connected ? (
           <>
             <VStack spacing={10} alignItems="start">

@@ -22,6 +22,7 @@ type Props = {
   title: string
   description?: string
   action?: ReactNode | undefined
+  maxWidth?: string
 }
 
 const Layout = ({
@@ -29,6 +30,7 @@ const Layout = ({
   title,
   description,
   action,
+  maxWidth = "container.xl",
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
   const { colorMode } = useColorMode()
@@ -83,7 +85,7 @@ const Layout = ({
           </HStack>
         </Flex>
         <Container
-          maxW="container.xl"
+          maxWidth={maxWidth}
           pt={{ base: 4, md: 9 }}
           pb={{ base: 20, md: 14 }}
           px={{ base: 4, sm: 6, md: 8, lg: 10 }}

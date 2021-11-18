@@ -4,6 +4,7 @@ import type { AppProps } from "next/app"
 import dynamic from "next/dynamic"
 import { IconContext } from "phosphor-react"
 import { SWRConfig } from "swr"
+import fetcher from "utils/fetcher"
 
 const WalletConnectionProvider = dynamic(
   () => import("components/_app/WalletConnectionProvider"),
@@ -18,6 +19,7 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
       <SWRConfig
         value={{
           onError: (e) => console.error(e),
+          fetcher,
         }}
       >
         <IconContext.Provider

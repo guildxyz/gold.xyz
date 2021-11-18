@@ -8,10 +8,13 @@ const useAuction = () => {
   const { connection } = useConnection()
   const router = useRouter()
 
-  const handleGetAuction = async (_, id) => getAuction(connection, id)
+  const handleGetAuction = async (_, id: string, cycleNumber: string) => {
+    if (!cycleNumber) return getAuction(connection, id)
+    return getAuction(connection, id, parseInt(cycleNumber))
+  }
 
-  const { data, isValidating, error } = useSWR(
-    ["auction", router.query.auction],
+  const { data, isValidating, error, mutate } = useSWR(
+    ["auction", router.query.auction, router.query.cycleNumber?.[0]],
     handleGetAuction,
     {
       revalidateOnFocus: false,
@@ -26,6 +29,7 @@ const useAuction = () => {
     auction: data,
     isLoading: isValidating && !data,
     error,
+    mutate,
   }
 }
 
