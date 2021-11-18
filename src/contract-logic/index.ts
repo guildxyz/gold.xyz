@@ -34,7 +34,7 @@ import { SECRET2, SECRET3 } from "./test"
   //let startAuctionTransaction = await startAuction(newAuction)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
 
-  let auction_id = "new"
+  let auction_id = "asdasd"
   var auction = await getAuction(CONNECTION, auction_id)
   console.log(await getAuction(CONNECTION, auction_id, 1))
   console.log(await getAuction(CONNECTION, auction_id, 2))
