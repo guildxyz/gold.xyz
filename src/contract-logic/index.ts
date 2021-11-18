@@ -1,10 +1,8 @@
 import { Keypair, PublicKey } from "@solana/web3.js"
-import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { Auction, getAuction, getAuctions } from "./queries/getAuctions"
-import { SECRET2, SECRET3, sendTransaction, init } from "./test"
-import { deleteAuction } from "./transactions/deleteAuction"
-import { startAuction } from "./transactions/startAuction"
-import { placeBid } from "./transactions/bid"
+import { CONNECTION } from "./consts"
+import { getAuction } from "./queries/getAuctions"
+import { getTreasuryFunds } from "./queries/getTreasuryFunds"
+import { SECRET2, SECRET3 } from "./test"
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
@@ -15,16 +13,16 @@ import { placeBid } from "./transactions/bid"
   //console.log("getAuctions:", auctionBaseArray)
   // START A NEW AUCTION
   //let newAuction: Auction = {
-  //  id: "asdasd",
-  //  name: "Asd",
+  //  id: "timestamp-short",
+  //  name: "Timestamp short",
   //  ownerPubkey: auctionOwner.publicKey,
   //  nftData: {
-  //    name: "Asd",
-  //    symbol: "ASD",
+  //    name: "Timestamps",
+  //    symbol: "TIMEs",
   //    uri: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Awesome-Sunset-Beaches-Images.jpg",
   //  },
   //  bids: [],
-  //  cyclePeriod: 3600,
+  //  cyclePeriod: 10,
   //  currentCycle: 1,
   //  numberOfCycles: 15,
   //  minBid: 2000,
@@ -65,8 +63,8 @@ import { placeBid } from "./transactions/bid"
   //console.log(await CONNECTION.getBalance(someUser.publicKey));
 
   // CLOSE AUCTION CYCLE
-  //for (let i = 3; i < 5; ++i){
-  //  await(await sleep(10000));
+  //for (let i = 0; i < 1; ++i){
+  //  //await(await sleep(10000));
   //  let closeCycleTransaction = await closeCycle(
   //    CONNECTION,
   //    auctionOwnerPubkey,
@@ -96,4 +94,7 @@ import { placeBid } from "./transactions/bid"
   //)
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("successfully deleted auction")
+
+  console.log('"Asd" treasury funds:', await getTreasuryFunds(CONNECTION, "asdasd"))
+  console.log('"New" treasury funds:', await getTreasuryFunds(CONNECTION, "new"))
 })()
