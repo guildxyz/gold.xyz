@@ -73,10 +73,10 @@ const WalletModal = ({
           </ModalBody>
           <ModalFooter>
             <Text textAlign="center">
-              New to Ethereum wallets?{" "}
+              New to Solana wallets?{" "}
               <Link
                 colorScheme="blue"
-                href="https://ethereum.org/en/wallets/"
+                href="https://docs.solana.com/wallet-guide"
                 isExternal
               >
                 Learn more
