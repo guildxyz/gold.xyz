@@ -14,7 +14,8 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js"
 // testnet
 export const PROGRAM_ID = new PublicKey("go1dcKcvafq8SDwmBKo6t2NVzyhvTEZJkMwnnfae99U")
 export const METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s")
-export const CONNECTION = new Connection("https://api.devnet.solana.com", "singleGossip")
+export const TARGET_CLUSTER = "https://api.devnet.solana.com"
+export const CONNECTION = new Connection(TARGET_CLUSTER, "singleGossip")
 
 export const PREFIX = Buffer.from("metadata")
 export const EDITION = Buffer.from("edition")
