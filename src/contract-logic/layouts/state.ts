@@ -14,6 +14,17 @@ export class AuctionConfig {
   }
 }
 
+export class AuctionDescription {
+  description: string
+  socials: string[]
+  goalTreasuryAmount: BN | null
+  constructor(args: { description: string; socials: string[]; goalTreasuryAmount: BN | null }) {
+    this.description = args.description
+    this.socials = args.socials
+    this.goalTreasuryAmount = args.goalTreasuryAmount
+  }
+}
+
 export class Bid {
   bidderPubkey: PublicKey
   amount: BN
@@ -44,18 +55,21 @@ export class AuctionStatus {
 export class AuctionRootState {
   auctionName: Uint8Array
   auctionOwner: PublicKey
+  auctionDescription: AuctionDescription
   config: AuctionConfig
   nftData: NftData
   status: AuctionStatus
   constructor(args: {
     auctionName: Uint8Array
     auctionOwner: PublicKey
+    auctionDescription: AuctionDescription
     config: AuctionConfig
     nftData: NftData
     status: AuctionStatus
   }) {
     this.auctionName = args.auctionName
     this.auctionOwner = args.auctionOwner
+    this.auctionDescription = args.auctionDescription
     this.config = args.config
     this.nftData = args.nftData
     this.status = args.status
@@ -70,9 +84,21 @@ export const AUCTION_ROOT_STATE_SCHEMA = new Map<any, any>([
       fields: [
         ["auctionName", [32]],
         ["auctionOwner", "borshPubkey"],
+        ["auctionDescription", AuctionDescription],
         ["config", AuctionConfig],
         ["nftData", NftData],
         ["status", AuctionStatus],
+      ],
+    },
+  ],
+  [
+    AuctionDescription,
+    {
+      kind: "struct",
+      fields: [
+        ["description", "string"],
+        ["socials", ["string"]],
+        ["goalTreasuryAmount", { kind: "option", type: "u64" }],
       ],
     },
   ],

@@ -7,7 +7,7 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js"
 //export const PROGRAM_ID = new PublicKey("EYWyXhivnRcNfEPejGvprRhJ9PzwQpP5G558uESR6EmY");
 //export const METADATA_PROGRAM_ID = new PublicKey("4vCSqWXmDKtX7QN237mr4nMmJ9Sbsn6ceswEWv8cuQ23");
 // gyozo localnet
-//export const PROGRAM_ID = new PublicKey("C49m9xTNShV9Ab1YwhgGqN3tv6bM3mYFVcdPrLxiZj2V")
+//export const PROGRAM_ID = new PublicKey("go1dcKcvafq8SDwmBKo6t2NVzyhvTEZJkMwnnfae99U")
 //export const METADATA_PROGRAM_ID = new PublicKey("4AokZ7xLLA4FJu5SciX9tAMjCdusFmiQXbJ5tpeF65qo")
 //export const CONNECTION = new Connection("http://localhost:8899", "singleGossip")
 
