@@ -1,7 +1,42 @@
-import { CompiledInstruction, Connection, Message, SignaturesForAddressOptions } from "@solana/web3.js"
+import {
+  ParsedConfirmedTransaction,
+  ParsedTransaction,
+  PartiallyDecodedInstruction,
+  SignaturesForAddressOptions,
+  TransactionSignature,
+} from "@solana/web3.js"
 import base58 from "bs58"
-import { PROGRAM_ID, TARGET_CLUSTER } from "../consts"
+import { CONNECTION_CONFIRMED, PROGRAM_ID } from "../consts"
 import { parseAuctionId } from "../utils/parseAuctionId"
+
+// `fromSignature` parameter should be the last signature of the last fetch
+// the transaction with the signature given in `fromSignature` is not included
+export class GetTransactionOptions {
+  fromTimestamp: number
+  toTimestamp?: number
+  fromSignature?: TransactionSignature
+  limit?: number
+  constructor(args: {
+    fromTimestamp: number
+    toTimestamp?: number
+    limit?: number
+    fromSignature?: TransactionSignature
+  }) {
+    this.fromTimestamp = args.fromTimestamp
+    this.toTimestamp = args.toTimestamp
+    this.fromSignature = args.fromSignature
+    this.limit = args.limit
+  }
+
+  toSignaturesForAddressOptions() {
+    const options: SignaturesForAddressOptions = {
+      before: this.fromSignature,
+      until: null,
+      limit: this.limit,
+    }
+    return options
+  }
+}
 
 export class ParsedInstruction {
   instructionCode: number
@@ -15,20 +50,20 @@ export class ParsedInstruction {
 }
 
 export interface InstructionFilter {
-  filter(instr: ParsedInstruction): boolean
+  filter(ix: ParsedInstruction): boolean
 }
 
-export class NoFilter {
-  filter(instr: ParsedInstruction): boolean {
+export class NoFilter implements InstructionFilter {
+  filter(ix: ParsedInstruction): boolean {
     return true
   }
 }
 
 export interface InstructionExtractor {
-  extract(instr: ParsedInstruction, args: { message: Message; signatures: string[] })
+  extract(ix: ParsedInstruction, tx: ParsedTransaction)
 }
 
-export function parseInstruction(fetchedInstruction: CompiledInstruction) {
+export function parseInstruction(fetchedInstruction: PartiallyDecodedInstruction) {
   const binaryData = base58.decode(fetchedInstruction.data)
   const instructionCode = binaryData[0]
   const auctionId = parseAuctionId(binaryData.slice(1, 33))
@@ -37,30 +72,40 @@ export function parseInstruction(fetchedInstruction: CompiledInstruction) {
   return new ParsedInstruction(instructionCode, auctionId, rest)
 }
 
-//
 export async function getAndExtractTransactions(
   extractor: InstructionExtractor,
   filter: InstructionFilter = new NoFilter(),
-  listOptions: SignaturesForAddressOptions = null
+  transactionOptions: GetTransactionOptions
 ) {
-  const connection_confirmed = new Connection(TARGET_CLUSTER, "confirmed")
-
   // Get transactions
-  const all_signatures = await connection_confirmed.getSignaturesForAddress(PROGRAM_ID, listOptions)
+  const all_signatures = (
+    await CONNECTION_CONFIRMED.getSignaturesForAddress(PROGRAM_ID, transactionOptions.toSignaturesForAddressOptions())
+  ).map((confirmedSignatureInfo) => confirmedSignatureInfo.signature)
 
-  let extractedTransactions = []
-  let lastSignature: string
-  for (let i = 0; i < all_signatures.length; ++i) {
-    const transaction = (await connection_confirmed.getTransaction(all_signatures[i].signature)).transaction
-
-    transaction.message.instructions.forEach((instruction) => {
-      const parsedInstruction = parseInstruction(instruction)
-      if (filter.filter(parsedInstruction)) {
-        extractedTransactions.push(extractor.extract(parsedInstruction, transaction))
-      }
-    })
-
-    lastSignature = all_signatures[i].signature
+  if (transactionOptions.toTimestamp == null) {
+    transactionOptions.toTimestamp = Number.MAX_SAFE_INTEGER
   }
+
+  const fetched = await CONNECTION_CONFIRMED.getParsedConfirmedTransactions(all_signatures)
+  let extractedTransactions = []
+  fetched.forEach((parsed: ParsedConfirmedTransaction | null) => {
+    if (parsed !== null) {
+      if (transactionOptions.fromTimestamp <= parsed.blockTime && transactionOptions.toTimestamp >= parsed.blockTime) {
+        const transaction = parsed.transaction
+        transaction.message.instructions.forEach((instruction) => {
+          if ("data" in instruction) {
+            const parsedInstruction = parseInstruction(instruction)
+            if (filter.filter(parsedInstruction)) {
+              extractedTransactions.push(extractor.extract(parsedInstruction, transaction))
+            }
+          } else {
+            console.log("Unhandled case in instruction parsing")
+          }
+        })
+      }
+    }
+  })
+
+  const lastSignature = all_signatures[all_signatures.length - 1]
   return { extractedTransactions, lastSignature }
 }

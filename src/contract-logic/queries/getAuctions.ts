@@ -6,8 +6,7 @@ import * as StateLayout from "../layouts/state"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
 import { getMasterMetadata } from "./masterEdition"
-import { getCurrentCycleState } from "./readCycleState"
-import { readNthCycleState } from "./readCycleState"
+import { getCurrentCycleState, readNthCycleState } from "./readCycleState"
 
 export type Bid = {
   bidderPubkey: PublicKey

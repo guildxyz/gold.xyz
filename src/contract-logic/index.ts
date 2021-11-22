@@ -4,8 +4,9 @@ import { Keypair, PublicKey } from "@solana/web3.js"
 import { performance } from "perf_hooks"
 import { CONNECTION } from "./consts"
 import { getAuction } from "./queries/getAuctions"
-import { getBidHistory, GetBidHistoryOptions } from "./queries/getBidHistory"
+import { getBidHistory } from "./queries/getBidHistory"
 import { SECRET2 } from "./test"
+
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
@@ -37,7 +38,7 @@ import { SECRET2 } from "./test"
   //let startAuctionTransaction = await startAuction(newAuction)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
 
-  let auction_id = "bargain-4"
+  let auction_id = "asdasd"
   var auction = await getAuction(CONNECTION, auction_id)
   //console.log(await getAuction(CONNECTION, auction_id, 1))
   //console.log(await getAuction(CONNECTION, auction_id, 2))
@@ -100,24 +101,14 @@ import { SECRET2 } from "./test"
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("successfully deleted auction")
 
-  // Get treasury funds
+  // GET TREASURY FUNDS
   //console.log('"Asd" treasury funds:', await getTreasuryFunds(CONNECTION, "asdasd"))
   //console.log('"New" treasury funds:', await getTreasuryFunds(CONNECTION, "new"))
 
-  //
-  let options = new GetBidHistoryOptions(3)
-
+  // GET BID HISTORY
   let startTime = performance.now()
-  const bidHistory = await getBidHistory(auction_id, options)
+  const bidHistory = await getBidHistory(auction_id, 1, 200)
   let endTime = performance.now()
   console.log("Bid history query fetched in", endTime - startTime, "ms")
   console.log(bidHistory)
-
-  let options2 = new GetBidHistoryOptions(3, bidHistory.lastSignature)
-
-  let startTime2 = performance.now()
-  const bidHistory2 = await getBidHistory(auction_id, options2)
-  let endTime2 = performance.now()
-  console.log("Bid history query fetched in", endTime2 - startTime2, "ms")
-  console.log(bidHistory2)
 })()

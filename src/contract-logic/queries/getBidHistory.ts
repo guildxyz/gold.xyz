@@ -1,11 +1,25 @@
-import { Connection, Message, SignaturesForAddressOptions, TransactionSignature } from "@solana/web3.js"
-import BN from "bn.js"
-import { PROGRAM_ID, TARGET_CLUSTER } from "../consts"
-import { Bid } from "../layouts/state"
+import { ParsedTransaction, PublicKey, TransactionSignature } from "@solana/web3.js"
+import { CONNECTION_CONFIRMED, LAMPORTS } from "../consts"
 import { bytesToNumber } from "../utils/bytesToNumber"
-import { getAndExtractTransactions, ParsedInstruction, parseInstruction } from "./getTransactions"
+import { getAuction } from "./getAuctions"
+import {
+  getAndExtractTransactions,
+  GetTransactionOptions,
+  InstructionExtractor,
+  InstructionFilter,
+  ParsedInstruction,
+} from "./getTransactions"
 
-export class myFilter {
+export class Bid {
+  amount: number
+  bidderPubkey: PublicKey
+  constructor(amount: number, bidderPubkey: PublicKey) {
+    this.amount = amount
+    this.bidderPubkey = bidderPubkey
+  }
+}
+
+export class BidFilter implements InstructionFilter {
   auctionId: string
   constructor(auctionId: string) {
     this.auctionId = auctionId
@@ -16,67 +30,72 @@ export class myFilter {
   }
 }
 
-// `from` parameter should be the last signature of the last fetch
-// the transaction with the signature given in `from` is not included
-export class GetBidHistoryOptions {
-  from?: TransactionSignature
-  limit?: number
-  constructor(limit?: number, from?: TransactionSignature) {
-    this.from = from
-    this.limit = limit
-  }
-
-  toSignaturesForAddressOptions() {
-    const options: SignaturesForAddressOptions = {
-      before: this.from,
-      until: null,
-      limit: this.limit,
-    }
-    return options
+export class BidExtractor implements InstructionExtractor {
+  extract(ix: ParsedInstruction, tx: ParsedTransaction) {
+    const bidAmount = bytesToNumber(ix.rest) / LAMPORTS
+    const bidder = tx.message.accountKeys[0].pubkey
+    return new Bid(bidAmount, bidder)
   }
 }
 
-export class BidExtractor {
-  extract(instr: ParsedInstruction, args: { message: Message; signatures: string[] }) {
-    const bidAmount = new BN(bytesToNumber(instr.rest))
-    const bidder = args.message.accountKeys[0]
-    return new Bid({ amount: bidAmount, bidderPubkey: bidder })
-  }
-}
+export async function getBidHistory(
+  auctionId: string,
+  cycleNumber: number,
+  limit?: number,
+  fromSignature?: TransactionSignature
+) {
+  const auction = await getAuction(CONNECTION_CONFIRMED, auctionId, cycleNumber)
 
-export async function getBidHistory(auctionId: string, options: GetBidHistoryOptions) {
-  const bids = await getAndExtractTransactions(
-    new BidExtractor(),
-    new myFilter(auctionId),
-    options.toSignaturesForAddressOptions()
-  )
+  const getTransactionOptions = new GetTransactionOptions({
+    fromTimestamp: auction.startTimestamp / 1000,
+    toTimestamp: auction.endTimestamp / 1000,
+    fromSignature: fromSignature,
+    limit: limit,
+  })
+
+  const bids = await getAndExtractTransactions(new BidExtractor(), new BidFilter(auctionId), getTransactionOptions)
   return { bidHistory: bids.extractedTransactions, lastSignature: bids.lastSignature }
 }
 
-export async function getBidHistoryMonolith(auctionId: string, options: GetBidHistoryOptions) {
-  const connection_confirmed = new Connection(TARGET_CLUSTER, "confirmed")
-
+/*
+export async function getBidHistoryMonolith(auctionId: string, transactionOptions: GetTransactionOptions) {
   // Get transactions
-  const all_signatures = await connection_confirmed.getSignaturesForAddress(
+  const all_signatures = (await CONNECTION_CONFIRMED.getSignaturesForAddress(
     PROGRAM_ID,
-    options.toSignaturesForAddressOptions()
-  )
+    transactionOptions.toSignaturesForAddressOptions()
+  )).map((confirmedSignatureInfo) => confirmedSignatureInfo.signature);
 
   let bidHistory = []
-  let lastSignature: string
-  for (let i = 0; i < all_signatures.length; ++i) {
-    const transaction = (await connection_confirmed.getTransaction(all_signatures[i].signature)).transaction
+  const fetched = await CONNECTION_CONFIRMED.getParsedConfirmedTransactions(all_signatures)
 
-    transaction.message.instructions.forEach((instruction) => {
-      const parsedInstruction = parseInstruction(instruction)
-      if (parsedInstruction.instructionCode === 4 && parsedInstruction.auctionId === auctionId) {
-        const bidAmount = new BN(bytesToNumber(parsedInstruction.rest))
-        const bidderPubkey = transaction.message.accountKeys[0]
-        bidHistory.push(new Bid({ amount: bidAmount, bidderPubkey: bidderPubkey }))
-      }
-    })
-
-    lastSignature = all_signatures[i].signature
+  if (transactionOptions.toTimestamp == null) {
+    transactionOptions.toTimestamp = Number.MAX_SAFE_INTEGER;
   }
+
+  fetched.forEach(
+    (parsed: ParsedConfirmedTransaction | null) => {
+      if (parsed !== null) {
+        if (transactionOptions.fromTimestamp <= parsed.blockTime && transactionOptions.toTimestamp >= parsed.blockTime ) {
+          const transaction = parsed.transaction;
+          transaction.message.instructions.forEach((instruction) => {
+            if ("data" in instruction ) {
+              const parsedInstruction = parseInstruction(instruction)
+              if (parsedInstruction.instructionCode === 4 && parsedInstruction.auctionId === auctionId) {
+                const bidAmount = bytesToNumber(parsedInstruction.rest) / LAMPORTS
+                const bidderPubkey = transaction.message.accountKeys[0].pubkey
+                bidHistory.push(new Bid(bidAmount, bidderPubkey))
+              }
+            }else {
+              // This case the instruction is of type ParsedInstruction
+              // Only deploy instructions seem to be of this type
+              console.log("Unhandled case in instruction parsing");
+            }
+          });
+        }
+      }
+  });
+
+  const lastSignature = all_signatures[all_signatures.length - 1];
   return { bidHistory, lastSignature }
 }
+*/
