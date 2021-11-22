@@ -1,7 +1,7 @@
 import { ParsedTransaction, PublicKey, TransactionSignature } from "@solana/web3.js"
 import { CONNECTION_CONFIRMED, LAMPORTS } from "../consts"
 import { bytesToNumber } from "../utils/bytesToNumber"
-import { getAuction } from "./getAuctions"
+import { Auction, getAuction } from "./getAuctions"
 import {
   getAndExtractTransactions,
   GetTransactionOptions,
@@ -54,6 +54,22 @@ export async function getBidHistory(
   })
 
   const bids = await getAndExtractTransactions(new BidExtractor(), new BidFilter(auctionId), getTransactionOptions)
+  return { bidHistory: bids.extractedTransactions, lastSignature: bids.lastSignature }
+}
+
+export async function getBidHistoryWithParsedAuction(
+  auction: Auction,
+  limit?: number,
+  fromSignature?: TransactionSignature
+) {
+  const getTransactionOptions = new GetTransactionOptions({
+    fromTimestamp: auction.startTimestamp / 1000,
+    toTimestamp: auction.endTimestamp / 1000,
+    fromSignature: fromSignature,
+    limit: limit,
+  })
+
+  const bids = await getAndExtractTransactions(new BidExtractor(), new BidFilter(auction.id), getTransactionOptions)
   return { bidHistory: bids.extractedTransactions, lastSignature: bids.lastSignature }
 }
 

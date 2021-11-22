@@ -4,9 +4,8 @@ import { Keypair, PublicKey } from "@solana/web3.js"
 import { performance } from "perf_hooks"
 import { CONNECTION } from "./consts"
 import { getAuction } from "./queries/getAuctions"
-import { getBidHistory } from "./queries/getBidHistory"
+import { getBidHistory, getBidHistoryWithParsedAuction } from "./queries/getBidHistory"
 import { SECRET2 } from "./test"
-
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
@@ -39,7 +38,8 @@ import { SECRET2 } from "./test"
   //await sendTransaction(startAuctionTransaction, auctionOwner);
 
   let auction_id = "asdasd"
-  var auction = await getAuction(CONNECTION, auction_id)
+  //let auction = await getAuction(CONNECTION, auction_id)
+  let auction = await getAuction(CONNECTION, auction_id, 1)
   //console.log(await getAuction(CONNECTION, auction_id, 1))
   //console.log(await getAuction(CONNECTION, auction_id, 2))
   //console.log(await getAuction(CONNECTION, auction_id, 3))
@@ -111,4 +111,10 @@ import { SECRET2 } from "./test"
   let endTime = performance.now()
   console.log("Bid history query fetched in", endTime - startTime, "ms")
   console.log(bidHistory)
+
+  let startTime2 = performance.now()
+  const bidHistory2 = await getBidHistoryWithParsedAuction(auction, 200)
+  let endTime2 = performance.now()
+  console.log("Bid history query fetched in", endTime2 - startTime2, "ms")
+  console.log(bidHistory2)
 })()
