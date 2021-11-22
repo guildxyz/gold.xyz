@@ -3,7 +3,7 @@ import BN from "bn.js"
 import { PROGRAM_ID, TARGET_CLUSTER } from "../consts"
 import { Bid } from "../layouts/state"
 import { bytesToNumber } from "../utils/bytesToNumber"
-import { getTransactions, ParsedInstruction, parseInstruction } from "./getTransactions"
+import { getAndExtractTransactions, ParsedInstruction, parseInstruction } from "./getTransactions"
 
 export class myFilter {
   auctionId: string
@@ -45,12 +45,12 @@ export class BidExtractor {
 }
 
 export async function getBidHistory(auctionId: string, options?: GetBidHistoryOptions) {
-  const bids = await getTransactions(
+  const bids = await getAndExtractTransactions(
     new BidExtractor(),
     new myFilter(auctionId),
     options.toSignaturesForAddressOptions()
   )
-  return bids
+  return { bidHistory: bids.extractedTransactions, lastSignature: bids.lastSignature }
 }
 
 export async function getBidHistoryMonolith(auctionId: string, options?: GetBidHistoryOptions) {
@@ -78,5 +78,5 @@ export async function getBidHistoryMonolith(auctionId: string, options?: GetBidH
 
     lastSignature = all_signatures[i].signature
   }
-  return bidHistory
+  return { bidHistory, lastSignature }
 }

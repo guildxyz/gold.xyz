@@ -38,7 +38,7 @@ export function parseInstruction(fetchedInstruction: CompiledInstruction) {
 }
 
 //
-export async function getTransactions(
+export async function getAndExtractTransactions(
   extractor: InstructionExtractor,
   filter: InstructionFilter = new NoFilter(),
   listOptions: SignaturesForAddressOptions = null
@@ -62,5 +62,5 @@ export async function getTransactions(
 
     lastSignature = all_signatures[i].signature
   }
-  return extractedTransactions
+  return { extractedTransactions, lastSignature }
 }

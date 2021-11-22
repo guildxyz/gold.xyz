@@ -4,9 +4,8 @@ import { Keypair, PublicKey } from "@solana/web3.js"
 import { performance } from "perf_hooks"
 import { CONNECTION } from "./consts"
 import { getAuction } from "./queries/getAuctions"
-import { getBidHistory, getBidHistoryMonolith, GetBidHistoryOptions } from "./queries/getBidHistory"
+import { getBidHistory, GetBidHistoryOptions } from "./queries/getBidHistory"
 import { SECRET2 } from "./test"
-
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
@@ -105,33 +104,34 @@ import { SECRET2 } from "./test"
   //console.log('"Asd" treasury funds:', await getTreasuryFunds(CONNECTION, "asdasd"))
   //console.log('"New" treasury funds:', await getTreasuryFunds(CONNECTION, "new"))
 
+  //
   let options = new GetBidHistoryOptions(30)
-  let avg = 0
-  const iterations = 30
-  for (let i = 0; i < iterations; ++i) {
-    console.log(i)
-    let startTime = performance.now()
-    const bidHistory = await getBidHistoryMonolith(auction_id, options)
-    let endTime = performance.now()
-    avg += endTime - startTime
-  }
-  console.log("Monolith:", avg / iterations)
 
-  avg = 0
-  for (let i = 0; i < iterations; ++i) {
-    console.log(i)
-    let startTime = performance.now()
-    const bidHistory = await getBidHistory(auction_id, options)
-    let endTime = performance.now()
-    avg += endTime - startTime
-  }
+  let startTime = performance.now()
+  const bidHistory = await getBidHistory(auction_id, options)
+  let endTime = performance.now()
+  console.log("Bid history query fetched in", endTime - startTime, "ms")
+  console.log(bidHistory)
 
-  console.log("Modular:", avg / iterations)
+  let options2 = new GetBidHistoryOptions(
+    30,
+    "4uuM4QFGwpF1gPzZMX99QvczBf7QWbgo4oJLs7cznTCDGD4LebAWoLdXMyZyvMuEP71PfooanpR9nHpXmeBGkfVq"
+  )
 
-  /*
-  console.log();
-  for (let i = 0; i < bidHistory.length; ++i){
-    console.log(bidHistory[i]);
-  }
-  */
+  let startTime2 = performance.now()
+  const bidHistory2 = await getBidHistory(auction_id, options2)
+  let endTime2 = performance.now()
+  console.log("Bid history query fetched in", endTime2 - startTime2, "ms")
+  console.log(bidHistory2)
+
+  let options3 = new GetBidHistoryOptions(
+    30,
+    "bGNXwRmptLmWB7LBF1je7E1gKKArDrpG7GuBxaGaniKXe9tqVZjxBMRL7i2664kYsw4ow6PMx5px68gPNhxSRYG"
+  )
+
+  let startTime3 = performance.now()
+  const bidHistory3 = await getBidHistory(auction_id, options3)
+  let endTime3 = performance.now()
+  console.log("Bid history query fetched in", endTime3 - startTime3, "ms")
+  console.log(bidHistory3)
 })()
