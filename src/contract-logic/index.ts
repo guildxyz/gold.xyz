@@ -1,8 +1,11 @@
+global.TextEncoder = require("util").TextEncoder
+
 import { Keypair, PublicKey } from "@solana/web3.js"
+import { performance } from "perf_hooks"
 import { CONNECTION } from "./consts"
 import { getAuction } from "./queries/getAuctions"
-import { getTreasuryFunds } from "./queries/getTreasuryFunds"
-import { SECRET2, SECRET3 } from "./test"
+import { getBidHistory, getBidHistoryWithParsedAuction } from "./queries/getBidHistory"
+import { SECRET2 } from "./test"
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
@@ -13,18 +16,18 @@ import { SECRET2, SECRET3 } from "./test"
   //console.log("getAuctions:", auctionBaseArray)
   // START A NEW AUCTION
   //let newAuction: Auction = {
-  //  id: "timestamp-short",
-  //  name: "Timestamp short",
+  //  id: "bargain-4",
+  //  name: "Bargain 4",
   //  ownerPubkey: auctionOwner.publicKey,
   //  nftData: {
-  //    name: "Timestamps",
-  //    symbol: "TIMEs",
-  //    uri: "https://www.pixelstalk.net/wp-content/uploads/2016/08/Awesome-Sunset-Beaches-Images.jpg",
+  //    name: "bargain4",
+  //    symbol: "BARGAIN4",
+  //    uri: "https://i.kym-cdn.com/entries/icons/original/000/022/916/doctor-strange-benedict-cumberbatch.jpg",
   //  },
   //  bids: [],
-  //  cyclePeriod: 10,
+  //  cyclePeriod: 300,
   //  currentCycle: 1,
-  //  numberOfCycles: 15,
+  //  numberOfCycles: 1,
   //  minBid: 2000,
   //  startTimestamp: 100000000,
   //  endTimestamp: 100010000,
@@ -35,26 +38,29 @@ import { SECRET2, SECRET3 } from "./test"
   //await sendTransaction(startAuctionTransaction, auctionOwner);
 
   let auction_id = "asdasd"
-  var auction = await getAuction(CONNECTION, auction_id)
-  console.log(await getAuction(CONNECTION, auction_id, 1))
-  console.log(await getAuction(CONNECTION, auction_id, 2))
-  console.log(await getAuction(CONNECTION, auction_id, 3))
+  //let auction = await getAuction(CONNECTION, auction_id)
+  let auction = await getAuction(CONNECTION, auction_id, 1)
+  //console.log(await getAuction(CONNECTION, auction_id, 1))
+  //console.log(await getAuction(CONNECTION, auction_id, 2))
+  //console.log(await getAuction(CONNECTION, auction_id, 3))
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)
-  console.log("AUCTION OWNER: ", auctionOwnerPubkey.toString())
-  console.log('getAuction("', auction_id, '")', auction)
+  //console.log("AUCTION OWNER:", auctionOwnerPubkey.toString())
+  //console.log('getAuction("', auction_id, '")', auction)
+
   // AIRDROP TO BIDDER
-  let someUser = Keypair.fromSecretKey(SECRET3)
-  console.log("SOME USER: ", someUser.publicKey.toString())
+  //let someUser = Keypair.fromSecretKey(SECRET3)
+  //console.log("SOME USER: ", someUser.publicKey.toString())
+
   //let bidder = new Keypair()
   //console.log("NEW BIDDER: ", bidder.publicKey.toString())
-  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 5_000_000_000))
+  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(someUser.publicKey, 6_000_000_000))
   //console.log(await CONNECTION.getBalance(someUser.publicKey));
   //// PLACE A BID
   //let placeBidTransaction = await placeBid(
   //  CONNECTION,
   //	auction.id,
   //	auctionOwnerPubkey,
-  //	7.25,
+  //	3,
   //	someUser.publicKey,
   //);
   //console.log("sending bid transaction");
@@ -95,6 +101,20 @@ import { SECRET2, SECRET3 } from "./test"
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("successfully deleted auction")
 
-  console.log('"Asd" treasury funds:', await getTreasuryFunds(CONNECTION, "asdasd"))
-  console.log('"New" treasury funds:', await getTreasuryFunds(CONNECTION, "new"))
+  // GET TREASURY FUNDS
+  //console.log('"Asd" treasury funds:', await getTreasuryFunds(CONNECTION, "asdasd"))
+  //console.log('"New" treasury funds:', await getTreasuryFunds(CONNECTION, "new"))
+
+  // GET BID HISTORY
+  let startTime = performance.now()
+  const bidHistory = await getBidHistory(auction_id, 1, 200)
+  let endTime = performance.now()
+  console.log("Bid history query fetched in", endTime - startTime, "ms")
+  console.log(bidHistory)
+
+  let startTime2 = performance.now()
+  const bidHistory2 = await getBidHistoryWithParsedAuction(auction, 200)
+  let endTime2 = performance.now()
+  console.log("Bid history query fetched in", endTime2 - startTime2, "ms")
+  console.log(bidHistory2)
 })()
