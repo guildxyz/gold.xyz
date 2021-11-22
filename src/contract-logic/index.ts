@@ -105,7 +105,7 @@ import { SECRET2 } from "./test"
   //console.log('"New" treasury funds:', await getTreasuryFunds(CONNECTION, "new"))
 
   //
-  let options = new GetBidHistoryOptions(30)
+  let options = new GetBidHistoryOptions(3)
 
   let startTime = performance.now()
   const bidHistory = await getBidHistory(auction_id, options)
@@ -113,25 +113,11 @@ import { SECRET2 } from "./test"
   console.log("Bid history query fetched in", endTime - startTime, "ms")
   console.log(bidHistory)
 
-  let options2 = new GetBidHistoryOptions(
-    30,
-    "4uuM4QFGwpF1gPzZMX99QvczBf7QWbgo4oJLs7cznTCDGD4LebAWoLdXMyZyvMuEP71PfooanpR9nHpXmeBGkfVq"
-  )
+  let options2 = new GetBidHistoryOptions(3, bidHistory.lastSignature)
 
   let startTime2 = performance.now()
   const bidHistory2 = await getBidHistory(auction_id, options2)
   let endTime2 = performance.now()
   console.log("Bid history query fetched in", endTime2 - startTime2, "ms")
   console.log(bidHistory2)
-
-  let options3 = new GetBidHistoryOptions(
-    30,
-    "bGNXwRmptLmWB7LBF1je7E1gKKArDrpG7GuBxaGaniKXe9tqVZjxBMRL7i2664kYsw4ow6PMx5px68gPNhxSRYG"
-  )
-
-  let startTime3 = performance.now()
-  const bidHistory3 = await getBidHistory(auction_id, options3)
-  let endTime3 = performance.now()
-  console.log("Bid history query fetched in", endTime3 - startTime3, "ms")
-  console.log(bidHistory3)
 })()

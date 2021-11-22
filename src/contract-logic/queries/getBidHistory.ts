@@ -44,7 +44,7 @@ export class BidExtractor {
   }
 }
 
-export async function getBidHistory(auctionId: string, options?: GetBidHistoryOptions) {
+export async function getBidHistory(auctionId: string, options: GetBidHistoryOptions) {
   const bids = await getAndExtractTransactions(
     new BidExtractor(),
     new myFilter(auctionId),
@@ -53,7 +53,7 @@ export async function getBidHistory(auctionId: string, options?: GetBidHistoryOp
   return { bidHistory: bids.extractedTransactions, lastSignature: bids.lastSignature }
 }
 
-export async function getBidHistoryMonolith(auctionId: string, options?: GetBidHistoryOptions) {
+export async function getBidHistoryMonolith(auctionId: string, options: GetBidHistoryOptions) {
   const connection_confirmed = new Connection(TARGET_CLUSTER, "confirmed")
 
   // Get transactions
