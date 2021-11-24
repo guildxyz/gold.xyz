@@ -21,11 +21,20 @@ export async function startAuction(auction: Auction): Promise<Transaction> {
     cyclePeriod: auction.cyclePeriod,
     numberOfCycles: auction.numberOfCycles,
   })
-  const auctionDescription = new Layout.AuctionDescription({
-    description: auction.description.description,
-    socials: auction.description.socials,
-    goalTreasuryAmount: auction.description.goalTreasuryAmount,
-  })
+  let auctionDescription: Layout.AuctionDescription
+  if (auction.description) {
+    auctionDescription = new Layout.AuctionDescription({
+      description: auction.description.description,
+      socials: auction.description.socials,
+      goalTreasuryAmount: auction.description.goalTreasuryAmount,
+    })
+  } else {
+    auctionDescription = new Layout.AuctionDescription({
+      description: "Placeholder description",
+      socials: ["link1.xyz", "link2.com", "etc"],
+      goalTreasuryAmount: null,
+    })
+  }
 
   const initAuctionArgs = new Layout.InitializeAuctionArgs({
     auctionId,
