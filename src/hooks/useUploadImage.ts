@@ -2,16 +2,39 @@ import useSubmit from "./useSubmit"
 import useToast from "./useToast"
 
 type ImageData = {
-  files: FileList
+  name: string
+  symbol: string
+  description: string
+  nfts: Array<{
+    preview: string
+    traits: Array<{ key: string; value: string }>
+    file: File
+    name: string
+  }>
   folder?: string
 }
 
 type ImageResponse = { publicUrl: string }
 
-const uploadImage = ({ files, folder = "" }: ImageData): Promise<ImageResponse> => {
+const uploadImage = ({
+  symbol,
+  description,
+  nfts,
+  folder = "",
+}: ImageData): Promise<ImageResponse> => {
+  const files = nfts.map(({ file }) => file)
+  const nftnames = nfts.map(({ name: nftName }) => nftName)
+  const attributes = nfts.map(({ traits }) =>
+    traits.map(({ key, value }) => ({ trait_type: key, value }))
+  )
+
   const formData = new FormData()
-  formData.append("nftImage", files[0])
+  files.forEach((file, i) => formData.append(i.toString(), file))
   formData.append("folder", folder)
+  formData.append("symbol", symbol)
+  formData.append("description", description)
+  formData.append("nftnames", JSON.stringify(nftnames))
+  formData.append("attributes", JSON.stringify(attributes))
 
   return fetch("/api/upload-image", {
     method: "POST",
