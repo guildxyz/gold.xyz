@@ -29,9 +29,6 @@ const useStartAuction = () => {
 
   const handleStartAuction = async (data_: AuctionFormData) => {
     console.log(data_)
-    return
-
-    console.log(data_)
     const tx = await startAuction(data_)
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
@@ -82,7 +79,7 @@ const useStartAuction = () => {
 
   return {
     onSubmit: (_data) => {
-      // Filtering out invalif traits
+      // Filtering out invalid traits
       _data.nfts.forEach((nft) => {
         nft.traits = nft.traits.filter(
           ({ key, value }) => key.length > 0 && value.length > 0
