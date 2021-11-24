@@ -1,7 +1,6 @@
 import { Keypair, PublicKey } from "@solana/web3.js"
 import { CONNECTION } from "./consts"
 import { getAuction } from "./queries/getAuctions"
-import { getTreasuryFunds } from "./queries/getTreasuryFunds"
 import { SECRET2, SECRET3 } from "./test"
 ;(async () => {
   // INITIALIZE CONTRACT
@@ -15,6 +14,11 @@ import { SECRET2, SECRET3 } from "./test"
   //let newAuction: Auction = {
   //  id: "timestamp-short",
   //  name: "Timestamp short",
+  //  description: {
+  //    description: "Some short description for test.",
+  //    socials: ["https://gold.xyz/" ,"http://somelink.xyz"],
+  //    goalTreasuryAmount: null
+  //  },
   //  ownerPubkey: auctionOwner.publicKey,
   //  nftData: {
   //    name: "Timestamps",
@@ -33,12 +37,13 @@ import { SECRET2, SECRET3 } from "./test"
   //}
   //let startAuctionTransaction = await startAuction(newAuction)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
+  //console.log("successfully initialized auction");
 
-  let auction_id = "asdasd"
+  let auction_id = "timestamp-short"
   var auction = await getAuction(CONNECTION, auction_id)
   console.log(await getAuction(CONNECTION, auction_id, 1))
-  console.log(await getAuction(CONNECTION, auction_id, 2))
-  console.log(await getAuction(CONNECTION, auction_id, 3))
+  //console.log(await getAuction(CONNECTION, auction_id, 2))
+  //console.log(await getAuction(CONNECTION, auction_id, 3))
   let auctionOwnerPubkey = new PublicKey(auction.ownerPubkey)
   console.log("AUCTION OWNER: ", auctionOwnerPubkey.toString())
   console.log('getAuction("', auction_id, '")', auction)
@@ -95,6 +100,6 @@ import { SECRET2, SECRET3 } from "./test"
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("successfully deleted auction")
 
-  console.log('"Asd" treasury funds:', await getTreasuryFunds(CONNECTION, "asdasd"))
-  console.log('"New" treasury funds:', await getTreasuryFunds(CONNECTION, "new"))
+  //console.log('"Asd" treasury funds:', await getTreasuryFunds(CONNECTION, "asdasd"))
+  //console.log('"New" treasury funds:', await getTreasuryFunds(CONNECTION, "new"))
 })()

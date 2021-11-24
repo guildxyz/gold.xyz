@@ -55,6 +55,17 @@ export class CreateMasterEditionArgs {
   }
 }
 
+export class AuctionDescription {
+  description: string
+  socials: string[]
+  goalTreasuryAmount: number | null
+  constructor(args: { description: string; socials: string[]; goalTreasuryAmount: number | null }) {
+    this.description = args.description
+    this.socials = args.socials
+    this.goalTreasuryAmount = args.goalTreasuryAmount
+  }
+}
+
 export class AuctionConfig {
   cyclePeriod: number
   encorePeriod: number
@@ -72,18 +83,21 @@ export class InitializeAuctionArgs {
   instruction: number = 1
   auctionId: Uint8Array // 32 bytes long
   auctionName: Uint8Array // 32 bytes long
+  auctionDescription: AuctionDescription
   auctionConfig: AuctionConfig
   metadataArgs: CreateMetadataArgs
   auctionStartTimestamp: number | null
   constructor(args: {
     auctionId: Uint8Array
     auctionName: Uint8Array
+    auctionDescription: AuctionDescription
     auctionConfig: AuctionConfig
     metadataArgs: CreateMetadataArgs
     auctionStartTimestamp: number | null
   }) {
     this.auctionId = args.auctionId
     this.auctionName = args.auctionName
+    this.auctionDescription = args.auctionDescription
     this.auctionConfig = args.auctionConfig
     this.metadataArgs = args.metadataArgs
     this.auctionStartTimestamp = args.auctionStartTimestamp
@@ -99,9 +113,21 @@ export const INIT_AUCTION_SCHEMA = new Map<any, any>([
         ["instruction", "u8"],
         ["auctionId", [32]],
         ["auctionName", [32]],
+        ["auctionDescription", AuctionDescription],
         ["auctionConfig", AuctionConfig],
         ["metadataArgs", CreateMetadataArgs],
         ["auctionStartTimestamp", { kind: "option", type: "u64" }],
+      ],
+    },
+  ],
+  [
+    AuctionDescription,
+    {
+      kind: "struct",
+      fields: [
+        ["description", "string"],
+        ["socials", ["string"]],
+        ["goalTreasuryAmount", { kind: "option", type: "u64" }],
       ],
     },
   ],

@@ -6,17 +6,23 @@ import * as StateLayout from "../layouts/state"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
 import { getMasterMetadata } from "./masterEdition"
-import { getCurrentCycleState } from "./readCycleState"
-import { readNthCycleState } from "./readCycleState"
+import { getCurrentCycleState, readNthCycleState } from "./readCycleState"
 
 export type Bid = {
   bidderPubkey: PublicKey
   amount: number
 }
 
+export type AuctionDescription = {
+  description: string
+  socials: string[]
+  goalTreasuryAmount?: number
+}
+
 export type AuctionBase = {
   id: string
   name: string
+  description: AuctionDescription
   ownerPubkey: PublicKey
 }
 
@@ -106,10 +112,21 @@ export async function getAuction(connection: Connection, id: string, n: number =
   //let uri = masterMetadata.uri
   //const regex = /([^\/]+\/*\/)([^/]*)(\.(jpeg|png|svg|gif|jpg))/
   //uri = uri.replace(regex, "$1" + currentCycle + "$3")
+
+  let goalTreasuryAmount = null
+  if (auctionRootStateDeserialized.auctionDescription.goalTreasuryAmount != null) {
+    goalTreasuryAmount = auctionRootStateDeserialized.auctionDescription.goalTreasuryAmount.toNumber()
+  }
+
   if (n === 0) {
     return {
       id: id,
       name: parseAuctionId(auctionRootStateDeserialized.auctionName),
+      description: {
+        description: auctionRootStateDeserialized.auctionDescription.description,
+        socials: auctionRootStateDeserialized.auctionDescription.socials,
+        goalTreasuryAmount: goalTreasuryAmount,
+      },
       ownerPubkey: auctionOwnerPubkey,
       nftData: {
         name: masterMetadata.name,
@@ -133,6 +150,11 @@ export async function getAuction(connection: Connection, id: string, n: number =
     return {
       id: id,
       name: parseAuctionId(auctionRootStateDeserialized.auctionName),
+      description: {
+        description: auctionRootStateDeserialized.auctionDescription.description,
+        socials: auctionRootStateDeserialized.auctionDescription.socials,
+        goalTreasuryAmount: goalTreasuryAmount,
+      },
       ownerPubkey: auctionOwnerPubkey,
       nftData: {
         name: masterMetadata.name,

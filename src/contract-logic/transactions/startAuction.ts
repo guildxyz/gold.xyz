@@ -21,13 +21,30 @@ export async function startAuction(auction: Auction): Promise<Transaction> {
     cyclePeriod: auction.cyclePeriod,
     numberOfCycles: auction.numberOfCycles,
   })
+  let auctionDescription: Layout.AuctionDescription
+  if (auction.description) {
+    auctionDescription = new Layout.AuctionDescription({
+      description: auction.description.description,
+      socials: auction.description.socials,
+      goalTreasuryAmount: auction.description.goalTreasuryAmount,
+    })
+  } else {
+    auctionDescription = new Layout.AuctionDescription({
+      description: "Placeholder description",
+      socials: ["link1.xyz", "link2.com", "etc"],
+      goalTreasuryAmount: null,
+    })
+  }
+
   const initAuctionArgs = new Layout.InitializeAuctionArgs({
     auctionId,
     auctionName: padTo32Bytes(auction.name),
+    auctionDescription: auctionDescription,
     auctionConfig: auctionConfig,
     metadataArgs: metadataArgs,
     auctionStartTimestamp: null,
   })
+
   const auctionOwnerPubkey = auction.ownerPubkey
 
   const [auctionPoolPubkey, _b] = await PublicKey.findProgramAddress(
@@ -72,6 +89,7 @@ export async function startAuction(auction: Auction): Promise<Transaction> {
     PROGRAM_ID
   )
 
+  console.log(initAuctionArgs)
   let auctionData = Buffer.from(serialize(Layout.INIT_AUCTION_SCHEMA, initAuctionArgs))
 
   const initializeAuctionInstruction = new TransactionInstruction({
