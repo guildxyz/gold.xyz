@@ -2,7 +2,6 @@ import { Keypair, PublicKey } from "@solana/web3.js"
 import { CONNECTION } from "./consts"
 import { getAuction } from "./queries/getAuctions"
 import { SECRET2, SECRET3 } from "./test"
-
 ;(async () => {
   // INITIALIZE CONTRACT
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
