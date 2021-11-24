@@ -52,6 +52,7 @@ const Page = (): JSX.Element => {
 
   const {
     name = router.query.auction as string,
+    description,
     nftData,
     bids,
     currentCycle = 0,
@@ -65,6 +66,8 @@ const Page = (): JSX.Element => {
   return (
     <Layout
       title={name}
+      description={description?.description}
+      showLayoutDescription
       action={
         publicKey &&
         ownerPubkey &&
