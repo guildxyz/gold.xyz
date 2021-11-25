@@ -1,6 +1,8 @@
 import { FormControl, FormErrorMessage, Grid, HStack, Input } from "@chakra-ui/react"
+import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
+import { AnimatePresence, AnimateSharedLayout } from "framer-motion"
 import { useFieldArray, useFormContext } from "react-hook-form"
 import NFTCard from "./components/NFTCard"
 
@@ -43,10 +45,20 @@ const NFTData = () => {
           gap="6"
           w="full"
         >
-          {fields.map((field, index) => (
-            <NFTCard key={field.id} index={index} removeNft={() => remove(index)} />
-          ))}
-          <UploadFile addNft={append} />
+          <AnimateSharedLayout>
+            <AnimatePresence>
+              {fields.map((field, index) => (
+                <NFTCard
+                  key={field.id}
+                  index={index}
+                  removeNft={() => remove(index)}
+                />
+              ))}
+            </AnimatePresence>
+            <CardMotionWrapper>
+              <UploadFile addNft={append} />
+            </CardMotionWrapper>
+          </AnimateSharedLayout>
         </Grid>
       </Section>
     </>
