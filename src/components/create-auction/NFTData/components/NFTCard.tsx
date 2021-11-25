@@ -17,13 +17,14 @@ import TraitInput from "./TraitInput"
 
 type Props = {
   index: number
+  id: string
+  preview: string
   removeNft: () => void
 }
 
-const NFTCard = ({ index, removeNft }: Props) => {
+const NFTCard = ({ index, id, preview, removeNft }: Props) => {
   const name = useWatch({ name: "nftData.name" })
-  const preview = useWatch({ name: `nfts.${index}.preview` })
-  const { fields, append, remove } = useFieldArray({ name: `nfts.${index}.traits` })
+  const { fields, append, remove } = useFieldArray({ name: `nfts.${id}.traits` })
 
   const addTrait = () =>
     append({
@@ -62,10 +63,10 @@ const NFTCard = ({ index, removeNft }: Props) => {
             </Tooltip>
           </HStack>
           <VStack spacing="2">
-            {fields.map((_field, traitIndex) => (
+            {fields.map((field, traitIndex) => (
               <TraitInput
-                key={traitIndex}
-                nftIndex={index}
+                key={field.id}
+                nftId={id}
                 traitIndex={traitIndex}
                 unselectTrait={() => remove(traitIndex)}
               />

@@ -23,7 +23,7 @@ const CreateGuildPage = (): JSX.Element => {
         name: "",
         symbol: "",
       },
-      nfts: [],
+      nfts: {},
       numberOfCycles: 0,
     },
   })

@@ -3,15 +3,27 @@ import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion"
-import { useFieldArray, useFormContext } from "react-hook-form"
+import { useState } from "react"
+import { useFormContext, useWatch } from "react-hook-form"
 import NFTCard from "./components/NFTCard"
 
 const NFTData = () => {
-  const { fields, append, remove } = useFieldArray({ name: "nfts" })
   const {
     register,
+    setValue,
     formState: { errors },
   } = useFormContext()
+
+  const [previews, setPreviews] = useState<Record<string, string>>({})
+
+  const nfts = useWatch({ name: "nfts" })
+
+  const removeNft = (id: string) => {
+    const newNfts = Object.fromEntries(
+      Object.entries(nfts).filter(([nftId]) => nftId !== id)
+    )
+    setValue("nfts", newNfts)
+  }
 
   return (
     <>
@@ -47,16 +59,18 @@ const NFTData = () => {
         >
           <AnimateSharedLayout>
             <AnimatePresence>
-              {fields.map((field, index) => (
+              {Object.keys(nfts).map((id, index) => (
                 <NFTCard
-                  key={field.id}
+                  preview={previews[id]}
+                  key={id}
+                  id={id}
                   index={index}
-                  removeNft={() => remove(index)}
+                  removeNft={() => removeNft(id)}
                 />
               ))}
             </AnimatePresence>
             <CardMotionWrapper>
-              <UploadFile addNft={append} />
+              <UploadFile setPreviews={setPreviews} />
             </CardMotionWrapper>
           </AnimateSharedLayout>
         </Grid>

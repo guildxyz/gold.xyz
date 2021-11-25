@@ -5,12 +5,13 @@ type ImageData = {
   name: string
   symbol: string
   description: string
-  nfts: Array<{
-    preview: string
-    traits: Array<{ key: string; value: string }>
-    file: File
-    name: string
-  }>
+  nfts: Record<
+    string,
+    {
+      traits: Array<{ key: string; value: string }>
+      file: File
+    }
+  >
   folder?: string
 }
 
@@ -23,8 +24,8 @@ const uploadImage = ({
   name,
   folder = "",
 }: ImageData): Promise<ImageResponse> => {
-  const files = nfts.map(({ file }) => file)
-  const attributes = nfts.map(({ traits }) =>
+  const files = Object.values(nfts).map(({ file }) => file)
+  const attributes = Object.values(nfts).map(({ traits }) =>
     traits.map(({ key, value }) => ({ trait_type: key, value }))
   )
 

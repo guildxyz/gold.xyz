@@ -9,8 +9,8 @@ const NumberOfCycles = () => {
     formState: { errors, dirtyFields },
   } = useFormContext()
 
-  const nfts = useWatch({ name: "nfts", defaultValue: [] })
-  const maxSupply = useMemo(() => nfts?.length ?? 0, [nfts])
+  const nfts = useWatch({ name: "nfts" })
+  const maxSupply = useMemo(() => Object.keys(nfts).length ?? 0, [nfts])
 
   useEffect(() => {
     if (!dirtyFields?.numberOfCycles) setValue("numberOfCycles", maxSupply)

@@ -10,7 +10,7 @@ import { ReactElement } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 
 type Props = {
-  nftIndex: number
+  nftId: string
   traitIndex: number
   unselectTrait: () => void
 }
@@ -20,13 +20,9 @@ const placeholders = [
   ["eg.: time", "eg.: season 1"],
 ]
 
-const TraitInput = ({
-  nftIndex,
-  traitIndex,
-  unselectTrait,
-}: Props): ReactElement => {
+const TraitInput = ({ nftId, traitIndex, unselectTrait }: Props): ReactElement => {
   const { register } = useFormContext()
-  const key = useWatch({ name: `nfts.${nftIndex}.traits.${traitIndex}.key` })
+  const key = useWatch({ name: `nfts.${nftId}.traits.${traitIndex}.key` })
 
   return (
     <InputGroup size="sm">
@@ -34,7 +30,7 @@ const TraitInput = ({
         borderRightWidth={0}
         borderRightRadius={0}
         placeholder={placeholders[traitIndex]?.[0] ?? ""}
-        {...register(`nfts.${nftIndex}.traits.${traitIndex}.key`)}
+        {...register(`nfts.${nftId}.traits.${traitIndex}.key`)}
       />
 
       <Divider orientation="vertical" />
@@ -43,9 +39,9 @@ const TraitInput = ({
         borderLeftWidth={0}
         borderLeftRadius={0}
         placeholder={placeholders[traitIndex]?.[1] ?? ""}
-        {...register(`nfts.${nftIndex}.traits.${traitIndex}.value`)}
+        {...register(`nfts.${nftId}.traits.${traitIndex}.value`)}
       />
-      {key.length <= 0 && (
+      {key?.length <= 0 && (
         <InputRightAddon p="0" overflow="hidden" bg="gray.700">
           <Button
             onClick={unselectTrait}

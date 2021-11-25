@@ -11,12 +11,14 @@ import { useSWRConfig } from "swr"
 const DAY_IN_SECONDS = 86400
 
 type AuctionFormData = Auction & {
-  nfts: Array<{
-    preview: string
-    traits: Array<{ key: string; value: string }>
-    file: File
-    name: string
-  }>
+  nfts: Record<
+    string,
+    {
+      traits: Array<{ key: string; value: string }>
+      file: File
+    }
+  >
+  customCyclePeriod?: number
 }
 
 const useStartAuction = () => {
@@ -78,13 +80,19 @@ const useStartAuction = () => {
   }, [imageResponse])
 
   return {
-    onSubmit: (_data) => {
+    onSubmit: (_data: AuctionFormData) => {
       // Filtering out invalid traits
-      _data.nfts.forEach((nft) => {
-        nft.traits = nft.traits.filter(
-          ({ key, value }) => key.length > 0 && value.length > 0
-        )
-      })
+      _data.nfts = Object.fromEntries(
+        Object.entries(_data.nfts).map(([id, nft]) => [
+          id,
+          {
+            ...nft,
+            traits: nft.traits.filter(
+              ({ key, value }) => key.length > 0 && value.length > 0
+            ),
+          },
+        ])
+      )
 
       setData({
         ..._data,
