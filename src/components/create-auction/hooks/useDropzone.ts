@@ -15,10 +15,7 @@ type Props = {
   maxFileSizeMb?: number
 }
 
-const useDropzone = (
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  { onDrop, maxFileSizeMb = 10 }: Props = {}
-) => {
+const useDropzone = ({ onDrop, maxFileSizeMb = 10 }: Props) => {
   const [previews, setPreviews] = useState<string[]>([])
   const toast = useToast()
 
