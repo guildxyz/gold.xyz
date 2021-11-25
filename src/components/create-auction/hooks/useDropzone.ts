@@ -36,6 +36,7 @@ const useDropzone = (
     },
     accept: "image/*",
     maxSize: maxFileSizeMb * 1024 * 1024,
+    noClick: true,
   })
 
   return { ...dropzone, previews }
