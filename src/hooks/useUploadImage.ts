@@ -20,10 +20,10 @@ const uploadImage = ({
   symbol,
   description,
   nfts,
+  name,
   folder = "",
 }: ImageData): Promise<ImageResponse> => {
   const files = nfts.map(({ file }) => file)
-  const nftnames = nfts.map(({ name: nftName }) => nftName)
   const attributes = nfts.map(({ traits }) =>
     traits.map(({ key, value }) => ({ trait_type: key, value }))
   )
@@ -31,9 +31,9 @@ const uploadImage = ({
   const formData = new FormData()
   files.forEach((file, i) => formData.append(i.toString(), file))
   formData.append("folder", folder)
+  formData.append("name", name)
   formData.append("symbol", symbol)
   formData.append("description", description)
-  formData.append("nftnames", JSON.stringify(nftnames))
   formData.append("attributes", JSON.stringify(attributes))
 
   return fetch("/api/upload-image", {

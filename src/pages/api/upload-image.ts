@@ -41,9 +41,8 @@ handler.post(
     req: NextApiRequest & { files: MulterFile[] },
     res: NextApiResponse<Data>
   ) => {
-    const { symbol, description, folder } = req.body
+    const { symbol, description, folder, name } = req.body
     const attributes = JSON.parse(req.body.attributes)
-    const nftNames = JSON.parse(req.body.nftnames)
 
     const [firstJsonUri] = await Promise.all(
       req.files.map(({ fieldname, originalname, buffer, mimetype }, index) =>
@@ -54,7 +53,7 @@ handler.post(
           uploadImage(
             `${folder}/${fieldname}.json`,
             JSON.stringify({
-              name: nftNames[index],
+              name: `${name} #${index}`,
               symbol,
               description,
               image: uploadedPublicUrl,

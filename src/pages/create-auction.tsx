@@ -17,6 +17,13 @@ const CreateGuildPage = (): JSX.Element => {
   const methods = useForm({
     mode: "all",
     defaultValues: {
+      name: "",
+      asset: "NFT",
+      nftData: {
+        name: "",
+        symbol: "",
+      },
+      nfts: [],
       numberOfCycles: 0,
     },
   })

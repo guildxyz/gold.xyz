@@ -2,7 +2,7 @@ import { FormControl, FormErrorMessage, Grid, HStack, Input } from "@chakra-ui/r
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { useFieldArray, useFormContext } from "react-hook-form"
-import NFTCard from "../AssetSelector/components/NFTData/components/NFTCard"
+import NFTCard from "./components/NFTCard"
 
 const NFTData = () => {
   const { fields, append, remove } = useFieldArray({ name: "nfts" })

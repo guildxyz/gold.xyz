@@ -1,8 +1,8 @@
-import { HStack, IconButton, Image, Input, Tooltip, VStack } from "@chakra-ui/react"
+import { HStack, IconButton, Image, Text, Tooltip, VStack } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { Plus, X } from "phosphor-react"
 import { useEffect } from "react"
-import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
+import { useFieldArray, useWatch } from "react-hook-form"
 import TraitInput from "./TraitInput"
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 }
 
 const NFTCard = ({ index, removeNft }: Props) => {
-  const { register } = useFormContext()
+  const name = useWatch({ name: "nftData.name" })
   const preview = useWatch({ name: `nfts.${index}.preview` })
   const { fields, append, remove } = useFieldArray({ name: `nfts.${index}.traits` })
 
@@ -31,8 +31,10 @@ const NFTCard = ({ index, removeNft }: Props) => {
   return (
     <Card>
       <VStack p={5}>
-        <HStack>
-          <Input placeholder="NFT Name" {...register(`nfts.${index}.name`)} />
+        <HStack width="full" justifyContent="space-between">
+          <Text>
+            {name} #{index}
+          </Text>
           <Tooltip label="Remove NFT">
             <IconButton
               size="sm"
