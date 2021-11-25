@@ -2,13 +2,12 @@ import {
   Box,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   Icon,
   Stack,
   Text,
   useColorMode,
 } from "@chakra-ui/react"
-import { File } from "phosphor-react"
+import { FilePlus } from "phosphor-react"
 import { FieldArrayMethodProps, useFormContext } from "react-hook-form"
 import useDropzone from "./hooks/useDropzone"
 
@@ -37,9 +36,7 @@ const UploadFile = ({ addNft }: Props) => {
   const { colorMode } = useColorMode()
 
   return (
-    <FormControl isInvalid={!!errors.nftImage} h="full" d="flex" flexDir="column">
-      <FormLabel>Upload file(s)</FormLabel>
-
+    <FormControl isInvalid={!!errors.nftImage} d="flex" flexDir="column">
       <input id="dropzone" {...getInputProps()} hidden />
       <Box
         {...getRootProps()}
@@ -47,6 +44,7 @@ const UploadFile = ({ addNft }: Props) => {
         htmlFor="dropzone"
         width="full"
         height="full"
+        minH="320px"
         _hover={{
           textDecor: "none",
           bg: colorMode === "light" ? "gray.100" : "whiteAlpha.50",
@@ -63,7 +61,7 @@ const UploadFile = ({ addNft }: Props) => {
       >
         <Stack direction="row" spacing={5} alignItems="center">
           <Icon
-            as={File}
+            as={FilePlus}
             boxSize={8}
             color={colorMode === "light" ? "gray.300" : "gray.500"}
           />
@@ -71,7 +69,7 @@ const UploadFile = ({ addNft }: Props) => {
             fontWeight="bold"
             color={colorMode === "light" ? "gray.400" : "gray.500"}
           >
-            {isDragActive ? "Drop files" : "Click here or drop here some images"}
+            {isDragActive ? "Drop files here" : "Add image(s)"}
           </Text>
         </Stack>
       </Box>

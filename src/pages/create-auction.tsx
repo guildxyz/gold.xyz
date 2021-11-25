@@ -1,11 +1,11 @@
-import { Divider, Flex, Tag, VStack } from "@chakra-ui/react"
+import { Divider, Flex, VStack } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
 import Section from "components/common/Section"
 import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import AssetSelector from "components/create-auction/AssetSelector"
-import MinBid from "components/create-auction/MinBid"
 import NameAndIcon from "components/create-auction/NameAndIcon"
+import NFTData from "components/create-auction/NFTData"
 import NumberOfCycles from "components/create-auction/NumberOfCycles"
 import RoundSelector from "components/create-auction/RoundSelector"
 import SubmitButton from "components/create-auction/SubmitButton"
@@ -26,15 +26,19 @@ const CreateGuildPage = (): JSX.Element => {
         {connected ? (
           <>
             <VStack spacing={10} alignItems="start">
-              <Section title="Choose a name for your auction">
+              <Section title="Auction name">
                 <NameAndIcon />
               </Section>
 
-              <Section title="Set asset">
+              <Divider />
+
+              <Section title="Asset type">
                 <AssetSelector />
               </Section>
 
-              <Section
+              <NFTData />
+
+              {/* <Section
                 title={
                   <>
                     Set the minimum price
@@ -43,15 +47,15 @@ const CreateGuildPage = (): JSX.Element => {
                 }
               >
                 <MinBid />
-              </Section>
+              </Section> */}
 
               <Divider />
 
-              <Section title="Set round term">
+              <Section title="Round term">
                 <RoundSelector />
               </Section>
 
-              <Section title="Set the number of rounds">
+              <Section title="Number of rounds">
                 <NumberOfCycles />
               </Section>
             </VStack>

@@ -1,4 +1,5 @@
 import { HStack, IconButton, Image, Input, Tooltip, VStack } from "@chakra-ui/react"
+import Card from "components/common/Card"
 import { Plus, X } from "phosphor-react"
 import { useEffect } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
@@ -30,41 +31,43 @@ const NFTCard = ({ index, removeNft }: Props) => {
   }, [])
 
   return (
-    <VStack padding={5}>
-      <HStack>
-        <Input placeholder="NFT Name" {...register(`nfts.${index}.name`)} />
-        <Tooltip label="Remove NFT">
-          <IconButton
-            size="sm"
-            icon={<X />}
-            aria-label="Remove NFT"
-            onClick={removeNft}
-          />
-        </Tooltip>
-      </HStack>
-      <Image
-        src={preview}
-        alt="Placeholder"
-        height="100%"
-        maxHeight="180px"
-        width="auto"
-      />
-      {fields.map((field, traitIndex) => (
-        <TraitInput
-          key={field.id}
-          nftIndex={index}
-          traitIndex={traitIndex}
-          unselectTrait={() => remove(traitIndex)}
+    <Card>
+      <VStack p={5}>
+        <HStack>
+          <Input placeholder="NFT Name" {...register(`nfts.${index}.name`)} />
+          <Tooltip label="Remove NFT">
+            <IconButton
+              size="sm"
+              icon={<X />}
+              aria-label="Remove NFT"
+              onClick={removeNft}
+            />
+          </Tooltip>
+        </HStack>
+        <Image
+          src={preview}
+          alt="Placeholder"
+          height="100%"
+          maxHeight="180px"
+          width="auto"
         />
-      ))}
-      <IconButton
-        onClick={addTrait}
-        width="full"
-        size="xs"
-        icon={<Plus />}
-        aria-label="Add a new trait"
-      />
-    </VStack>
+        {fields.map((field, traitIndex) => (
+          <TraitInput
+            key={field.id}
+            nftIndex={index}
+            traitIndex={traitIndex}
+            unselectTrait={() => remove(traitIndex)}
+          />
+        ))}
+        <IconButton
+          onClick={addTrait}
+          width="full"
+          size="xs"
+          icon={<Plus />}
+          aria-label="Add a new trait"
+        />
+      </VStack>
+    </Card>
   )
 }
 
