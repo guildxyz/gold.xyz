@@ -29,7 +29,6 @@ const useStartAuction = () => {
 
   const handleStartAuction = async (data_: AuctionFormData) => {
     console.log(data_)
-    return
     const tx = await startAuction(data_)
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
