@@ -14,7 +14,12 @@ import { FormProvider, useForm } from "react-hook-form"
 
 const CreateGuildPage = (): JSX.Element => {
   const { connected } = useWallet()
-  const methods = useForm({ mode: "all" })
+  const methods = useForm({
+    mode: "all",
+    defaultValues: {
+      numberOfCycles: 0,
+    },
+  })
 
   useWarnIfUnsavedChanges(
     methods.formState?.isDirty && !methods.formState.isSubmitted
