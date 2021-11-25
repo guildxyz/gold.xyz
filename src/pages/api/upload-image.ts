@@ -57,7 +57,7 @@ handler.post(
               symbol,
               description,
               image: uploadedPublicUrl,
-              attributes,
+              attributes: attributes[index],
               properties: {
                 category: "image",
                 files: [
