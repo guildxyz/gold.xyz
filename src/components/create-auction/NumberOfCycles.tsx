@@ -28,6 +28,8 @@ const NumberOfCycles = () => {
             message: "Can't exceed max NFT supply",
           },
         })}
+        size="lg"
+        maxW="sm"
         placeholder="0"
         type="number"
       />
