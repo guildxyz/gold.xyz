@@ -4,26 +4,22 @@ import {
   NumberInput,
   NumberInputField,
 } from "@chakra-ui/react"
-import { useEffect } from "react"
-import { useFormContext } from "react-hook-form"
+import { useEffect, useMemo } from "react"
+import { useFormContext, useWatch } from "react-hook-form"
 
 const NumberOfCycles = () => {
   const {
     register,
-    watch,
-    trigger,
     setValue,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useFormContext()
 
-  const maxSupply = watch("nftData.maxSupply")
+  const nfts = useWatch({ name: "nfts", defaultValue: [] })
+  const maxSupply = useMemo(() => nfts?.length ?? 0, [nfts])
 
   useEffect(() => {
-    if (maxSupply) {
-      setValue("numberOfCycles", maxSupply)
-      trigger("numberOfCycles")
-    }
-  }, [maxSupply])
+    if (!dirtyFields?.numberOfCycles) setValue("numberOfCycles", maxSupply)
+  }, [maxSupply, setValue, dirtyFields])
 
   return (
     <FormControl isInvalid={errors?.numberOfCycles} isRequired>
@@ -32,6 +28,7 @@ const NumberOfCycles = () => {
         <NumberInputField
           {...register("numberOfCycles", {
             required: "This field is required.",
+            valueAsDate: true,
             max: {
               value: maxSupply,
               message: "Can't exceed max NFT supply",

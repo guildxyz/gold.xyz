@@ -24,12 +24,12 @@ const UploadFile = ({ addNft }: Props) => {
   } = useFormContext()
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (files) =>
-      files.forEach((file) =>
-        addNft({
+      addNft(
+        files.map((file) => ({
           file,
           traits: [],
           preview: URL.createObjectURL(file),
-        })
+        }))
       ),
   })
 

@@ -22,12 +22,10 @@ const NFTCard = ({ index, removeNft }: Props) => {
     })
 
   useEffect(() => {
-    // This condition should only be needed for dev mode
     if (fields.length <= 0) {
       addTrait()
       addTrait()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -51,9 +49,9 @@ const NFTCard = ({ index, removeNft }: Props) => {
           maxHeight="180px"
           width="auto"
         />
-        {fields.map((field, traitIndex) => (
+        {fields.map((_field, traitIndex) => (
           <TraitInput
-            key={field.id}
+            key={traitIndex}
             nftIndex={index}
             traitIndex={traitIndex}
             unselectTrait={() => remove(traitIndex)}

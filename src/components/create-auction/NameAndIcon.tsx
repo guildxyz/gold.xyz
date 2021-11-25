@@ -6,7 +6,7 @@ import slugify from "utils/slugify"
 const NameAndIcon = () => {
   const {
     register,
-    formState: { errors },
+    formState: { errors, dirtyFields },
     setValue,
   } = useFormContext()
 
@@ -31,6 +31,11 @@ const NameAndIcon = () => {
             },
             validate: (input) =>
               input?.trim() !== "404" || 'Name "404" is not allowed.',
+            onBlur: ({ target: { value } }) => {
+              if (!dirtyFields?.nftData?.name) {
+                setValue("nftData.name", value)
+              }
+            },
           })}
         />
       </HStack>
