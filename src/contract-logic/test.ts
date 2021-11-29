@@ -1,6 +1,5 @@
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { initContract } from "./transactions/initializeContract"
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -33,11 +32,10 @@ export async function sendTransaction(transaction: Transaction, signer: Keypair)
   )
 }
 
-export async function init(auctionOwnerPubkey: PublicKey) {
+export async function initializeContract(auctionOwnerPubkey: PublicKey) {
   await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(CONTRACT_ADMIN_KEYPAIR.publicKey, 100000000))
 
   try {
-    await initContract(CONTRACT_ADMIN_KEYPAIR)
     console.log("successfully initialized contract")
   } catch (e) {
     console.log("contract already initialized")
@@ -49,86 +47,3 @@ export async function init(auctionOwnerPubkey: PublicKey) {
   await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(auctionOwnerPubkey, 100000000))
   console.log("successfully initialized payers")
 }
-
-// TODO remove these
-/*
-async function test_all_ix(contractAdmin: Keypair, auctionOwner: Keypair, user1: Keypair, auctionId: Uint8Array){
-	const nft = new MasterNftData();
-	// This is here to enable multiple runs on a single test-validator restart.
-	// TODO remove when possible
-	//while(true){
-	//	try{
-	//		let auctionName = auctionId;
-	//		await startAuction(contractAdmin.publicKey, auctionOwner, nft, auctionId, auctionName, 10, 100);
-	//		console.log("Started auction with id: ");
-	//		console.log(auctionId);
-	//		break;
-	//	} catch (error){
-	//		console.log("Unable to initialize auction with id: ", auctionId);
-	//		auctionId[0] += 1;
-	//	}
-	//}
-	const metadata = await getMasterMetadata(auctionOwner.publicKey, auctionId);
-	console.log("master metadata pubkey:");
-	console.log(metadata);
-
-	const auctions = await getAuctionPool();
-	console.log("auctions:");
-	console.log(auctions);
-
-	const auction = await getAuctionWithId(auctionId);
-	console.log("new auction pubkey:");
-	console.log(new PublicKey(auction));
-	const [auctionRootStatePubkey, _z] = await PublicKey.findProgramAddress([Buffer.from("auction_root_state"), Buffer.from(auctionId), Buffer.from(auctionOwner.publicKey.toBytes())], PROGRAM_ID);
-	console.log(auctionRootStatePubkey);
-	await bid(user1, auctionOwner.publicKey, auctionId, 10000);
-	await bid(user1, auctionOwner.publicKey, auctionId, 100000);	
-	console.log("Bids taken.");
-	await sleep(10000);
-	await closeCycle(auctionOwner.publicKey, user1, auctionId, 1);
-	console.log("Cycle closed.");
-	await claimFunds(contractAdmin, auctionOwner, auctionId, 10000);
-	await claimFunds(contractAdmin, auctionOwner, auctionId, 90000);
-	console.log("Funds claimed.");
-	await freeze(auctionOwner, auctionId);
-	console.log("Auction frozen.");
-	
-	console.log("First auction cycle:, ", await readNthCycleState(auctionOwner.publicKey, auctionId, 1));
-	console.log("Second auction cycle:, ", await readNthCycleState(auctionOwner.publicKey, auctionId, 2));
-	try{
-		console.log("Third auction cycle:, ", await readNthCycleState(auctionOwner.publicKey, auctionId, 3));
-	} catch(e) {
-		console.log("Trying to read non-existant cycle state failed (expected)");
-	}
-}
-
-async function test_nft_mints(contractAdmin: Keypair, auctionOwner: Keypair, user1: Keypair, auctionId: Uint8Array) {
-	
-	const masterMetadata = await getMasterMetadata(auctionOwner.publicKey, auctionId);
-    const masterAccounts = await getMasterAccounts(auctionId, auctionOwner.publicKey);
-
-	for(let i=1; i < 4; ++i){
-		await bid(user1, auctionOwner.publicKey, auctionId, 10000);
-		await sleep(3000);
-		await closeCycle(auctionOwner.publicKey, user1, auctionId, i);
-
-		let childAccounts = await getChildAccounts(auctionId, auctionOwner.publicKey, i);
-		let holdingAccountInfo = await CONNECTION.getTokenAccountsByOwner(user1.publicKey, { mint: childAccounts.mint });
-		let holdingAccount = holdingAccountInfo.value[0].pubkey;
-		assert.deepEqual(holdingAccount, childAccounts.holding);
-		assert.deepEqual(await (await CONNECTION.getTokenAccountBalance(holdingAccount)).value.uiAmount, 1);
-
-		let child_metadata = await getChildMetadata(auctionOwner.publicKey, auctionId, i);
-		assert.deepEqual(child_metadata, masterMetadata);
-
-		let childEditionAccount = await CONNECTION.getAccountInfo(childAccounts.edition);
-		let childEditionData: Buffer = childEditionAccount!.data;
-		let childEdition = deserializeUnchecked(MetadataLayout.EDITION_SCHEMA, MetadataLayout.Edition, childEditionData);
-
-		assert.deepEqual(new PublicKey(childEdition.parent), masterAccounts.edition);
-		assert(childEdition.edition.eq(new BN(i)));
-		
-		console.log("Asserts of cycle", i, "successful");
-	}
-}
-*/
