@@ -1,68 +1,37 @@
-import { Keypair, Transaction } from "@solana/web3.js"
-import {
-  SCHEMA,
-  InitializeAuctionArgs,
-  AuctionConfig,
-  AuctionDescription,
-  CreateMetadataAccountArgs,
-  CreateTokenArgs,
-  CreateTokenArgsNft,
-  Data,
-} from "./schema"
-import { serialize } from "borsh"
-import { initContract, initAuction } from "./wasm-factory"
-import { initializeContract, sendTransaction, SECRET2 } from "./test"
-import { CONTRACT_ADMIN_PUBKEY } from "./consts"
-import { parseInstruction } from "./utils"
+import { Keypair } from "@solana/web3.js"
+import { CONTRACT_ADMIN_KEYPAIR } from "./consts"
+import { SECRET2, SECRET3, sendTransaction } from "./test"
+import { deleteAuction } from "./transactions/deleteAuction"
+import { freeze } from "./transactions/freeze"
 
 ;(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
+  let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
   //await initializeContract(auctionOwner.publicKey);
-  const auctionConfig = new AuctionConfig({
-    cyclePeriod: 5,
-    encorePeriod: 2,
-    numberOfCycles: 10,
-    minimumBidAmount: 1000,
-  })
-  const auctionDescription = new AuctionDescription({
-    description: "cool description",
-    socials: ["this.xyz", "that.com"],
-    goalTreasuryAmount: 100_000_000,
-  })
-  const createMetadataAccountArgs = new CreateMetadataAccountArgs({
-    data: new Data({
-      name: "hello",
-      symbol: "hll",
-      uri: "gold.xyz",
-      sellerFeeBasisPoints: 100,
-      creators: null,
-    }),
-    isMutable: true,
-  })
-  const createTokenArgs = new CreateTokenArgs({
-    createTokenArgsNft: new CreateTokenArgsNft({
-      unnamed: createMetadataAccountArgs,
-    }),
-  })
+
   const auctionId = Uint8Array.from([
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 0, 0,
   ])
-  const initAuctionArgs = new InitializeAuctionArgs({
-    contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
-    auctionOwnerPubkey: auctionOwner.publicKey,
-    auctionId,
-    auctionName: auctionId,
-    auctionConfig,
-    auctionDescription,
-    createTokenArgs,
-    auctionStartTimestamp: null,
-  })
 
-  const initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)
-  const instruction = parseInstruction(initAuction(initAuctionArgsSerialized))
+  //const startAuctionTransaction = await startAuction(auctionOwner.publicKey, auctionId);
+  //await sendTransaction(startAuctionTransaction, auctionOwner);
+  //console.log("Auction created successfully.");
 
-  await sendTransaction(new Transaction().add(instruction), auctionOwner)
-  console.log("hello")
+  // Don't bid until topBidder queries are use in the following instructions
+  //const bidTransaction = await placeBid(auctionOwner.publicKey, auctionId, bidder.publicKey);
+  //await sendTransaction(bidTransaction, bidder);
+  //console.log("Bid placed successfully.");
+
+  const freezeAuctionTransaction = await freeze(auctionOwner.publicKey, auctionId)
+  await sendTransaction(freezeAuctionTransaction, auctionOwner)
+  console.log("Auction frozen successfully.")
+
+  const deleteAuctionTransaction = await deleteAuction(
+    auctionOwner.publicKey,
+    auctionId
+  )
+  await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
+  console.log("Auction deleted successfully.")
 })()
