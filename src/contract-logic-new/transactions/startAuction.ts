@@ -9,10 +9,10 @@ import {
   CreateTokenArgsNft,
   Data,
   InitializeAuctionArgs,
-  SCHEMA,
+  SCHEMA
 } from "../schema"
 import { parseInstruction } from "../utils"
-import { initAuction } from "../wasm-factory/instructions"
+import { initAuctionWasm } from "../wasm-factory/instructions"
 
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
@@ -59,7 +59,7 @@ export async function startAuction(
   })
 
   const initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)
-  const instruction = parseInstruction(initAuction(initAuctionArgsSerialized))
+  const instruction = parseInstruction(initAuctionWasm(initAuctionArgsSerialized))
 
   return new Transaction().add(instruction)
 }

@@ -1,9 +1,9 @@
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { initContract } from "./wasm-factory"
-import { SCHEMA, InitializeContractArgs } from "./schema"
+import { InitializeContractArgs, SCHEMA } from "./schema"
 import { parseInstruction } from "./utils"
+import { initContractWasm } from "./wasm-factory"
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -48,7 +48,7 @@ export async function initializeContract(auctionOwnerPubkey: PublicKey) {
       contractAdminPubkey: CONTRACT_ADMIN_KEYPAIR.publicKey,
     })
     const instruction = parseInstruction(
-      await initContract(serialize(SCHEMA, initContractArgs))
+      await initContractWasm(serialize(SCHEMA, initContractArgs))
     )
     console.log(instruction)
     console.log(new PublicKey(instruction.keys[0].pubkey).toString())

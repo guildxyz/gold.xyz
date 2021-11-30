@@ -1,39 +1,39 @@
-import { Keypair, PublicKey } from "@solana/web3.js"
+import { Keypair } from "@solana/web3.js"
 import { CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { SECRET2, SECRET3, sendTransaction } from "./test"
 import { deleteAuction } from "./transactions/deleteAuction"
-import { freeze } from "./transactions/freeze"
-import { getAuctionPoolPubkey } from "./wasm-factory"
+import { freezeAuction } from "./transactions/freezeAuction"
+import { placeBid } from "./transactions/placeBid"
+import { startAuction } from "./transactions/startAuction"
 
-;(async () => {
+(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
   //await initializeContract(auctionOwner.publicKey);
 
   const auctionId = Uint8Array.from([
-    5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 0, 0,
   ])
 
-  //const startAuctionTransaction = await startAuction(auctionOwner.publicKey, auctionId);
-  //await sendTransaction(startAuctionTransaction, auctionOwner);
-  //console.log("Auction created successfully.");
 
-  // Don't bid until topBidder queries are using the following instructions
-  //const bidTransaction = await placeBid(auctionOwner.publicKey, auctionId, bidder.publicKey);
-  //await sendTransaction(bidTransaction, bidder);
-  //console.log("Bid placed successfully.");
+  const startAuctionTransaction = await startAuction(auctionOwner.publicKey, auctionId);
+  await sendTransaction(startAuctionTransaction, auctionOwner);
+  console.log("Auction created successfully.");
 
-  //const freezeAuctionTransaction = await freeze(auctionOwner.publicKey, auctionId)
-  //await sendTransaction(freezeAuctionTransaction, auctionOwner)
-  //console.log("Auction frozen successfully.")
+  const bidTransaction = await placeBid(auctionOwner.publicKey, auctionId, bidder.publicKey, 1000);
+  await sendTransaction(bidTransaction, bidder);
+  console.log("Bid placed successfully.");
 
-  //const deleteAuctionTransaction = await deleteAuction(
-  //  auctionOwner.publicKey,
-  //  auctionId
-  //)
-  //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
-  //console.log("Auction deleted successfully.")
-  console.log(new PublicKey(getAuctionPoolPubkey(CONTRACT_ADMIN_KEYPAIR.publicKey.toBytes())).toString())
+  const freezeAuctionTransaction = await freezeAuction(auctionOwner.publicKey, auctionId)
+  await sendTransaction(freezeAuctionTransaction, auctionOwner)
+  console.log("Auction frozen successfully.")
+
+  const deleteAuctionTransaction = await deleteAuction(
+    auctionOwner.publicKey,
+    auctionId
+  )
+  await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
+  console.log("Auction deleted successfully.")
 })()
