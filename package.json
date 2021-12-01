@@ -30,7 +30,7 @@
     "@xstate/react": "^1.6.1",
     "bignumber.js": "^9.0.1",
     "bn.js": "^5.2.0",
-    "borsh": "^0.6.0",
+    "borsh": "file:/home/gyozosz/git/local-borsh-js/borsh-js",
     "bs58": "^4.0.1",
     "focus-visible": "^5.2.0",
     "framer-motion": "^4.1.17",

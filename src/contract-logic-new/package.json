@@ -13,6 +13,6 @@
   "dependencies": {
     "@solana/web3.js": "^1.30.2",
     "bn": "^1.0.5",
-    "borsh": "^0.6.0"
+    "borsh": "file:/home/gyozosz/git/local-borsh-js/borsh-js"
   }
 }

@@ -1,17 +1,21 @@
 import { PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { CONNECTION, CONTRACT_ADMIN_PUBKEY } from "../consts"
-import { getCurrentCycleStatePubkeyFromId } from "../queries/readCycleState"
+import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { ClaimFundsArgs, SCHEMA } from "../schema"
 import { parseInstruction } from "../utils"
-import * as wasmFactory from "../wasm-factory/instructions"
+import { claimFundsWasm } from "../wasm-factory/instructions"
 
 export async function claimFunds(
   auctionOwnerPubkey: PublicKey,
   auctionId: Uint8Array,
-  amount: number,
+  amount: number
 ) {
-  const currentCycleNumber = await getCurrentCycleStatePubkeyFromId(CONNECTION, auctionId, auctionOwnerPubkey);
+  const currentCycleNumber = await getCurrentCycleNumberFromId(
+    CONNECTION,
+    auctionId,
+    auctionOwnerPubkey
+  )
 
   const claimFundsArgs = new ClaimFundsArgs({
     contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
@@ -22,7 +26,7 @@ export async function claimFunds(
   })
 
   const claimFundsInstruction = parseInstruction(
-    wasmFactory.claimFunds(serialize(SCHEMA, claimFundsArgs))
+    claimFundsWasm(serialize(SCHEMA, claimFundsArgs))
   )
 
   return new Transaction().add(claimFundsInstruction)

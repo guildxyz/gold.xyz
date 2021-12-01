@@ -1,8 +1,8 @@
 import { PublicKey } from "@solana/web3.js"
 import BN from "bn.js"
+import { Enum } from "./extensions/enum"
 import { borshPublicKey } from "./extensions/publicKey"
 import { Struct } from "./extensions/struct"
-import { Enum } from "./extensions/enum"
 
 borshPublicKey()
 
@@ -91,7 +91,7 @@ export class AuctionCycleState extends Struct {
 }
 
 export class AuctionPool extends Struct {
-  pool: Map<[32], PublicKey>
+  pool: Map<Uint8Array, PublicKey>
 }
 
 export class ContractBankState extends Struct {

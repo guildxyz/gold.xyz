@@ -50,8 +50,6 @@ export async function initializeContract(auctionOwnerPubkey: PublicKey) {
     const instruction = parseInstruction(
       await initContractWasm(serialize(SCHEMA, initContractArgs))
     )
-    console.log(instruction)
-    console.log(new PublicKey(instruction.keys[0].pubkey).toString())
     const transaction = new Transaction().add(instruction)
     await sendTransaction(transaction, CONTRACT_ADMIN_KEYPAIR)
     console.log("successfully initialized contract")

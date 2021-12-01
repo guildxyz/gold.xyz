@@ -5,21 +5,32 @@ import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { PlaceBidArgs, SCHEMA } from "../schema"
 import { parseInstruction } from "../utils"
+import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { placeBidWasm } from "../wasm-factory/instructions"
 
 export async function placeBid(
   auctionOwnerPubkey: PublicKey,
-  auctionId: Uint8Array,
+  auctionId: string,
   bidder: PublicKey,
   amount: number
 ) {
-  const topBidder = await getTopBidder(CONNECTION, auctionId, auctionOwnerPubkey);
-  const currentCycleNumber = await getCurrentCycleNumberFromId(CONNECTION, auctionId, auctionOwnerPubkey);
+  const auctionIdArray = padTo32Bytes(auctionId)
+  console.log(auctionIdArray)
+  const topBidder = await getTopBidder(
+    CONNECTION,
+    auctionIdArray,
+    auctionOwnerPubkey
+  )
+  const currentCycleNumber = await getCurrentCycleNumberFromId(
+    CONNECTION,
+    auctionIdArray,
+    auctionOwnerPubkey
+  )
 
   const placeBidArgs = new PlaceBidArgs({
     userMainPubkey: bidder,
     auctionOwnerPubkey: auctionOwnerPubkey,
-    auctionId: auctionId,
+    auctionId: auctionIdArray,
     cycleNumber: currentCycleNumber,
     topBidderPubkey: topBidder,
     amount: amount,
