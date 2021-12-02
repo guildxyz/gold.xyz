@@ -1,6 +1,5 @@
-import { PublicKey, Transaction } from "@solana/web3.js"
+import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONNECTION } from "../consts"
 import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { FreezeAuctionArgs, SCHEMA } from "../schema"
@@ -9,18 +8,19 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { freezeAuctionWasm } from "../wasm-factory/instructions"
 
 export async function freezeAuction(
+  connection: Connection,
   auctionId: string,
-  auctionOwnerPubkey: PublicKey,
+  auctionOwnerPubkey: PublicKey
 ) {
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const topBidder = await getTopBidder(
-    CONNECTION,
+    connection,
     auctionIdArray,
     auctionOwnerPubkey
   )
   const currentCycleNumber = await getCurrentCycleNumberFromId(
-    CONNECTION,
+    connection,
     auctionIdArray,
     auctionOwnerPubkey
   )

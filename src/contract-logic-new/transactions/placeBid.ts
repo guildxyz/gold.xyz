@@ -1,6 +1,5 @@
-import { PublicKey, Transaction } from "@solana/web3.js"
+import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONNECTION } from "../consts"
 import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { PlaceBidArgs, SCHEMA } from "../schema"
@@ -9,6 +8,7 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { placeBidWasm } from "../wasm-factory/instructions"
 
 export async function placeBid(
+  connection: Connection,
   auctionId: string,
   auctionOwnerPubkey: PublicKey,
   bidder: PublicKey,
@@ -17,12 +17,12 @@ export async function placeBid(
   const auctionIdArray = padTo32Bytes(auctionId)
   console.log(auctionIdArray)
   const topBidder = await getTopBidder(
-    CONNECTION,
+    connection,
     auctionIdArray,
     auctionOwnerPubkey
   )
   const currentCycleNumber = await getCurrentCycleNumberFromId(
-    CONNECTION,
+    connection,
     auctionIdArray,
     auctionOwnerPubkey
   )

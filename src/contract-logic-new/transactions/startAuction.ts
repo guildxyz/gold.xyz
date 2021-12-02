@@ -11,7 +11,7 @@ import {
   CreateTokenArgsToken,
   Data,
   InitializeAuctionArgs,
-  SCHEMA
+  SCHEMA,
 } from "../schema"
 import { parseInstruction } from "../utils"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
@@ -19,7 +19,9 @@ import { initAuctionWasm } from "../wasm-factory/instructions"
 
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
-export async function startAuction(frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig) {
+export async function startAuction(
+  frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig
+) {
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,
