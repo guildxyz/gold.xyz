@@ -1,6 +1,6 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import useAuction from "components/[auction]/hooks/useAuction"
-import { placeBid } from "contract-logic/transactions/bid"
+import { placeBid } from "contract-logic/transactions/placeBid"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
@@ -26,8 +26,8 @@ const usePlaceBid = (setValue) => {
       connection,
       auction.id,
       auction.ownerPubkey,
-      amount_,
-      publicKey
+      publicKey,
+      amount_
     )
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {

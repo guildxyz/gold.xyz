@@ -15,7 +15,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { freeze } from "contract-logic/transactions/freeze"
+import { freezeAuction } from "contract-logic/transactions/freezeAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { Gear, Snowflake } from "phosphor-react"
@@ -31,7 +31,7 @@ const SettingsMenu = () => {
   const alertCancelRef = useRef()
 
   const handleFreezeAuction = async () => {
-    const tx = await freeze(connection, auction?.ownerPubkey, auction?.id)
+    const tx = await freezeAuction(connection, auction?.id, auction?.ownerPubkey)
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
