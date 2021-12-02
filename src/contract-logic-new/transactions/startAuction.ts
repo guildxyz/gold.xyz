@@ -1,7 +1,7 @@
-import { PublicKey, Transaction } from "@solana/web3.js"
+import { Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY } from "../consts"
-import { Auction } from "../queries/getAuctions"
+import * as FrontendAuctionTypes from "../queries/getAuctions"
 import {
   AuctionConfig,
   AuctionDescription,
@@ -11,7 +11,7 @@ import {
   CreateTokenArgsToken,
   Data,
   InitializeAuctionArgs,
-  SCHEMA,
+  SCHEMA
 } from "../schema"
 import { parseInstruction } from "../utils"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
@@ -19,27 +19,29 @@ import { initAuctionWasm } from "../wasm-factory/instructions"
 
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
-export async function startAuction(auction: Auction, auctionOwnerPubkey: PublicKey) {
+export async function startAuction(frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig) {
   const auctionConfig = new AuctionConfig({
-    cyclePeriod: auction.cyclePeriod,
+    cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,
-    numberOfCycles: auction.numberOfCycles,
-    minimumBidAmount: auction.minBid,
+    numberOfCycles: frontendAuctionConfig.numberOfCycles,
+    minimumBidAmount: frontendAuctionConfig.minBid,
   })
   const auctionDescription = new AuctionDescription({
-    description: auction.description,
-    socials: auction.socials,
-    goalTreasuryAmount: auction.goalTreasuryAmount,
+    description: frontendAuctionConfig.description,
+    socials: frontendAuctionConfig.socials,
+    goalTreasuryAmount: frontendAuctionConfig.goalTreasuryAmount,
   })
   let createTokenArgs: CreateTokenArgs
 
-  if (auction.asset.type === "NFT") {
+  if (frontendAuctionConfig.asset.type === "NFT") {
     const createMetadataAccountArgs = new CreateMetadataAccountArgs({
       data: new Data({
-        name: auction.asset.name,
-        symbol: auction.asset.symbol,
-        uri: auction.asset.uri,
+        name: frontendAuctionConfig.asset.name,
+        symbol: frontendAuctionConfig.asset.symbol,
+        uri: frontendAuctionConfig.asset.uri,
+        // TODO: set this from parameter maybe?
         sellerFeeBasisPoints: 100,
+        // TODO: put the auctionOwnerPubkey here?
         creators: null,
       }),
       isMutable: true,
@@ -49,24 +51,24 @@ export async function startAuction(auction: Auction, auctionOwnerPubkey: PublicK
         unnamed: createMetadataAccountArgs,
       }),
     })
-  } else if (auction.asset.type === "TOKEN") {
+  } else if (frontendAuctionConfig.asset.type === "TOKEN") {
     createTokenArgs = new CreateTokenArgs({
       createTokenArgsToken: new CreateTokenArgsToken({
-        decimals: auction.asset.decimals,
-        perCycleAmount: auction.asset.perCycleAmount,
+        decimals: frontendAuctionConfig.asset.decimals,
+        perCycleAmount: frontendAuctionConfig.asset.perCycleAmount,
       }),
     })
   }
 
   const initAuctionArgs = new InitializeAuctionArgs({
     contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
-    auctionOwnerPubkey: auctionOwnerPubkey,
-    auctionId: padTo32Bytes(auction.id),
-    auctionName: padTo32Bytes(auction.id),
+    auctionOwnerPubkey: frontendAuctionConfig.ownerPubkey,
+    auctionId: padTo32Bytes(frontendAuctionConfig.id),
+    auctionName: padTo32Bytes(frontendAuctionConfig.id),
     auctionConfig,
     auctionDescription,
     createTokenArgs,
-    auctionStartTimestamp: null,
+    auctionStartTimestamp: frontendAuctionConfig.startTimestamp,
   })
 
   const initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)

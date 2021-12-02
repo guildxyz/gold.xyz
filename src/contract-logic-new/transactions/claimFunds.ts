@@ -4,23 +4,26 @@ import { CONNECTION, CONTRACT_ADMIN_PUBKEY } from "../consts"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { ClaimFundsArgs, SCHEMA } from "../schema"
 import { parseInstruction } from "../utils"
+import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { claimFundsWasm } from "../wasm-factory/instructions"
 
 export async function claimFunds(
+  auctionId: string,
   auctionOwnerPubkey: PublicKey,
-  auctionId: Uint8Array,
   amount: number
 ) {
+  const auctionIdArray = padTo32Bytes(auctionId)
+
   const currentCycleNumber = await getCurrentCycleNumberFromId(
     CONNECTION,
-    auctionId,
+    auctionIdArray,
     auctionOwnerPubkey
   )
 
   const claimFundsArgs = new ClaimFundsArgs({
     contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
     auctionOwnerPubkey: auctionOwnerPubkey,
-    auctionId: auctionId,
+    auctionId: auctionIdArray,
     cycleNumber: currentCycleNumber,
     amount: amount,
   })

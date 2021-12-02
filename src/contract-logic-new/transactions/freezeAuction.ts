@@ -9,8 +9,8 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { freezeAuctionWasm } from "../wasm-factory/instructions"
 
 export async function freezeAuction(
+  auctionId: string,
   auctionOwnerPubkey: PublicKey,
-  auctionId: string
 ) {
   const auctionIdArray = padTo32Bytes(auctionId)
 

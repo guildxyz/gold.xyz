@@ -1,5 +1,5 @@
-import { Connection, PublicKey } from "@solana/web3.js";
-import { getCurrentCycleState, getRootStatePubkey } from "./readCycleState";
+import { Connection, PublicKey } from "@solana/web3.js"
+import { getCurrentCycleState, getRootStatePubkey } from "./readCycleState"
 
 /*
 export async function getTopBidder(connection: Connection, auctionCycleStatePubkey: PublicKey) {
@@ -14,10 +14,14 @@ export async function getTopBidder(connection: Connection, auctionCycleStatePubk
 }
 */
 
-export async function getTopBidder(connection: Connection, auctionId: Uint8Array, auctionOwnerPubkey: PublicKey) {
-  const auctionRootPubkey = await getRootStatePubkey(auctionId, auctionOwnerPubkey);
-  const auctionCycleState = await getCurrentCycleState(connection, auctionRootPubkey);
-  
+export async function getTopBidder(
+  connection: Connection,
+  auctionId: Uint8Array,
+  auctionOwnerPubkey: PublicKey
+) {
+  const auctionRootPubkey = await getRootStatePubkey(auctionId, auctionOwnerPubkey)
+  const auctionCycleState = await getCurrentCycleState(connection, auctionRootPubkey)
+
   let history_len = auctionCycleState.bidHistory.length
   if (history_len == 0) {
     return PublicKey.default

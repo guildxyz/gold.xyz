@@ -9,8 +9,8 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { placeBidWasm } from "../wasm-factory/instructions"
 
 export async function placeBid(
-  auctionOwnerPubkey: PublicKey,
   auctionId: string,
+  auctionOwnerPubkey: PublicKey,
   bidder: PublicKey,
   amount: number
 ) {

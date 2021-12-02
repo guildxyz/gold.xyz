@@ -1,37 +1,20 @@
-import { Keypair } from "@solana/web3.js"
-import { CONNECTION } from "./consts"
-import { Auction, getAuction, getAuctions } from "./queries/getAuctions"
-import { SECRET2, SECRET3 } from "./test"
-
-;(async () => {
+import { Keypair } from "@solana/web3.js";
+import { CONNECTION } from "./consts";
+import { AuctionConfig, getAuction, getAuctions } from "./queries/getAuctions";
+import { SECRET2, SECRET3, sendTransaction } from "./test";
+import { startAuction } from "./transactions/startAuction";
+(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
   //await initializeContract(auctionOwner.publicKey);
 
-  /*
-  export type Auction = AuctionBase & {
-    description: string
-    socials: string[]
-    asset: NFTData | TokenData
-    bids: Bid[]
-    cyclePeriod: number
-    currentCycle: number
-    numberOfCycles: number
-    minBid: number
-    startTimestamp: number
-    endTimestamp: number
-    isActive: boolean
-    isFrozen: boolean
-  }
-  */
-  const auction: Auction = {
-    id: "something",
-    name: "Something",
-    description: "Some cool description of the auction",
-    socials: ["this.com", "that.xyz"],
+  const auction: AuctionConfig = {
+    id: "bot-test",
+    name: "Bot test",
+    description: "Let's see it it works",
+    socials: ["gold.xyz"],
     goalTreasuryAmount: 100000000,
-    currentTreasuryAmount: 0,
     ownerPubkey: auctionOwner.publicKey,
     asset: {
       type: "NFT",
@@ -40,44 +23,38 @@ import { SECRET2, SECRET3 } from "./test"
       uri: "test.json",
       isRepeated: false,
     },
-    currentCycle: 1,
-    bids: [],
-    cyclePeriod: 300,
-    numberOfCycles: 5,
+    cyclePeriod: 60,
+    numberOfCycles: 10,
     minBid: 10000,
-    startTimestamp: 0,
-    endTimestamp: 0,
-    isActive: true,
-    isFrozen: false,
+    startTimestamp: null,
   }
 
   // Create Auction
-  //const startAuctionTransaction = await startAuction(auction, auctionOwner.publicKey);
-  //await sendTransaction(startAuctionTransaction, auctionOwner);
-  //console.log("Auction created successfully.");
+  const startAuctionTransaction = await startAuction(auction);
+  await sendTransaction(startAuctionTransaction, auctionOwner);
+  console.log("Auction created successfully.");
 
   // Query auction
   console.log(await getAuctions(CONNECTION))
   console.log("auction data:", await getAuction(CONNECTION, auction.id))
 
   // Bid on an auction
-  //const bidTransaction = await placeBid(auctionOwner.publicKey, auction.id, bidder.publicKey, 100000);
+  //const bidTransaction = await placeBid(auction.id, auctionOwner.publicKey, bidder.publicKey, 100000);
   //await sendTransaction(bidTransaction, bidder);
   //console.log("Bid placed successfully.");
 
   // Freeze auction
-  //const freezeAuctionTransaction = await freezeAuction(auctionOwner.publicKey, auction.id)
+  //const freezeAuctionTransaction = await freezeAuction(auction.id, auctionOwner.publicKey)
   //await sendTransaction(freezeAuctionTransaction, auctionOwner)
   //console.log("Auction frozen successfully.")
 
   // Delete auction
   //const deleteAuctionTransaction = await deleteAuction(
-  //  auctionOwner.publicKey,
-  //  auction.id
+  //  auction.id,
+  //  auctionOwner.publicKey
   //)
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("Auction deleted successfully.")
 
-  //console.log( await getAuctions(CONNECTION) );
-  console.log("start")
+  console.log( await getAuctions(CONNECTION) );
 })()
