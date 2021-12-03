@@ -5,7 +5,7 @@ import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { ClaimFundsArgs, SCHEMA } from "../schema"
 import { parseInstruction } from "../utils"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
-import { claimFundsWasm } from "../wasm-factory/instructions"
+//import { claimFundsWasm } from "../wasm-factory/instructions"
 
 export async function claimFunds(
   connection: Connection,
@@ -13,6 +13,7 @@ export async function claimFunds(
   auctionOwnerPubkey: PublicKey,
   amount: number
 ) {
+  const { claimFundsWasm } = async import("../../../rust/zgsol-fund-client/pkg");
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(

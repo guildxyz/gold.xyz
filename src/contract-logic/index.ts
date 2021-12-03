@@ -37,7 +37,7 @@ import { SECRET2, SECRET3 } from "./test"
 
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  console.log("auction data:", await getAuction(CONNECTION, "bot-test-long"))
+  //console.log("auction data:", await getAuction(CONNECTION, "bot-test-long"))
 
   // Bid on an auction
   //const bidTransaction = await placeBid(CONNECTION, auction.id, auctionOwner.publicKey, bidder.publicKey, 100000);

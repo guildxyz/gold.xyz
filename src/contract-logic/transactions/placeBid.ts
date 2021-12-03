@@ -5,7 +5,7 @@ import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { PlaceBidArgs, SCHEMA } from "../schema"
 import { parseInstruction } from "../utils"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
-import { placeBidWasm } from "../wasm-factory/instructions"
+//import { placeBidWasm } from "../wasm-factory/instructions"
 
 export async function placeBid(
   connection: Connection,
@@ -14,6 +14,7 @@ export async function placeBid(
   bidder: PublicKey,
   amount: number
 ) {
+  const { placeBidWasm } = async import("../../../rust/zgsol-fund-client/pkg");
   const auctionIdArray = padTo32Bytes(auctionId)
   console.log(auctionIdArray)
   const topBidder = await getTopBidder(
