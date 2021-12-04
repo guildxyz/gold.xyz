@@ -6,33 +6,40 @@ const withTM = require("next-transpile-modules")([
   "@solana/wallet-adapter-phantom",
 ])
 
-//const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
-//const SSRPlugin =
-//  require('next/dist/build/webpack/plugins/nextjs-ssr-import').default;
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
+const SSRPlugin =
+  require('next/dist/build/webpack/plugins/nextjs-ssr-import').default;
 const { dirname, relative, resolve, join } = require('path');
 
 /** @type {import("next").NextConfig} */
 module.exports = withTM({
   webpack(config) {
     // From https://github.com/rustwasm/wasm-pack/issues/835#issuecomment-772591665
-    //config.experiments = {
-    //  syncWebAssembly: true,
-    //  topLevelAwait: true,
-    //};
+    config.experiments = {
+      syncWebAssembly: true,
+      topLevelAwait: true,
+    };
 
-    //config.module.rules.push({
-    //  test: /\.wasm$/,
-    //  type: 'webassembly/sync',
-    //});
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'webassembly/sync',
+    });
+
+    config.plugins.push(
+        new WasmPackPlugin({
+            crateDirectory: resolve("./rust/zgsol-fund-client"),
+            args: "--log-level warn",
+        })
+    );
 
     // From https://github.com/vercel/next.js/issues/22581#issuecomment-864476385
-    //const ssrPlugin = config.plugins.find(
-    //  (plugin) => plugin instanceof SSRPlugin
-    //);
+    const ssrPlugin = config.plugins.find(
+      (plugin) => plugin instanceof SSRPlugin
+    );
 
-    //if (ssrPlugin) {
-    //  patchSsrPlugin(ssrPlugin);
-    //}
+    if (ssrPlugin) {
+      patchSsrPlugin(ssrPlugin);
+    }
 
     return config;
   },

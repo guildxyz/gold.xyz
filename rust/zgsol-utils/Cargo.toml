@@ -1,0 +1,14 @@
+[package]
+name = "zgsol-utils"
+version = "0.1.0"
+edition = "2018"
+
+[features]
+derive = []
+
+[dependencies]
+borsh = "0.9.0"
+borsh-derive = "0.9.0"
+solana-program = { git = "https://github.com/zgendao/solana.git" }
+thiserror = "1.0"
+zgsol-utils-derive = { path = "./zgsol-utils-derive" }
