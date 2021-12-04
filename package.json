@@ -31,7 +31,7 @@
     "@xstate/react": "^1.6.1",
     "bignumber.js": "^9.0.1",
     "bn.js": "^5.2.0",
-    "borsh": "https://github.com/zgendao/borsh-js",
+    "borsh": "^0.7.0",
     "bs58": "^4.0.1",
     "focus-visible": "^5.2.0",
     "framer-motion": "^4.1.17",

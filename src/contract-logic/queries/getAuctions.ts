@@ -76,16 +76,17 @@ export async function getAuctions(
       AuctionPool,
       auctionPoolData
   );
-  //const pubkey = new PublicKey("3Xc2FDqN2sRFJcEDpVd8sR92kKjRWAWFtxDR5FU3Rx3g");
-  //const info = await connection.getAccountInfo(pubkey)
-  //const data: Buffer = info!.data
-  //console.log(data);
-  //const state = deserializeUnchecked(
-  //    SCHEMA,
-  //    AuctionRootState,
-  //    auctionPoolData
-  //);
-  //console.log(state);
+
+  const pubkey = new PublicKey("3Xc2FDqN2sRFJcEDpVd8sR92kKjRWAWFtxDR5FU3Rx3g");
+  const info = await connection.getAccountInfo(pubkey)
+  const data: Buffer = info!.data
+  console.log(data);
+  const state = deserializeUnchecked(
+      SCHEMA,
+      AuctionRootState,
+      auctionPoolData
+  );
+  console.log(state);
 
 
   let auctionBaseArray = []
