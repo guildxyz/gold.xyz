@@ -27,7 +27,7 @@ module.exports = withTM({
 
     config.plugins.push(
         new WasmPackPlugin({
-            crateDirectory: resolve("./rust/zgsol-fund-client"),
+            crateDirectory: resolve("./zgen-solana/zgsol-fund-client"),
             args: "--log-level warn",
             outDir: "wasm-factory",
             outName: "instructions",

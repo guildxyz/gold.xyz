@@ -63,7 +63,7 @@ export type Auction = AuctionConfig &
 export async function getAuctions(
   connection: Connection
 ): Promise<Array<AuctionBase>> {
-  const { getAuctionPoolPubkeyWasm } = await import ("../../../rust/zgsol-fund-client/wasm-factory");
+  const { getAuctionPoolPubkeyWasm } = await import ("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionPoolPubkey = new PublicKey(
     await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
   )
@@ -115,7 +115,7 @@ export async function getAuction(
   n?: number
 ): Promise<Auction> {
   // read auction pool
-  const { getAuctionPoolPubkeyWasm } = await import ("../../../rust/zgsol-fund-client/wasm-factory");
+  const { getAuctionPoolPubkeyWasm } = await import ("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionPoolPubkey = new PublicKey(
     await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
   )

@@ -8,7 +8,7 @@ export async function getTreasuryFunds(
   auctionId: string,
   auctionOwnerPubkey?: PublicKey
 ) {
-  const { getAuctionBankPubkeyWasm } = await import("../../../rust/zgsol-fund-client/wasm-factory");
+  const { getAuctionBankPubkeyWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   if (auctionOwnerPubkey == null) {
     auctionOwnerPubkey = (await getAuction(connection, auctionId)).ownerPubkey
   }
