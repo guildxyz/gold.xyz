@@ -13,7 +13,7 @@ import {
   InitializeAuctionArgs,
   SCHEMA,
 } from "../schema"
-import { parseInstruction } from "../utils"
+import { parseInstruction } from "../utils/parseInstruction"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 //import { initAuctionWasm } from "../wasm-factory/instructions"
 

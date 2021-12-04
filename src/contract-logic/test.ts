@@ -2,7 +2,7 @@ import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { InitializeContractArgs, SCHEMA } from "./schema"
-import { parseInstruction } from "./utils"
+import { parseInstruction } from "./utils/parseInstruction"
 import { initContractWasm } from "./wasm-factory"
 
 export async function sleep(ms: number) {

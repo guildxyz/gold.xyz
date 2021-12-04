@@ -1,8 +1,8 @@
 import { PublicKey } from "@solana/web3.js"
 import BN from "bn.js"
-import { Enum } from "./extensions/enum"
+import Enum from "./extensions/enum"
+import Struct from "./extensions/struct"
 import { borshPublicKey } from "./extensions/publicKey"
-import { Struct } from "./extensions/struct"
 
 borshPublicKey()
 

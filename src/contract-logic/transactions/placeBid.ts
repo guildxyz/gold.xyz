@@ -3,7 +3,7 @@ import { serialize } from "borsh"
 import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { PlaceBidArgs, SCHEMA } from "../schema"
-import { parseInstruction } from "../utils"
+import { parseInstruction } from "../utils/parseInstruction"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 //import { placeBidWasm } from "../wasm-factory/instructions"
 

@@ -3,7 +3,7 @@ import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY } from "../consts"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { ClaimFundsArgs, SCHEMA } from "../schema"
-import { parseInstruction } from "../utils"
+import { parseInstruction } from "../utils/parseInstruction"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 //import { claimFundsWasm } from "../wasm-factory/instructions"
 

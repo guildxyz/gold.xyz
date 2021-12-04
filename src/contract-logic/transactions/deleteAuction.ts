@@ -3,7 +3,7 @@ import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY, NUM_OF_CYCLES_TO_DELETE } from "../consts"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { DeleteAuctionArgs, SCHEMA } from "../schema"
-import { parseInstruction } from "../utils"
+import { parseInstruction } from "../utils/parseInstruction"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 //import { deleteAuctionWasm } from "../wasm-factory/instructions"
 

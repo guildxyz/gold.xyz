@@ -1,4 +1,4 @@
-export class Enum {
+export default class Enum {
   enum: string
   constructor(properties) {
     if (Object.keys(properties).length !== 1) {
