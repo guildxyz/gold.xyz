@@ -2,10 +2,10 @@ import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
 import { AuctionCycleState, AuctionRootState, SCHEMA } from "../schema"
 import { numberToBytes } from "../utils/numberToBytes"
-import {
-  getCycleStatePubkeyWasm,
-  getRootStatePubkeyWasm,
-} from "../wasm-factory/instructions"
+//import {
+//  getCycleStatePubkeyWasm,
+//  getRootStatePubkeyWasm,
+//} from "../wasm-factory/instructions"
 
 // ROOT STATES
 export async function getRootState(
@@ -28,6 +28,7 @@ export async function getRootStatePubkey(
   auctionId: Uint8Array,
   auctionOwnerPubkey: PublicKey
 ) {
+  const { getRootStatePubkeyWasm } = await import("../../../rust/zgsol-fund-client/wasm-factory");
   const pubkeyBytes = await getRootStatePubkeyWasm(
     auctionId,
     auctionOwnerPubkey.toBytes()
@@ -40,6 +41,7 @@ export async function getNthCycleStatePubkey(
   auctionRootStatePubkey: PublicKey,
   n: number
 ) {
+  const { getCycleStatePubkeyWasm } = await import("../../../rust/zgsol-fund-client/wasm-factory");
   const pubkeyBytes = getCycleStatePubkeyWasm(
     auctionRootStatePubkey.toBytes(),
     numberToBytes(n)

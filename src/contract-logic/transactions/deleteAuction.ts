@@ -5,13 +5,14 @@ import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { DeleteAuctionArgs, SCHEMA } from "../schema"
 import { parseInstruction } from "../utils"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
-import { deleteAuctionWasm } from "../wasm-factory/instructions"
+//import { deleteAuctionWasm } from "../wasm-factory/instructions"
 
 export async function deleteAuction(
   connection: Connection,
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
+  const { deleteAuctionWasm } = async import("../../../rust/zgsol-fund-client/wasm-factory");
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(

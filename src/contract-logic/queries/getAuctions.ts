@@ -5,7 +5,6 @@ import { MasterEditionV2, METADATA_SCHEMA } from "../metadata_schema"
 import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
-import { getAuctionPoolPubkeyWasm } from "../wasm-factory/instructions"
 import { getMasterMetadata } from "./getMasterMedata"
 import { getTreasuryFunds } from "./getTreasuryFunds"
 import { getCurrentCycleState } from "./readCycleState"
@@ -64,17 +63,20 @@ export type Auction = AuctionConfig &
 export async function getAuctions(
   connection: Connection
 ): Promise<Array<AuctionBase>> {
+  const { getAuctionPoolPubkeyWasm } = await import ("../../../rust/zgsol-fund-client/wasm-factory");
   const auctionPoolPubkey = new PublicKey(
     await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
   )
 
+  //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   const auctionPool = deserializeUnchecked(
-    SCHEMA,
-    AuctionPool,
-    Buffer.from(auctionPoolData)
-  )
+      SCHEMA,
+      AuctionPool,
+      auctionPoolData
+  );
+
   let auctionBaseArray = []
 
   let poolIterator = auctionPool.pool.entries()
@@ -113,6 +115,7 @@ export async function getAuction(
   n?: number
 ): Promise<Auction> {
   // read auction pool
+  const { getAuctionPoolPubkeyWasm } = await import ("../../../rust/zgsol-fund-client/wasm-factory");
   const auctionPoolPubkey = new PublicKey(
     await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
   )

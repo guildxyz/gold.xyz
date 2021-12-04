@@ -15,13 +15,14 @@ import {
 } from "../schema"
 import { parseInstruction } from "../utils"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
-import { initAuctionWasm } from "../wasm-factory/instructions"
+//import { initAuctionWasm } from "../wasm-factory/instructions"
 
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
 export async function startAuction(
   frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig
 ) {
+  const { initAuctionWasm } = async import("../../../rust/zgsol-fund-client/wasm-factory");
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,
