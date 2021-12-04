@@ -63,60 +63,48 @@ export type Auction = AuctionConfig &
 export async function getAuctions(
   connection: Connection
 ): Promise<Array<AuctionBase>> {
-  //const { getAuctionPoolPubkeyWasm } = await import ("../../../rust/zgsol-fund-client/pkg");
-  //const auctionPoolPubkey = new PublicKey(
-  //  await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
-  //)
+  const { getAuctionPoolPubkeyWasm } = await import ("../../../rust/zgsol-fund-client/pkg");
+  const auctionPoolPubkey = new PublicKey(
+    await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
+  )
 
   //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
-  //const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
-  //const auctionPoolData: Buffer = auctionPoolAccount!.data
-  //const auctionPool = deserializeUnchecked(
-  //    SCHEMA,
-  //    AuctionPool,
-  //    auctionPoolData
-  //);
-
-  //const pubkey = new PublicKey("3Xc2FDqN2sRFJcEDpVd8sR92kKjRWAWFtxDR5FU3Rx3g");
-  const pubkey = new PublicKey("FiunhfJk6rjX2YA67KiuUdPWmrRqEPkF22uErUxYvUM6");
-  const info = await connection.getAccountInfo(pubkey)
-  const data: Buffer = info!.data
-  const state = deserializeUnchecked(
+  const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
+  const auctionPoolData: Buffer = auctionPoolAccount!.data
+  const auctionPool = deserializeUnchecked(
       SCHEMA,
-      AuctionRootState,
-      data,
+      AuctionPool,
+      auctionPoolData
   );
-  console.log(state);
-
 
   let auctionBaseArray = []
 
-  //let poolIterator = auctionPool.pool.entries()
-  //let currentEntry = poolIterator.next()
-  //while (!currentEntry.done) {
-  //  const [auctionId, auctionRootStatePubkey] = currentEntry.value
-  //  const auctionRootStateAccountInfo = await connection.getAccountInfo(
-  //    auctionRootStatePubkey
-  //  )
-  //  const auctionRootStateData: Buffer = auctionRootStateAccountInfo!.data
-  //  const auctionRootStateDeserialized = deserializeUnchecked(
-  //    SCHEMA,
-  //    AuctionRootState,
-  //    auctionRootStateData
-  //  )
-  //  auctionBaseArray.push({
-  //    id: auctionId,
-  //    name: parseAuctionId(
-  //      Uint8Array.from(auctionRootStateDeserialized.auctionName)
-  //    ),
-  //    ownerPubkey: auctionRootStateDeserialized.auctionOwner,
-  //    goalTreasuryAmount:
-  //      auctionRootStateDeserialized.description.goalTreasuryAmount,
-  //    currentTreasuryAmount: 100, // TODO: insert field from auctionRootState
-  //  })
+  let poolIterator = auctionPool.pool.entries()
+  let currentEntry = poolIterator.next()
+  while (!currentEntry.done) {
+    const [auctionId, auctionRootStatePubkey] = currentEntry.value
+    const auctionRootStateAccountInfo = await connection.getAccountInfo(
+      auctionRootStatePubkey
+    )
+    const auctionRootStateData: Buffer = auctionRootStateAccountInfo!.data
+    const auctionRootStateDeserialized = deserializeUnchecked(
+      SCHEMA,
+      AuctionRootState,
+      auctionRootStateData
+    )
+    auctionBaseArray.push({
+      id: auctionId,
+      name: parseAuctionId(
+        Uint8Array.from(auctionRootStateDeserialized.auctionName)
+      ),
+      ownerPubkey: auctionRootStateDeserialized.auctionOwner,
+      goalTreasuryAmount:
+        auctionRootStateDeserialized.description.goalTreasuryAmount,
+      currentTreasuryAmount: 100, // TODO: insert field from auctionRootState
+    })
 
-  //  currentEntry = poolIterator.next()
-  //}
+    currentEntry = poolIterator.next()
+  }
 
   return auctionBaseArray
 }

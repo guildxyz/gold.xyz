@@ -75,13 +75,18 @@ export class TokenConfigToken extends Struct {
   unnamed: TokenData
 }
 
-export class AuctionRootState extends Struct {
+export class AuctionRootState {
   auctionName: [32]
   auctionOwner: PublicKey
   description: AuctionDescription
   auctionConfig: AuctionConfig
   tokenConfig: TokenConfig
   status: AuctionStatus
+  constructor(args) {
+    Object.keys(args).map((key) => {
+      this[key] = args[key]
+    })
+  }
 }
 
 export class AuctionCycleState extends Struct {
@@ -90,8 +95,11 @@ export class AuctionCycleState extends Struct {
   bidHistory: BidData[]
 }
 
-export class AuctionPool extends Struct {
-  pool: Map<Uint8Array, PublicKey>
+export class AuctionPool {
+  pool: Map<Uint8Array, PublicKey>;
+    constructor(args: { pool: Map<Uint8Array, PublicKey> }) {
+      this.pool = args.pool;
+    }
 }
 
 export class ContractBankState extends Struct {
