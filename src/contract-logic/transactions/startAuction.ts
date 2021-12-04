@@ -22,7 +22,7 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 export async function startAuction(
   frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig
 ) {
-  const { initAuctionWasm } = async import("../../../rust/zgsol-fund-client/pkg");
+  const { initAuctionWasm } = async import("../../../rust/zgsol-fund-client/wasm-factory");
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,

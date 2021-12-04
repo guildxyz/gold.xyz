@@ -28,7 +28,7 @@ export async function getRootStatePubkey(
   auctionId: Uint8Array,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { getRootStatePubkeyWasm } = await import("../../../rust/zgsol-fund-client/pkg");
+  const { getRootStatePubkeyWasm } = await import("../../../rust/zgsol-fund-client/wasm-factory");
   const pubkeyBytes = await getRootStatePubkeyWasm(
     auctionId,
     auctionOwnerPubkey.toBytes()
@@ -41,7 +41,7 @@ export async function getNthCycleStatePubkey(
   auctionRootStatePubkey: PublicKey,
   n: number
 ) {
-  const { getCycleStatePubkeyWasm } = await import("../../../rust/zgsol-fund-client/pkg");
+  const { getCycleStatePubkeyWasm } = await import("../../../rust/zgsol-fund-client/wasm-factory");
   const pubkeyBytes = getCycleStatePubkeyWasm(
     auctionRootStatePubkey.toBytes(),
     numberToBytes(n)

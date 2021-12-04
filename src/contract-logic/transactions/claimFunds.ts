@@ -13,7 +13,7 @@ export async function claimFunds(
   auctionOwnerPubkey: PublicKey,
   amount: number
 ) {
-  const { claimFundsWasm } = async import("../../../rust/zgsol-fund-client/pkg");
+  const { claimFundsWasm } = async import("../../../rust/zgsol-fund-client/wasm-factory");
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(

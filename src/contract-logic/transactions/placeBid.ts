@@ -14,7 +14,7 @@ export async function placeBid(
   bidder: PublicKey,
   amount: number
 ) {
-  const { placeBidWasm } = async import("../../../rust/zgsol-fund-client/pkg");
+  const { placeBidWasm } = async import("../../../rust/zgsol-fund-client/wasm-factory");
   const auctionIdArray = padTo32Bytes(auctionId)
   console.log(auctionIdArray)
   const topBidder = await getTopBidder(

@@ -12,7 +12,7 @@ export async function deleteAuction(
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { deleteAuctionWasm } = async import("../../../rust/zgsol-fund-client/pkg");
+  const { deleteAuctionWasm } = async import("../../../rust/zgsol-fund-client/wasm-factory");
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(
