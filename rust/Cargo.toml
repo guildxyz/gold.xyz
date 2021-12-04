@@ -1,7 +1,0 @@
-[workspace]
-members = [
-	"zgsol-fund-client",
-	"zgsol-fund-contract",
-	"zgsol-testbench",
-	"zgsol-utils",
-]
