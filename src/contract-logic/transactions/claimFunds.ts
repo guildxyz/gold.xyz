@@ -3,8 +3,8 @@ import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY } from "../consts"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { ClaimFundsArgs, SCHEMA } from "../schema"
-import { parseInstruction } from "../utils/parseInstruction"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
+import { parseInstruction } from "../utils/parseInstruction"
 //import { claimFundsWasm } from "../wasm-factory/instructions"
 
 export async function claimFunds(
@@ -13,13 +13,12 @@ export async function claimFunds(
   auctionOwnerPubkey: PublicKey,
   amount: number
 ) {
-  const { claimFundsWasm } = async import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+  const { claimFundsWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(
     connection,
     auctionIdArray,
-    auctionOwnerPubkey
   )
 
   const claimFundsArgs = new ClaimFundsArgs({
