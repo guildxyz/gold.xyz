@@ -10,17 +10,17 @@ import { startAuction } from "./transactions/startAuction";
   //await initializeContract(auctionOwner.publicKey);
 
   const auction: AuctionConfig = {
-    id: "small-fixes-test2",
-    name: "Bot test",
-    description: "Let's see if it works",
-    socials: ["gold.xyz"],
+    id: "aaa-aaa",
+    name: "aaa-aaa",
+    description: "aaa",
+    socials: ["aaa.aaa"],
     goalTreasuryAmount: 100000000,
     ownerPubkey: auctionOwner.publicKey,
     asset: {
       type: "NFT",
-      name: "test-nft",
-      symbol: "TEST",
-      uri: "test.json",
+      name: "aaa",
+      symbol: "AAA",
+      uri: "aaaa.json",
       isRepeated: false,
     },
     cyclePeriod: 60,
@@ -30,6 +30,7 @@ import { startAuction } from "./transactions/startAuction";
   }
 
   console.log(CONTRACT_ADMIN_KEYPAIR.publicKey.toString())
+  console.log(await getAuctions(CONNECTION))
 
   // Create Auction
   const startAuctionTransaction = await startAuction(auction);

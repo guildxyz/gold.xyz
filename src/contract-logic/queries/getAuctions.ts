@@ -32,7 +32,7 @@ type TokenData = {
 export type AuctionBaseConfig = {
   id: string
   name: string
-  goalTreasuryAmount: number
+  goalTreasuryAmount?: number
   ownerPubkey: PublicKey
 }
 
