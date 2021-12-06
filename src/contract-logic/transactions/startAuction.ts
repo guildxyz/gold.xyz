@@ -22,7 +22,7 @@ import { parseInstruction } from "../utils/parseInstruction"
 export async function startAuction(
   frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig
 ) {
-  const { initAuctionWasm } = async import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+  const { initAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,
