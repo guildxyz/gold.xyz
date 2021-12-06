@@ -5,25 +5,18 @@ import { Metadata, METADATA_SCHEMA } from "../metadata_schema"
 
 export async function getMasterMetadata(
   connection: Connection,
-  auctionOwnerPubkey: PublicKey,
   auctionId: Uint8Array
 ) {
-  const [masterMint, _a] = await PublicKey.findProgramAddress(
-    [
-      Buffer.from("master_mint"),
-      Buffer.from(auctionId),
-      Buffer.from(auctionOwnerPubkey.toBytes()),
-    ],
-    PROGRAM_ID
-  )
-  const [masterMetadataPubkey, _b] = await PublicKey.findProgramAddress(
-    [
-      PREFIX,
-      Buffer.from(METADATA_PROGRAM_ID.toBytes()),
-      Buffer.from(masterMint.toBytes()),
-    ],
-    METADATA_PROGRAM_ID
-  )
+  const { getMasterMetadataPubkeyWasm, getMasterMintPubkeyWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+  const masterMintPubkey = new PublicKey(
+    await getMasterMintPubkeyWasm(auctionId)
+  );
+  const masterMetadataPubkey = new PublicKey(
+    await getMasterMetadataPubkeyWasm(masterMintPubkey.toBytes())
+  );
+  console.log("HELLO");
+  console.log(masterMetadataPubkey.toString());
+  console.log(masterMintPubkey.toString());
 
   let metadataAccount = await connection.getAccountInfo(masterMetadataPubkey)
   let metadataAccountData: Buffer = metadataAccount!.data

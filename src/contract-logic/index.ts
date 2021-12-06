@@ -33,13 +33,13 @@ import { startAuction } from "./transactions/startAuction";
   console.log(await getAuctions(CONNECTION))
 
   // Create Auction
-  const startAuctionTransaction = await startAuction(auction);
-  await sendTransaction(startAuctionTransaction, auctionOwner);
-  console.log("Auction created successfully.");
+  //const startAuctionTransaction = await startAuction(auction);
+  //await sendTransaction(startAuctionTransaction, auctionOwner);
+  //console.log("Auction created successfully.");
 
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  console.log("auction data:", await getAuction(CONNECTION, "small-fixes-test"))
+  console.log("auction data:", await getAuction(CONNECTION, "aaa-aaa"))
 
   // Bid on an auction
   //const bidTransaction = await placeBid(CONNECTION, auction.id, auctionOwner.publicKey, bidder.publicKey, 100000);
