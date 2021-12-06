@@ -1,47 +1,38 @@
-import { Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js"
+import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { PROGRAM_ID } from "../consts"
-import * as Layout from "../layouts"
-import { getCurrentCycleStatePubkey } from "../queries/readCycleState"
+import { CONTRACT_ADMIN_PUBKEY } from "../consts"
+import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
+import { ClaimFundsArgs, SCHEMA } from "../schema"
+import { parseInstruction } from "../utils/parseInstruction"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
+//import { claimFundsWasm } from "../wasm-factory/instructions"
 
 export async function claimFunds(
   connection: Connection,
-  contractAdminPubkey: PublicKey,
-  auctionOwnerPubkey: PublicKey,
   auctionId: string,
+  auctionOwnerPubkey: PublicKey,
   amount: number
-): Promise<Transaction> {
-  let auctionIdBuffer = padTo32Bytes(auctionId)
-  const [contractBankPubkey, _c] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_contract_bank")],
-    PROGRAM_ID
-  )
-  const [auctionBankPubkey, _a] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_bank"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
-    PROGRAM_ID
-  )
-  const [auctionRootStatePubkey, _z] = await PublicKey.findProgramAddress(
-    [Buffer.from("auction_root_state"), auctionIdBuffer, Buffer.from(auctionOwnerPubkey.toBytes())],
-    PROGRAM_ID
-  )
-  const auctionCycleStatePubkey = await getCurrentCycleStatePubkey(connection, auctionRootStatePubkey)
+) {
+  const { claimFundsWasm } = async import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+  const auctionIdArray = padTo32Bytes(auctionId)
 
-  const claimFundsArgs = new Layout.ClaimFundsArgs({ auctionId: auctionIdBuffer, amount: amount })
-  let auctionData = Buffer.from(serialize(Layout.CLAIM_FUNDS_SCHEMA, claimFundsArgs))
+  const currentCycleNumber = await getCurrentCycleNumberFromId(
+    connection,
+    auctionIdArray,
+    auctionOwnerPubkey
+  )
 
-  const claimFundsInstruction = new TransactionInstruction({
-    programId: PROGRAM_ID,
-    data: auctionData,
-    keys: [
-      { pubkey: auctionOwnerPubkey, isSigner: true, isWritable: true },
-      { pubkey: auctionBankPubkey, isSigner: false, isWritable: true },
-      { pubkey: auctionRootStatePubkey, isSigner: false, isWritable: true },
-      { pubkey: auctionCycleStatePubkey, isSigner: false, isWritable: true },
-      { pubkey: contractAdminPubkey, isSigner: false, isWritable: true },
-      { pubkey: contractBankPubkey, isSigner: false, isWritable: true },
-    ],
+  const claimFundsArgs = new ClaimFundsArgs({
+    contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
+    auctionOwnerPubkey: auctionOwnerPubkey,
+    auctionId: auctionIdArray,
+    cycleNumber: currentCycleNumber,
+    amount: amount,
   })
+
+  const claimFundsInstruction = parseInstruction(
+    claimFundsWasm(serialize(SCHEMA, claimFundsArgs))
+  )
 
   return new Transaction().add(claimFundsInstruction)
 }

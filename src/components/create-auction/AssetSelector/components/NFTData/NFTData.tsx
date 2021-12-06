@@ -8,6 +8,7 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react"
 import UploadFile from "components/create-auction/UploadFile"
+import { useEffect } from "react"
 import { useFormContext } from "react-hook-form"
 
 const NFTData = () => {
@@ -16,34 +17,38 @@ const NFTData = () => {
     formState: { errors },
   } = useFormContext()
 
+  useEffect(() => {
+    register("asset.type", { value: "NFT" })
+  }, [])
+
   return (
     <SimpleGrid px="5" py="4" spacing="6" columns={{ base: 1, md: 2 }}>
       <UploadFile />
       <SimpleGrid columns={{ base: 1 }} spacing="8" w="full">
-        <FormControl isInvalid={errors?.nftData?.name}>
+        <FormControl isInvalid={errors?.asset?.name}>
           <FormLabel>Name</FormLabel>
           <Input
-            {...register("nftData.name", {
+            {...register("asset.name", {
               required: "This field is required.",
             })}
           />
-          <FormErrorMessage>{errors?.nftData?.name?.message}</FormErrorMessage>
+          <FormErrorMessage>{errors?.asset?.name?.message}</FormErrorMessage>
         </FormControl>
 
-        <FormControl isInvalid={errors?.nftData?.symbol}>
+        <FormControl isInvalid={errors?.asset?.symbol}>
           <FormLabel>Symbol</FormLabel>
           <Input
-            {...register("nftData.symbol", {
+            {...register("asset.symbol", {
               required: "This field is required.",
             })}
           />
-          <FormErrorMessage>{errors?.nftData?.symbol?.message}</FormErrorMessage>
+          <FormErrorMessage>{errors?.asset?.symbol?.message}</FormErrorMessage>
         </FormControl>
-        <FormControl isInvalid={errors?.nftData?.maxSupply}>
+        <FormControl isInvalid={errors?.asset?.maxSupply}>
           <FormLabel>Max supply</FormLabel>
           <NumberInput>
             <NumberInputField
-              {...register("nftData.maxSupply", {
+              {...register("asset.maxSupply", {
                 required: "This field is required.",
               })}
             />
@@ -52,7 +57,7 @@ const NFTData = () => {
               <NumberDecrementStepper />
             </NumberInputStepper> */}
           </NumberInput>
-          <FormErrorMessage>{errors?.nftData?.maxSupply?.message}</FormErrorMessage>
+          <FormErrorMessage>{errors?.asset?.maxSupply?.message}</FormErrorMessage>
         </FormControl>
       </SimpleGrid>
     </SimpleGrid>

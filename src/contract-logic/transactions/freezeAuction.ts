@@ -3,15 +3,16 @@ import { serialize } from "borsh"
 import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { FreezeAuctionArgs, SCHEMA } from "../schema"
-import { parseInstruction } from "../utils"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
-import { freezeAuctionWasm } from "../wasm-factory/instructions"
+import { parseInstruction } from "../utils/parseInstruction"
+//import { freezeAuctionWasm } from "../wasm-factory/instructions"
 
 export async function freezeAuction(
   connection: Connection,
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
+  const { freezeAuctionWasm } = async import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const topBidder = await getTopBidder(connection, auctionIdArray)
