@@ -174,22 +174,19 @@ module.exports.getAuctionPoolPubkeyWasm = function(admin_pubkey) {
 
 /**
 * @param {Uint8Array} auction_id
-* @param {Uint8Array} owner_pubkey
 * @returns {Uint8Array}
 */
-module.exports.getAuctionBankPubkeyWasm = function(auction_id, owner_pubkey) {
+module.exports.getAuctionBankPubkeyWasm = function(auction_id) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         var ptr0 = passArray8ToWasm0(auction_id, wasm.__wbindgen_malloc);
         var len0 = WASM_VECTOR_LEN;
-        var ptr1 = passArray8ToWasm0(owner_pubkey, wasm.__wbindgen_malloc);
-        var len1 = WASM_VECTOR_LEN;
-        wasm.getAuctionBankPubkeyWasm(retptr, ptr0, len0, ptr1, len1);
+        wasm.getAuctionBankPubkeyWasm(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
         wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
+        return v1;
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }
@@ -197,22 +194,19 @@ module.exports.getAuctionBankPubkeyWasm = function(auction_id, owner_pubkey) {
 
 /**
 * @param {Uint8Array} auction_id
-* @param {Uint8Array} owner_pubkey
 * @returns {Uint8Array}
 */
-module.exports.getRootStatePubkeyWasm = function(auction_id, owner_pubkey) {
+module.exports.getRootStatePubkeyWasm = function(auction_id) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         var ptr0 = passArray8ToWasm0(auction_id, wasm.__wbindgen_malloc);
         var len0 = WASM_VECTOR_LEN;
-        var ptr1 = passArray8ToWasm0(owner_pubkey, wasm.__wbindgen_malloc);
-        var len1 = WASM_VECTOR_LEN;
-        wasm.getRootStatePubkeyWasm(retptr, ptr0, len0, ptr1, len1);
+        wasm.getRootStatePubkeyWasm(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
         wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
+        return v1;
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }
@@ -243,22 +237,19 @@ module.exports.getCycleStatePubkeyWasm = function(root_state_pubkey, cycle_numbe
 
 /**
 * @param {Uint8Array} auction_id
-* @param {Uint8Array} owner_pubkey
 * @returns {Uint8Array}
 */
-module.exports.getMasterMintPubkeyWasm = function(auction_id, owner_pubkey) {
+module.exports.getMasterMintPubkeyWasm = function(auction_id) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         var ptr0 = passArray8ToWasm0(auction_id, wasm.__wbindgen_malloc);
         var len0 = WASM_VECTOR_LEN;
-        var ptr1 = passArray8ToWasm0(owner_pubkey, wasm.__wbindgen_malloc);
-        var len1 = WASM_VECTOR_LEN;
-        wasm.getMasterMintPubkeyWasm(retptr, ptr0, len0, ptr1, len1);
+        wasm.getMasterMintPubkeyWasm(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
         wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
+        return v1;
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }
@@ -286,22 +277,19 @@ module.exports.getMasterMetadataPubkeyWasm = function(mint_pubkey) {
 
 /**
 * @param {Uint8Array} auction_id
-* @param {Uint8Array} owner_pubkey
 * @returns {Uint8Array}
 */
-module.exports.getTokenMintPubkeyWasm = function(auction_id, owner_pubkey) {
+module.exports.getTokenMintPubkeyWasm = function(auction_id) {
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         var ptr0 = passArray8ToWasm0(auction_id, wasm.__wbindgen_malloc);
         var len0 = WASM_VECTOR_LEN;
-        var ptr1 = passArray8ToWasm0(owner_pubkey, wasm.__wbindgen_malloc);
-        var len1 = WASM_VECTOR_LEN;
-        wasm.getTokenMintPubkeyWasm(retptr, ptr0, len0, ptr1, len1);
+        wasm.getTokenMintPubkeyWasm(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v2 = getArrayU8FromWasm0(r0, r1).slice();
+        var v1 = getArrayU8FromWasm0(r0, r1).slice();
         wasm.__wbindgen_free(r0, r1 * 1);
-        return v2;
+        return v1;
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
     }

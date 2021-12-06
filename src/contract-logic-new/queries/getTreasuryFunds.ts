@@ -14,7 +14,7 @@ export async function getTreasuryFunds(
 
   const auctionIdBuffer = padTo32Bytes(auctionId)
   const auctionBankPubkey = new PublicKey(
-    await getAuctionBankPubkeyWasm(auctionIdBuffer, auctionOwnerPubkey.toBytes())
+    await getAuctionBankPubkeyWasm(auctionIdBuffer)
   )
   let auctionBankAccount = await connection.getAccountInfo(auctionBankPubkey)
   return (

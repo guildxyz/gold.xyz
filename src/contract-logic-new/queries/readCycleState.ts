@@ -4,7 +4,7 @@ import { AuctionCycleState, AuctionRootState, SCHEMA } from "../schema"
 import { numberToBytes } from "../utils/numberToBytes"
 import {
   getCycleStatePubkeyWasm,
-  getRootStatePubkeyWasm,
+  getRootStatePubkeyWasm
 } from "../wasm-factory/instructions"
 
 // ROOT STATES
@@ -29,8 +29,7 @@ export async function getRootStatePubkey(
   auctionOwnerPubkey: PublicKey
 ) {
   const pubkeyBytes = await getRootStatePubkeyWasm(
-    auctionId,
-    auctionOwnerPubkey.toBytes()
+    auctionId
   )
   return new PublicKey(pubkeyBytes)
 }
