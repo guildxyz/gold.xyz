@@ -4,7 +4,7 @@ import { AuctionCycleState, AuctionRootState, SCHEMA } from "../schema"
 import { numberToBytes } from "../utils/numberToBytes"
 import {
   getCycleStatePubkeyWasm,
-  getRootStatePubkeyWasm
+  getRootStatePubkeyWasm,
 } from "../wasm-factory/instructions"
 
 // ROOT STATES
@@ -24,13 +24,8 @@ export async function getRootState(
   return auctionRootState
 }
 
-export async function getRootStatePubkey(
-  auctionId: Uint8Array,
-  auctionOwnerPubkey: PublicKey
-) {
-  const pubkeyBytes = await getRootStatePubkeyWasm(
-    auctionId
-  )
+export async function getRootStatePubkey(auctionId: Uint8Array) {
+  const pubkeyBytes = await getRootStatePubkeyWasm(auctionId)
   return new PublicKey(pubkeyBytes)
 }
 
@@ -78,13 +73,9 @@ export async function getCurrentCycleStatePubkey(
 
 export async function getCurrentCycleNumberFromId(
   connection: Connection,
-  auctionId: Uint8Array,
-  auctionOwnerPubkey: PublicKey
+  auctionId: Uint8Array
 ) {
-  const auctionRootStatePubkey = await getRootStatePubkey(
-    auctionId,
-    auctionOwnerPubkey
-  )
+  const auctionRootStatePubkey = await getRootStatePubkey(auctionId)
   const cycleNumber = await getCurrentCycleNumber(connection, auctionRootStatePubkey)
 
   return cycleNumber

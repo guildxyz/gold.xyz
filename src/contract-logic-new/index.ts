@@ -1,9 +1,15 @@
-import { Keypair, PublicKey } from "@solana/web3.js";
-import { CONNECTION } from "./consts";
-import { AuctionConfig, getAuction, getAuctions, NFTData, TokenData } from "./queries/getAuctions";
-import { SECRET2, SECRET3, sendTransaction } from "./test";
-import { startAuction } from "./transactions/startAuction";
-(async () => {
+import { Keypair, PublicKey } from "@solana/web3.js"
+import { CONNECTION } from "./consts"
+import {
+  AuctionConfig,
+  getAuction,
+  getAuctions,
+  NFTData,
+  TokenData,
+} from "./queries/getAuctions"
+import { SECRET2, SECRET3, sendTransaction } from "./test"
+import { startAuction } from "./transactions/startAuction"
+;(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
@@ -15,7 +21,7 @@ import { startAuction } from "./transactions/startAuction";
     symbol: "TEST",
     uri: "test.json",
     isRepeated: false,
-  };
+  }
 
   const tokenAsset: TokenData = {
     type: "TOKEN",
@@ -39,16 +45,16 @@ import { startAuction } from "./transactions/startAuction";
   }
 
   // Create Auction
-  const startAuctionTransaction = await startAuction(auction);
-  await sendTransaction(startAuctionTransaction, auctionOwner);
-  console.log("Auction created successfully.");
+  const startAuctionTransaction = await startAuction(auction)
+  await sendTransaction(startAuctionTransaction, auctionOwner)
+  console.log("Auction created successfully.")
 
   // Query auction
   console.log(await getAuctions(CONNECTION))
   console.log("auction data:", await getAuction(CONNECTION, auction.id))
 
   // Bid on an auction
-  //const bidTransaction = await placeBid(CONNECTION, auction.id, auctionOwner.publicKey, bidder.publicKey, 100000);
+  //const bidTransaction = await placeBid(CONNECTION, auction.id, bidder.publicKey, 100000);
   //await sendTransaction(bidTransaction, bidder);
   //console.log("Bid placed successfully.");
 

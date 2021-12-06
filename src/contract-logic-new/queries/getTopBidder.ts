@@ -14,12 +14,8 @@ export async function getTopBidder(connection: Connection, auctionCycleStatePubk
 }
 */
 
-export async function getTopBidder(
-  connection: Connection,
-  auctionId: Uint8Array,
-  auctionOwnerPubkey: PublicKey
-) {
-  const auctionRootPubkey = await getRootStatePubkey(auctionId, auctionOwnerPubkey)
+export async function getTopBidder(connection: Connection, auctionId: Uint8Array) {
+  const auctionRootPubkey = await getRootStatePubkey(auctionId)
   const auctionCycleState = await getCurrentCycleState(connection, auctionRootPubkey)
 
   let history_len = auctionCycleState.bidHistory.length

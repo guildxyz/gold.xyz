@@ -10,26 +10,19 @@ import { placeBidWasm } from "../wasm-factory/instructions"
 export async function placeBid(
   connection: Connection,
   auctionId: string,
-  auctionOwnerPubkey: PublicKey,
   bidder: PublicKey,
   amount: number
 ) {
   const auctionIdArray = padTo32Bytes(auctionId)
   console.log(auctionIdArray)
-  const topBidder = await getTopBidder(
-    connection,
-    auctionIdArray,
-    auctionOwnerPubkey
-  )
+  const topBidder = await getTopBidder(connection, auctionIdArray)
   const currentCycleNumber = await getCurrentCycleNumberFromId(
     connection,
-    auctionIdArray,
-    auctionOwnerPubkey
+    auctionIdArray
   )
 
   const placeBidArgs = new PlaceBidArgs({
     userMainPubkey: bidder,
-    auctionOwnerPubkey: auctionOwnerPubkey,
     auctionId: auctionIdArray,
     cycleNumber: currentCycleNumber,
     topBidderPubkey: topBidder,
