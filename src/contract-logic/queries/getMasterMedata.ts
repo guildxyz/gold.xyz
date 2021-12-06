@@ -14,9 +14,6 @@ export async function getMasterMetadata(
   const masterMetadataPubkey = new PublicKey(
     await getMasterMetadataPubkeyWasm(masterMintPubkey.toBytes())
   );
-  console.log("HELLO");
-  console.log(masterMetadataPubkey.toString());
-  console.log(masterMintPubkey.toString());
 
   let metadataAccount = await connection.getAccountInfo(masterMetadataPubkey)
   let metadataAccountData: Buffer = metadataAccount!.data
