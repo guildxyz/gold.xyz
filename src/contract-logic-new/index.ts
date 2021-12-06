@@ -1,39 +1,47 @@
-import { Keypair } from "@solana/web3.js"
-import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { AuctionConfig, getAuction, getAuctions } from "./queries/getAuctions"
-import { SECRET2, SECRET3 } from "./test"
-;(async () => {
+import { Keypair, PublicKey } from "@solana/web3.js";
+import { CONNECTION } from "./consts";
+import { AuctionConfig, getAuction, getAuctions, NFTData, TokenData } from "./queries/getAuctions";
+import { SECRET2, SECRET3, sendTransaction } from "./test";
+import { startAuction } from "./transactions/startAuction";
+(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
   //await initializeContract(auctionOwner.publicKey);
 
+  const nftAsset: NFTData = {
+    type: "NFT",
+    name: "test-nft",
+    symbol: "TEST",
+    uri: "test.json",
+    isRepeated: false,
+  };
+
+  const tokenAsset: TokenData = {
+    type: "TOKEN",
+    decimals: 1,
+    mintAddress: PublicKey.default,
+    perCycleAmount: 100,
+  }
+
   const auction: AuctionConfig = {
-    id: "bot-test",
-    name: "Bot test",
-    description: "Let's see it it works",
+    id: "small-fixes-test-token",
+    name: "Small fixes test token",
+    description: "Let's see if it works",
     socials: ["gold.xyz"],
     goalTreasuryAmount: 100000000,
     ownerPubkey: auctionOwner.publicKey,
-    asset: {
-      type: "NFT",
-      name: "test-nft",
-      symbol: "TEST",
-      uri: "test.json",
-      isRepeated: false,
-    },
+    asset: tokenAsset,
     cyclePeriod: 60,
     numberOfCycles: 10,
     minBid: 10000,
     startTimestamp: null,
   }
 
-  console.log(CONTRACT_ADMIN_KEYPAIR.publicKey.toString())
-
   // Create Auction
-  //const startAuctionTransaction = await startAuction(auction);
-  //await sendTransaction(startAuctionTransaction, auctionOwner);
-  //console.log("Auction created successfully.");
+  const startAuctionTransaction = await startAuction(auction);
+  await sendTransaction(startAuctionTransaction, auctionOwner);
+  console.log("Auction created successfully.");
 
   // Query auction
   console.log(await getAuctions(CONNECTION))

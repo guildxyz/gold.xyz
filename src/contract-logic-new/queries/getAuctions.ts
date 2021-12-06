@@ -1,13 +1,12 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
-import { CONNECTION, CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
+import { CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
 import { MasterEditionV2, METADATA_SCHEMA } from "../metadata_schema"
 import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
-import { getAuctionPoolPubkeyWasm } from "../wasm-factory/instructions"
+import { getAuctionPoolPubkeyWasm, getDecimalsFromMintAccountDataWasm } from "../wasm-factory/instructions"
 import { getMasterMetadata } from "./getMasterMedata"
-import { getTreasuryFunds } from "./getTreasuryFunds"
 import { getCurrentCycleState } from "./readCycleState"
 
 export type Bid = {
@@ -15,16 +14,7 @@ export type Bid = {
   amount: number
 }
 
-/*
-export type AuctionBase = {
-  id: string
-  name: string
-  goalTreasuryAmount?: number
-  currentTreasuryAmount: number
-  ownerPubkey: PublicKey
-}
-
-type NFTData = {
+export type NFTData = {
   type: "NFT"
   name: string
   symbol: string
@@ -32,38 +22,7 @@ type NFTData = {
   isRepeated: boolean
 }
 
-type TokenData = {
-  type: "TOKEN"
-  decimals: number
-  address: PublicKey
-  perCycleAmount: number
-}
-
-export type Auction = AuctionBase & {
-  description: string
-  socials: string[]
-  asset: NFTData | TokenData
-  bids: Bid[]
-  cyclePeriod: number
-  currentCycle: number
-  numberOfCycles: number
-  minBid: number
-  startTimestamp: number
-  endTimestamp: number
-  isActive: boolean
-  isFrozen: boolean
-}
-*/
-
-type NFTData = {
-  type: "NFT"
-  name: string
-  symbol: string
-  uri: string
-  isRepeated: boolean
-}
-
-type TokenData = {
+export type TokenData = {
   type: "TOKEN"
   decimals: number
   mintAddress: PublicKey
@@ -135,8 +94,8 @@ export async function getAuctions(
         Uint8Array.from(auctionRootStateDeserialized.auctionName)
       ),
       ownerPubkey: auctionRootStateDeserialized.auctionOwner,
-      goalTreasuryAmount: auctionRootStateDeserialized.description.goalTreasuryAmount,
-      currentTreasuryAmount: 100 // TODO: insert field from auctionRootState
+      goalTreasuryAmount: auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber(),
+      currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber()
     })
 
     currentEntry = poolIterator.next()
@@ -222,14 +181,17 @@ export async function getAuction(
       isRepeated: false,
     }
   } else if (auctionRootStateDeserialized.tokenConfig.tokenConfigToken) {
-    // TODO: get decimals, probably with web3js/spl-token
-    //  or with a wasm generated function with the account data as its parameter
+    const mintInfo = await connection.getAccountInfo(
+      auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint
+    )
+    const mintData: Buffer = mintInfo!.data
+    const decimals = await getDecimalsFromMintAccountDataWasm(mintData);
     asset = {
       type: "TOKEN",
-      decimals: 1,
-      mintAddress: PublicKey.default,
+      decimals: decimals,
+      mintAddress: auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint,
       perCycleAmount:
-        auctionRootStateDeserialized.tokenConfig.tokenConfigToken.perCycleAmount,
+        auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.perCycleAmount.toNumber(),
     }
   }
 
@@ -239,7 +201,6 @@ export async function getAuction(
       auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber()
   }
 
-  const treasuryFunds = await getTreasuryFunds(CONNECTION, id, auctionOwnerPubkey)
   let currentCycleNumber: number
   if (n) {
     currentCycleNumber = n
@@ -254,7 +215,7 @@ export async function getAuction(
     description: auctionRootStateDeserialized.description.description,
     socials: auctionRootStateDeserialized.description.socials,
     goalTreasuryAmount: goalTreasuryAmount,
-    currentTreasuryAmount: treasuryFunds,
+    currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber(),
     ownerPubkey: auctionOwnerPubkey,
     asset: asset,
     bids: auctionCycleStateDeserialized.bidHistory

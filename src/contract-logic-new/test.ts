@@ -58,8 +58,8 @@ export async function initializeContract(auctionOwnerPubkey: PublicKey) {
     console.log("contract already initialized")
   }
 
-  //var waitTill = new Date(new Date().getTime() + 10 * 1000)
-  //while (waitTill > new Date()) {}
-  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(auctionOwnerPubkey, 100000000))
-  //console.log("successfully initialized payers")
+  var waitTill = new Date(new Date().getTime() + 10 * 1000)
+  while (waitTill > new Date()) {}
+  await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(auctionOwnerPubkey, 100000000))
+  console.log("successfully initialized payers")
 }
