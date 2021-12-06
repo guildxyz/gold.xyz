@@ -14,15 +14,10 @@ export async function freezeAuction(
 ) {
   const auctionIdArray = padTo32Bytes(auctionId)
 
-  const topBidder = await getTopBidder(
-    connection,
-    auctionIdArray,
-    auctionOwnerPubkey
-  )
+  const topBidder = await getTopBidder(connection, auctionIdArray)
   const currentCycleNumber = await getCurrentCycleNumberFromId(
     connection,
-    auctionIdArray,
-    auctionOwnerPubkey
+    auctionIdArray
   )
 
   const freezeAuctionArgs = new FreezeAuctionArgs({

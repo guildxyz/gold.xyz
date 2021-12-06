@@ -5,7 +5,10 @@ import { MasterEditionV2, METADATA_SCHEMA } from "../metadata_schema"
 import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
-import { getAuctionPoolPubkeyWasm, getDecimalsFromMintAccountDataWasm } from "../wasm-factory/instructions"
+import {
+  getAuctionPoolPubkeyWasm,
+  getDecimalsFromMintAccountDataWasm,
+} from "../wasm-factory/instructions"
 import { getMasterMetadata } from "./getMasterMedata"
 import { getCurrentCycleState } from "./readCycleState"
 
@@ -51,13 +54,14 @@ export type AuctionBase = AuctionBaseConfig & {
   currentTreasuryAmount: number
 }
 
-export type Auction = AuctionConfig & AuctionBase & {
-  bids: Bid[]
-  currentCycle: number
-  endTimestamp: number
-  isActive: boolean
-  isFrozen: boolean
-}
+export type Auction = AuctionConfig &
+  AuctionBase & {
+    bids: Bid[]
+    currentCycle: number
+    endTimestamp: number
+    isActive: boolean
+    isFrozen: boolean
+  }
 
 export async function getAuctions(
   connection: Connection
@@ -94,8 +98,9 @@ export async function getAuctions(
         Uint8Array.from(auctionRootStateDeserialized.auctionName)
       ),
       ownerPubkey: auctionRootStateDeserialized.auctionOwner,
-      goalTreasuryAmount: auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber(),
-      currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber()
+      goalTreasuryAmount:
+        auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber(),
+      currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber(),
     })
 
     currentEntry = poolIterator.next()
@@ -185,11 +190,12 @@ export async function getAuction(
       auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint
     )
     const mintData: Buffer = mintInfo!.data
-    const decimals = await getDecimalsFromMintAccountDataWasm(mintData);
+    const decimals = await getDecimalsFromMintAccountDataWasm(mintData)
     asset = {
       type: "TOKEN",
       decimals: decimals,
-      mintAddress: auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint,
+      mintAddress:
+        auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint,
       perCycleAmount:
         auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.perCycleAmount.toNumber(),
     }

@@ -17,8 +17,7 @@ export async function claimFunds(
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(
     connection,
-    auctionIdArray,
-    auctionOwnerPubkey
+    auctionIdArray
   )
 
   const claimFundsArgs = new ClaimFundsArgs({

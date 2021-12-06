@@ -11,7 +11,7 @@ import {
   CreateTokenArgsToken,
   Data,
   InitializeAuctionArgs,
-  SCHEMA
+  SCHEMA,
 } from "../schema"
 import { parseInstruction } from "../utils"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
@@ -75,7 +75,7 @@ export async function startAuction(
   })
 
   const initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)
-  const instruction = parseInstruction(initAuctionWasm(initAuctionArgsSerialized));    
+  const instruction = parseInstruction(initAuctionWasm(initAuctionArgsSerialized))
 
   return new Transaction().add(instruction)
 }

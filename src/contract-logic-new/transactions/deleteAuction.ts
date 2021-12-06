@@ -16,8 +16,7 @@ export async function deleteAuction(
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(
     connection,
-    auctionIdArray,
-    auctionOwnerPubkey
+    auctionIdArray
   )
   const numOfCyclesToDelete = NUM_OF_CYCLES_TO_DELETE
 
