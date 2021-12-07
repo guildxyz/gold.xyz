@@ -3,17 +3,14 @@ import { deserializeUnchecked } from "borsh"
 import { METADATA_PROGRAM_ID, PREFIX, PROGRAM_ID } from "../consts"
 import { Metadata, METADATA_SCHEMA } from "../metadata_schema"
 
-export async function getMasterMetadata(
-  connection: Connection,
-  auctionId: Uint8Array
-) {
-  const { getMasterMetadataPubkeyWasm, getMasterMintPubkeyWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
-  const masterMintPubkey = new PublicKey(
-    await getMasterMintPubkeyWasm(auctionId)
-  );
+export async function getMasterMetadata(connection: Connection, auctionId: Uint8Array) {
+  const { getMasterMetadataPubkeyWasm, getMasterMintPubkeyWasm } = await import(
+    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
+  )
+  const masterMintPubkey = new PublicKey(await getMasterMintPubkeyWasm(auctionId))
   const masterMetadataPubkey = new PublicKey(
     await getMasterMetadataPubkeyWasm(masterMintPubkey.toBytes())
-  );
+  )
 
   let metadataAccount = await connection.getAccountInfo(masterMetadataPubkey)
   let metadataAccountData: Buffer = metadataAccount!.data

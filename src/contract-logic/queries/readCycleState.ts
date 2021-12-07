@@ -8,13 +8,8 @@ import { numberToBytes } from "../utils/numberToBytes"
 //} from "../wasm-factory/instructions"
 
 // ROOT STATES
-export async function getRootState(
-  connection: Connection,
-  auctionRootStatePubkey: PublicKey
-) {
-  const auctionRootStateAccount = await connection.getAccountInfo(
-    auctionRootStatePubkey
-  )
+export async function getRootState(connection: Connection, auctionRootStatePubkey: PublicKey) {
+  const auctionRootStateAccount = await connection.getAccountInfo(auctionRootStatePubkey)
   const auctionRootStateAccountData: Buffer = auctionRootStateAccount!.data
   const auctionRootState = deserializeUnchecked(
     SCHEMA,
@@ -24,26 +19,20 @@ export async function getRootState(
   return auctionRootState
 }
 
-export async function getRootStatePubkey(
-  auctionId: Uint8Array,
-) {
-  const { getRootStatePubkeyWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
-  const pubkeyBytes = await getRootStatePubkeyWasm(
-    auctionId,
+export async function getRootStatePubkey(auctionId: Uint8Array) {
+  const { getRootStatePubkeyWasm } = await import(
+    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
   )
+  const pubkeyBytes = await getRootStatePubkeyWasm(auctionId)
   return new PublicKey(pubkeyBytes)
 }
 
 // CYCLE STATES
-export async function getNthCycleStatePubkey(
-  auctionRootStatePubkey: PublicKey,
-  n: number
-) {
-  const { getCycleStatePubkeyWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
-  const pubkeyBytes = getCycleStatePubkeyWasm(
-    auctionRootStatePubkey.toBytes(),
-    numberToBytes(n)
+export async function getNthCycleStatePubkey(auctionRootStatePubkey: PublicKey, n: number) {
+  const { getCycleStatePubkeyWasm } = await import(
+    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
   )
+  const pubkeyBytes = getCycleStatePubkeyWasm(auctionRootStatePubkey.toBytes(), numberToBytes(n))
   return new PublicKey(pubkeyBytes)
 }
 
@@ -52,14 +41,8 @@ export async function readNthCycleState(
   auctionRootStatePubkey: PublicKey,
   n: number
 ) {
-  const nthAuctionCycleStatePubkey = await getNthCycleStatePubkey(
-    auctionRootStatePubkey,
-    n
-  )
-  const nthAuctionCycleState = await getCycleState(
-    connection,
-    nthAuctionCycleStatePubkey
-  )
+  const nthAuctionCycleStatePubkey = await getNthCycleStatePubkey(auctionRootStatePubkey, n)
+  const nthAuctionCycleState = await getCycleState(connection, nthAuctionCycleStatePubkey)
 
   return nthAuctionCycleState
 }
@@ -69,21 +52,13 @@ export async function getCurrentCycleStatePubkey(
   auctionRootStatePubkey: PublicKey
 ) {
   const cycleNumber = await getCurrentCycleNumber(connection, auctionRootStatePubkey)
-  const auctionCycleStatePubkey = getNthCycleStatePubkey(
-    auctionRootStatePubkey,
-    cycleNumber
-  )
+  const auctionCycleStatePubkey = getNthCycleStatePubkey(auctionRootStatePubkey, cycleNumber)
 
   return auctionCycleStatePubkey
 }
 
-export async function getCurrentCycleNumberFromId(
-  connection: Connection,
-  auctionId: Uint8Array,
-) {
-  const auctionRootStatePubkey = await getRootStatePubkey(
-    auctionId,
-  )
+export async function getCurrentCycleNumberFromId(connection: Connection, auctionId: Uint8Array) {
+  const auctionRootStatePubkey = await getRootStatePubkey(auctionId)
   const cycleNumber = await getCurrentCycleNumber(connection, auctionRootStatePubkey)
 
   return cycleNumber
@@ -93,12 +68,8 @@ export async function getNextCycleStatePubkey(
   connection: Connection,
   auctionRootStatePubkey: PublicKey
 ) {
-  const cycleNumber =
-    +(await getCurrentCycleNumber(connection, auctionRootStatePubkey)) + 1
-  const auctionCycleStatePubkey = getNthCycleStatePubkey(
-    auctionRootStatePubkey,
-    cycleNumber
-  )
+  const cycleNumber = +(await getCurrentCycleNumber(connection, auctionRootStatePubkey)) + 1
+  const auctionCycleStatePubkey = getNthCycleStatePubkey(auctionRootStatePubkey, cycleNumber)
 
   return auctionCycleStatePubkey
 }
@@ -125,13 +96,8 @@ export async function getCurrentCycleNumber(
   return auctionRootState.status.currentAuctionCycle.toNumber()
 }
 
-export async function getCycleState(
-  connection: Connection,
-  auctionCycleStatePubkey: PublicKey
-) {
-  const auctionCycleStateAccount = await connection.getAccountInfo(
-    auctionCycleStatePubkey
-  )
+export async function getCycleState(connection: Connection, auctionCycleStatePubkey: PublicKey) {
+  const auctionCycleStateAccount = await connection.getAccountInfo(auctionCycleStatePubkey)
   const auctionCycleStateAccountData: Buffer = auctionCycleStateAccount!.data
   const auctionCycleState = deserializeUnchecked(
     SCHEMA,

@@ -11,14 +11,11 @@ export async function freezeAuction(
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { freezeAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+  const { freezeAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory")
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const topBidder = await getTopBidder(connection, auctionIdArray)
-  const currentCycleNumber = await getCurrentCycleNumberFromId(
-    connection,
-    auctionIdArray
-  )
+  const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)
 
   const freezeAuctionArgs = new FreezeAuctionArgs({
     auctionOwnerPubkey: auctionOwnerPubkey,

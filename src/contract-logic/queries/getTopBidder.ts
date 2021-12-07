@@ -1,10 +1,7 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { getCurrentCycleState, getRootStatePubkey } from "./readCycleState"
 
-export async function getTopBidder(
-  connection: Connection,
-  auctionId: Uint8Array,
-) {
+export async function getTopBidder(connection: Connection, auctionId: Uint8Array) {
   const auctionRootPubkey = await getRootStatePubkey(auctionId)
   const auctionCycleState = await getCurrentCycleState(connection, auctionRootPubkey)
 

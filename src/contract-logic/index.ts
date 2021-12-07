@@ -1,8 +1,8 @@
-import { Keypair, PublicKey } from "@solana/web3.js";
-import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts";
-import { AuctionConfig, getAuction, getAuctions, NFTData, TokenData } from "./queries/getAuctions";
-import { SECRET2, SECRET3 } from "./test";
-(async () => {
+import { Keypair, PublicKey } from "@solana/web3.js"
+import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
+import { AuctionConfig, getAuction, getAuctions, NFTData, TokenData } from "./queries/getAuctions"
+import { SECRET2, SECRET3 } from "./test"
+;(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
@@ -14,7 +14,7 @@ import { SECRET2, SECRET3 } from "./test";
     symbol: "AAA",
     uri: "aaaa.json",
     isRepeated: false,
-  };
+  }
 
   const tokenAsset: TokenData = {
     type: "TOKEN",

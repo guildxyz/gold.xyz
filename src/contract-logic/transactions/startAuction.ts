@@ -11,17 +11,15 @@ import {
   CreateTokenArgsToken,
   Data,
   InitializeAuctionArgs,
-  SCHEMA
+  SCHEMA,
 } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
 
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
-export async function startAuction(
-  frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig
-) {
-  const { initAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+export async function startAuction(frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig) {
+  const { initAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory")
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,
@@ -33,7 +31,7 @@ export async function startAuction(
     socials: frontendAuctionConfig.socials,
     goalTreasuryAmount: frontendAuctionConfig.goalTreasuryAmount,
   })
-  
+
   let createTokenArgs: CreateTokenArgs
   if (frontendAuctionConfig.asset.type === "NFT") {
     const createMetadataAccountArgs = new CreateMetadataAccountArgs({

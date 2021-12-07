@@ -194,10 +194,10 @@ export class AuctionCycleState {
 }
 
 export class AuctionPool {
-  pool: Map<Uint8Array, PublicKey>;
-    constructor(args: { pool: Map<Uint8Array, PublicKey> }) {
-      this.pool = args.pool;
-    }
+  pool: Map<Uint8Array, PublicKey>
+  constructor(args: { pool: Map<Uint8Array, PublicKey> }) {
+    this.pool = args.pool
+  }
 }
 
 export class ContractBankState {
