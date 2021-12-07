@@ -1,7 +1,7 @@
 import { Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY } from "../consts"
-import * as FrontendAuctionTypes from "../queries/getAuctions"
+import { AuctionConfig as AuctionConfigType } from "../queries/getAuctions"
 import {
   AuctionConfig,
   AuctionDescription,
@@ -18,7 +18,7 @@ import { parseInstruction } from "../utils/parseInstruction"
 
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
-export async function startAuction(frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig) {
+export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
   const { initAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory")
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,

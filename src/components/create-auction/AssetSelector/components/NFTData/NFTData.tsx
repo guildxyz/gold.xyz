@@ -8,7 +8,6 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react"
 import UploadFile from "components/create-auction/UploadFile"
-import { useEffect } from "react"
 import { useFormContext } from "react-hook-form"
 
 const NFTData = () => {
@@ -16,10 +15,6 @@ const NFTData = () => {
     register,
     formState: { errors },
   } = useFormContext()
-
-  useEffect(() => {
-    register("asset.type", { value: "NFT" })
-  }, [])
 
   return (
     <SimpleGrid px="5" py="4" spacing="6" columns={{ base: 1, md: 2 }}>
