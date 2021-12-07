@@ -9,27 +9,26 @@ import {
 } from "@chakra-ui/react"
 import { useFormContext } from "react-hook-form"
 
-const MinBid = () => {
+const GoalAmount = () => {
   const {
     register,
     formState: { errors },
   } = useFormContext()
 
   return (
-    <FormControl isInvalid={errors?.minBid} isDisabled>
-      <InputGroup size="lg" maxW={{ base: "2xs", lg: "xs" }}>
+    <FormControl isRequired isInvalid={errors?.goalTreasuryAmount}>
+      <InputGroup size="lg">
         <NumberInput w="full">
           <NumberInputField
-            {...register("minBid", {
-              // required: "This field is required.",
+            {...register("goalTreasuryAmount", {
+              required: "This field is required.",
             })}
-            // borderRightRadius="0"
-            placeholder="0.00001"
+            placeholder="0"
           />
           {/* <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper> */}
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper> */}
         </NumberInput>
         <InputRightElement>
           <Text colorScheme="gray" mr="4">
@@ -37,9 +36,9 @@ const MinBid = () => {
           </Text>
         </InputRightElement>
       </InputGroup>
-      <FormErrorMessage>{errors?.minBid?.message}</FormErrorMessage>
+      <FormErrorMessage>{errors?.goalTreasuryAmount?.message}</FormErrorMessage>
     </FormControl>
   )
 }
 
-export default MinBid
+export default GoalAmount

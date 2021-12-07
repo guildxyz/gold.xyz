@@ -1,26 +1,25 @@
-import { Heading, Stack, Text } from "@chakra-ui/react"
+import { Heading, HStack, Stack } from "@chakra-ui/react"
 import { PropsWithChildren } from "react"
+import { Rest } from "types"
 
 type Props = {
   title: string | JSX.Element
-  description?: string
-}
+  titleRightElement?: JSX.Element
+} & Rest
 
 const Section = ({
   title,
-  description,
+  titleRightElement,
   children,
+  ...rest
 }: PropsWithChildren<Props>): JSX.Element => (
-  <Stack width="full" spacing={5}>
-    <Heading fontSize={{ base: "md", sm: "lg" }} as="h2">
-      {title}
-    </Heading>
-
-    {description && (
-      <Text fontSize="sm" fontWeight="medium" colorScheme="gray">
-        {description}
-      </Text>
-    )}
+  <Stack width="full" spacing={5} {...rest}>
+    <HStack spacing={2} alignItems="center">
+      <Heading fontSize={{ base: "md", sm: "lg" }} as="h2">
+        {title}
+      </Heading>
+      {titleRightElement}
+    </HStack>
 
     {children}
   </Stack>
