@@ -1,6 +1,5 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
-import { getDecimalsFromMintAccountDataWasm } from "../../../zgen-solana/zgsol-fund-client/wasm-factory"
 import { CONNECTION, CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
 import { MasterEditionV2, METADATA_SCHEMA } from "../metadata_schema"
 import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
@@ -118,7 +117,10 @@ export async function getAuction(
   id: string,
   n?: number
 ): Promise<Auction> {
-  const auctionPool = await getAuctionPool(connection);
+  const { getDecimalsFromMintAccountDataWasm } = await import(
+    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
+  )
+  const auctionPool = await getAuctionPool(connection)
 
   const auctionId = Uint8Array.from(padTo32Bytes(id))
 

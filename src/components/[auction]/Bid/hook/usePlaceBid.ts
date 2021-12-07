@@ -22,13 +22,7 @@ const usePlaceBid = (setValue) => {
   const handlePlaceBid = async ({ amount: inputAmount }: Data) => {
     const amount_ = parseFloat(inputAmount)
     setAmount(amount_)
-    const tx = await placeBid(
-      connection,
-      auction.id,
-      auction.ownerPubkey,
-      publicKey,
-      amount_
-    )
+    const tx = await placeBid(connection, auction.id, publicKey, amount_)
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
