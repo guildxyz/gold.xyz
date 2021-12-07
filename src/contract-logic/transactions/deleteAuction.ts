@@ -3,8 +3,8 @@ import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY, NUM_OF_CYCLES_TO_DELETE } from "../consts"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { DeleteAuctionArgs, SCHEMA } from "../schema"
-import { parseInstruction } from "../utils/parseInstruction"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
+import { parseInstruction } from "../utils/parseInstruction"
 //import { deleteAuctionWasm } from "../wasm-factory/instructions"
 
 export async function deleteAuction(
@@ -12,13 +12,12 @@ export async function deleteAuction(
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { deleteAuctionWasm } = async import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+  const { deleteAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(
     connection,
     auctionIdArray,
-    auctionOwnerPubkey
   )
   const numOfCyclesToDelete = NUM_OF_CYCLES_TO_DELETE
 

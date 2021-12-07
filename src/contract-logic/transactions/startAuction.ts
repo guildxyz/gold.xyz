@@ -1,5 +1,5 @@
 import { Transaction } from "@solana/web3.js"
-import { serialize } from "borsh"
+import { deserializeUnchecked, serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY } from "../consts"
 import * as FrontendAuctionTypes from "../queries/getAuctions"
 import {
@@ -11,10 +11,10 @@ import {
   CreateTokenArgsToken,
   Data,
   InitializeAuctionArgs,
-  SCHEMA,
+  SCHEMA
 } from "../schema"
-import { parseInstruction } from "../utils/parseInstruction"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
+import { parseInstruction } from "../utils/parseInstruction"
 //import { initAuctionWasm } from "../wasm-factory/instructions"
 
 // TODO: separate error in contract if the metadata account is existing
@@ -22,7 +22,7 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 export async function startAuction(
   frontendAuctionConfig: FrontendAuctionTypes.AuctionConfig
 ) {
-  const { initAuctionWasm } = async import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+  const { initAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,
@@ -34,8 +34,8 @@ export async function startAuction(
     socials: frontendAuctionConfig.socials,
     goalTreasuryAmount: frontendAuctionConfig.goalTreasuryAmount,
   })
+  
   let createTokenArgs: CreateTokenArgs
-
   if (frontendAuctionConfig.asset.type === "NFT") {
     const createMetadataAccountArgs = new CreateMetadataAccountArgs({
       data: new Data({
@@ -51,7 +51,8 @@ export async function startAuction(
     })
     createTokenArgs = new CreateTokenArgs({
       createTokenArgsNft: new CreateTokenArgsNft({
-        unnamed: createMetadataAccountArgs,
+        metadataArgs: createMetadataAccountArgs,
+        isRepeating: frontendAuctionConfig.asset.isRepeated,
       }),
     })
   } else if (frontendAuctionConfig.asset.type === "TOKEN") {
@@ -68,13 +69,17 @@ export async function startAuction(
     auctionOwnerPubkey: frontendAuctionConfig.ownerPubkey,
     auctionId: padTo32Bytes(frontendAuctionConfig.id),
     auctionName: padTo32Bytes(frontendAuctionConfig.id),
-    auctionConfig,
-    auctionDescription,
-    createTokenArgs,
+    auctionConfig: auctionConfig,
+    auctionDescription: auctionDescription,
+    createTokenArgs: createTokenArgs,
     auctionStartTimestamp: frontendAuctionConfig.startTimestamp,
   })
 
   const initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)
+  console.log(initAuctionArgs)
+  console.log(deserializeUnchecked(SCHEMA, InitializeAuctionArgs, Buffer.from(initAuctionArgsSerialized)))
+
+  
   const instruction = parseInstruction(initAuctionWasm(initAuctionArgsSerialized))
 
   return new Transaction().add(instruction)

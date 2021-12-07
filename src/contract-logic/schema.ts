@@ -1,7 +1,5 @@
 import { PublicKey } from "@solana/web3.js"
 import BN from "bn.js"
-import Enum from "./extensions/enum"
-import Struct from "./extensions/struct"
 import { borshPublicKey } from "./extensions/publicKey"
 
 borshPublicKey()
@@ -66,7 +64,8 @@ export class CreateTokenArgs {
 }
 
 export class CreateTokenArgsNft {
-  unnamed: CreateMetadataAccountArgs
+  metadataArgs: CreateMetadataAccountArgs
+  isRepeating: boolean
   constructor(properties) {
     Object.keys(properties).map((key) => {
       this[key] = properties[key]
@@ -117,6 +116,7 @@ export class TokenTypeToken {
 
 export class NftData {
   masterEdition: PublicKey
+  isRepeating: boolean
   constructor(properties) {
     Object.keys(properties).map((key) => {
       this[key] = properties[key]
@@ -174,6 +174,7 @@ export class AuctionRootState {
   auctionConfig: AuctionConfig
   tokenConfig: TokenConfig
   status: AuctionStatus
+  currentTreasury: BN
   constructor(args) {
     Object.keys(args).map((key) => {
       this[key] = args[key]
@@ -249,7 +250,6 @@ export class FreezeAuctionArgs {
 
 export class PlaceBidArgs {
   userMainPubkey: PublicKey
-  auctionOwnerPubkey: PublicKey
   auctionId: [32]
   cycleNumber: BN
   topBidderPubkey: PublicKey | null
@@ -290,6 +290,7 @@ export class ClaimFundsArgs {
   contractAdminPubkey: PublicKey
   auctionOwnerPubkey: PublicKey
   auctionId: [32]
+  topBidderPubkey: PublicKey | null
   cycleNumber: BN
   amount: BN
   constructor(properties) {
@@ -393,7 +394,10 @@ export const SCHEMA = new Map<any, any>([
     CreateTokenArgsNft,
     {
       kind: "struct",
-      fields: [["unnamed", CreateMetadataAccountArgs]],
+      fields: [
+        ["metadataArgs", CreateMetadataAccountArgs],
+        ["isRepeating", "u8"],
+      ],
     },
   ],
   [
@@ -435,7 +439,10 @@ export const SCHEMA = new Map<any, any>([
     NftData,
     {
       kind: "struct",
-      fields: [["masterEdition", "publicKey"]],
+      fields: [
+        ["masterEdition", "publicKey"],
+        ["isRepeating", "u8"],
+      ],
     },
   ],
   [
@@ -484,6 +491,7 @@ export const SCHEMA = new Map<any, any>([
         ["auctionConfig", AuctionConfig],
         ["tokenConfig", TokenConfig],
         ["status", AuctionStatus],
+        ["currentTreasury", "u64"],
       ],
     },
   ],
@@ -527,6 +535,55 @@ export const SCHEMA = new Map<any, any>([
     },
   ],
   [
+    ClaimFundsArgs,
+    {
+      kind: "struct",
+      fields: [
+        ["contractAdminPubkey", "publicKey"],
+        ["auctionOwnerPubkey", "publicKey"],
+        ["auctionId", [32]],
+        ["cycleNumber", "u64"],
+        ["amount", "u64"],
+      ],
+    },
+  ],
+  [
+    InitializeAuctionArgs,
+    {
+      kind: "struct",
+      fields: [
+        ["contractAdminPubkey", "publicKey"],
+        ["auctionOwnerPubkey", "publicKey"],
+        ["auctionId", [32]],
+        ["auctionName", [32]],
+        ["auctionConfig", AuctionConfig],
+        ["auctionDescription", AuctionDescription],
+        ["createTokenArgs", CreateTokenArgs],
+        ["auctionStartTimestamp", { kind: "option", type: "u64" }],
+      ],
+    },
+  ],
+  [
+    InitializeContractArgs,
+    {
+      kind: "struct",
+      fields: [["contractAdminPubkey", "publicKey"]],
+    },
+  ],
+  [
+    PlaceBidArgs,
+    {
+      kind: "struct",
+      fields: [
+        ["userMainPubkey", "publicKey"],
+        ["auctionId", [32]],
+        ["cycleNumber", "u64"],
+        ["topBidderPubkey", { kind: "option", type: "publicKey" }],
+        ["amount", "u64"],
+      ],
+    },
+  ],
+  [
     DeleteAuctionArgs,
     {
       kind: "struct",
@@ -548,56 +605,6 @@ export const SCHEMA = new Map<any, any>([
         ["auctionId", [32]],
         ["topBidderPubkey", { kind: "option", type: "publicKey" }],
         ["cycleNumber", "u64"],
-      ],
-    },
-  ],
-  [
-    PlaceBidArgs,
-    {
-      kind: "struct",
-      fields: [
-        ["userMainPubkey", "publicKey"],
-        ["auctionOwnerPubkey", "publicKey"],
-        ["auctionId", [32]],
-        ["cycleNumber", "u64"],
-        ["topBidderPubkey", { kind: "option", type: "publicKey" }],
-        ["amount", "u64"],
-      ],
-    },
-  ],
-  [
-    InitializeContractArgs,
-    {
-      kind: "struct",
-      fields: [["contractAdminPubkey", "publicKey"]],
-    },
-  ],
-  [
-    InitializeAuctionArgs,
-    {
-      kind: "struct",
-      fields: [
-        ["contractAdminPubkey", "publicKey"],
-        ["auctionOwnerPubkey", "publicKey"],
-        ["auctionId", [32]],
-        ["auctionName", [32]],
-        ["auctionConfig", AuctionConfig],
-        ["auctionDescription", AuctionDescription],
-        ["createTokenArgs", CreateTokenArgs],
-        ["auctionStartTimestamp", { kind: "option", type: "u64" }],
-      ],
-    },
-  ],
-  [
-    ClaimFundsArgs,
-    {
-      kind: "struct",
-      fields: [
-        ["contractAdminPubkey", "publicKey"],
-        ["auctionOwnerPubkey", "publicKey"],
-        ["auctionId", [32]],
-        ["cycleNumber", "u64"],
-        ["amount", "u64"],
       ],
     },
   ],

@@ -3,7 +3,6 @@ import { serialize } from "borsh"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { InitializeContractArgs, SCHEMA } from "./schema"
 import { parseInstruction } from "./utils/parseInstruction"
-import { initContractWasm } from "./wasm-factory"
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -39,6 +38,7 @@ export async function sendTransaction(transaction: Transaction, signer: Keypair)
 }
 
 export async function initializeContract(auctionOwnerPubkey: PublicKey) {
+  const { initContractWasm } = await import ("../../zgen-solana/zgsol-fund-client/wasm-factory")
   await CONNECTION.confirmTransaction(
     await CONNECTION.requestAirdrop(CONTRACT_ADMIN_KEYPAIR.publicKey, 100000000)
   )

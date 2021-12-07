@@ -1,25 +1,25 @@
-import { Keypair } from "@solana/web3.js"
-import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { AuctionConfig, getAuction, getAuctions } from "./queries/getAuctions"
-import { SECRET2, SECRET3 } from "./test"
-;(async () => {
+import { Keypair } from "@solana/web3.js";
+import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts";
+import { AuctionConfig, getAuction, getAuctions } from "./queries/getAuctions";
+import { SECRET2, SECRET3 } from "./test";
+(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
   //await initializeContract(auctionOwner.publicKey);
 
   const auction: AuctionConfig = {
-    id: "bot-test",
-    name: "Bot test",
-    description: "Let's see it it works",
-    socials: ["gold.xyz"],
+    id: "aaa-aaa",
+    name: "aaa-aaa",
+    description: "aaa",
+    socials: ["aaa.aaa"],
     goalTreasuryAmount: 100000000,
     ownerPubkey: auctionOwner.publicKey,
     asset: {
       type: "NFT",
-      name: "test-nft",
-      symbol: "TEST",
-      uri: "test.json",
+      name: "aaa",
+      symbol: "AAA",
+      uri: "aaaa.json",
       isRepeated: false,
     },
     cyclePeriod: 60,
@@ -29,6 +29,7 @@ import { SECRET2, SECRET3 } from "./test"
   }
 
   console.log(CONTRACT_ADMIN_KEYPAIR.publicKey.toString())
+  console.log(await getAuctions(CONNECTION))
 
   // Create Auction
   //const startAuctionTransaction = await startAuction(auction);
@@ -37,10 +38,10 @@ import { SECRET2, SECRET3 } from "./test"
 
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  //console.log("auction data:", await getAuction(CONNECTION, "bot-test-long"))
+  console.log("auction data:", await getAuction(CONNECTION, auction.id))
 
   // Bid on an auction
-  //const bidTransaction = await placeBid(CONNECTION, auction.id, auctionOwner.publicKey, bidder.publicKey, 100000);
+  //const bidTransaction = await placeBid(CONNECTION, auction.id, bidder.publicKey, 100000);
   //await sendTransaction(bidTransaction, bidder);
   //console.log("Bid placed successfully.");
 

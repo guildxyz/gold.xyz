@@ -7803,7 +7803,7 @@
   "resolved" "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   "version" "0.1.0"
 
-"zgsol-borsh-schema@file:/data/zgen/gold.xyz/src/contract-logic":
+"zgsol-borsh-schema@file:/home/gyozosz/Desktop/work/0_git/gold.xyz/src/contract-logic":
   "resolved" "file:src/contract-logic"
   "version" "1.0.0"
   dependencies:

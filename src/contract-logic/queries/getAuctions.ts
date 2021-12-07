@@ -32,7 +32,7 @@ type TokenData = {
 export type AuctionBaseConfig = {
   id: string
   name: string
-  goalTreasuryAmount: number
+  goalTreasuryAmount?: number
   ownerPubkey: PublicKey
 }
 
@@ -60,22 +60,25 @@ export type Auction = AuctionConfig &
     isFrozen: boolean
   }
 
-export async function getAuctions(
-  connection: Connection
-): Promise<Array<AuctionBase>> {
+async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
   const { getAuctionPoolPubkeyWasm } = await import ("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionPoolPubkey = new PublicKey(
     await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
   )
-
   //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
-  const auctionPool = deserializeUnchecked(
+  return deserializeUnchecked(
       SCHEMA,
       AuctionPool,
       auctionPoolData
   );
+}
+
+export async function getAuctions(
+  connection: Connection
+): Promise<Array<AuctionBase>> {
+  const auctionPool = await getAuctionPool(connection);
 
   let auctionBaseArray = []
 
@@ -114,18 +117,7 @@ export async function getAuction(
   id: string,
   n?: number
 ): Promise<Auction> {
-  // read auction pool
-  const { getAuctionPoolPubkeyWasm } = await import ("../../../zgen-solana/zgsol-fund-client/wasm-factory");
-  const auctionPoolPubkey = new PublicKey(
-    await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
-  )
-  const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
-  const auctionPoolData: Buffer = auctionPoolAccount!.data
-  const auctionPool = deserializeUnchecked(
-    SCHEMA,
-    AuctionPool,
-    Buffer.from(auctionPoolData)
-  )
+  const auctionPool = await getAuctionPool(connection);
 
   const auctionId = Uint8Array.from(padTo32Bytes(id))
 
@@ -175,7 +167,6 @@ export async function getAuction(
 
     const masterMetadata = await getMasterMetadata(
       connection,
-      auctionOwnerPubkey,
       auctionId
     )
 
@@ -204,7 +195,7 @@ export async function getAuction(
       auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber()
   }
 
-  const treasuryFunds = await getTreasuryFunds(CONNECTION, id, auctionOwnerPubkey)
+  const treasuryFunds = await getTreasuryFunds(CONNECTION, id)
   let currentCycleNumber: number
   if (n) {
     currentCycleNumber = n
@@ -219,7 +210,7 @@ export async function getAuction(
     description: auctionRootStateDeserialized.description.description,
     socials: auctionRootStateDeserialized.description.socials,
     goalTreasuryAmount: goalTreasuryAmount,
-    currentTreasuryAmount: treasuryFunds,
+    currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber(),
     ownerPubkey: auctionOwnerPubkey,
     asset: asset,
     bids: auctionCycleStateDeserialized.bidHistory
