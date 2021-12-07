@@ -1,5 +1,6 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
+import { getDecimalsFromMintAccountDataWasm } from "../../../zgen-solana/zgsol-fund-client/wasm-factory"
 import { CONNECTION, CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
 import { MasterEditionV2, METADATA_SCHEMA } from "../metadata_schema"
 import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
@@ -22,7 +23,7 @@ export type NFTData = {
   isRepeated: boolean
 }
 
-type TokenData = {
+export type TokenData = {
   type: "TOKEN"
   decimals: number
   mintAddress: PublicKey
@@ -178,14 +179,23 @@ export async function getAuction(
       isRepeated: false,
     }
   } else if (auctionRootStateDeserialized.tokenConfig.tokenConfigToken) {
-    // TODO: get decimals, probably with web3js/spl-token
-    //  or with a wasm generated function with the account data as its parameter
+    const mintPubkey = auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint;
+    const mintInfo = await connection.getAccountInfo(mintPubkey);
+    const mintData: Buffer = mintInfo!.data;
+
+    let decimals;
+    try {
+      decimals = await getDecimalsFromMintAccountDataWasm(Uint8Array.from(mintData));
+    } catch (e) {
+      console.log("wasm error:", e);
+    }
+
     asset = {
       type: "TOKEN",
-      decimals: 1,
-      mintAddress: PublicKey.default,
+      decimals: decimals,
+      mintAddress: mintPubkey,
       perCycleAmount:
-        auctionRootStateDeserialized.tokenConfig.tokenConfigToken.perCycleAmount,
+        auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.perCycleAmount.toNumber(),
     }
   }
 

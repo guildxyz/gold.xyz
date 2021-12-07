@@ -30,11 +30,10 @@ export async function placeBid(
     amount: amount,
   })
 
-  console.log(placeBidArgs)
-
-  const placeBidInstruction = parseInstruction(
-    placeBidWasm(serialize(SCHEMA, placeBidArgs))
-  )
-
-  return new Transaction().add(placeBidInstruction)
+  try {
+    const instruction = parseInstruction(placeBidWasm(serialize(SCHEMA, placeBidArgs)))
+    return new Transaction().add(instruction)
+  } catch (e) {
+    console.log("wasm error:", e)
+  }
 }

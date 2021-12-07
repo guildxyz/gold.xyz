@@ -5,7 +5,6 @@ import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { DeleteAuctionArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
-//import { deleteAuctionWasm } from "../wasm-factory/instructions"
 
 export async function deleteAuction(
   connection: Connection,
@@ -29,9 +28,10 @@ export async function deleteAuction(
     numOfCyclesToDelete: numOfCyclesToDelete,
   })
 
-  const deleteAuctionInstruction = parseInstruction(
-    deleteAuctionWasm(serialize(SCHEMA, deleteAuctionArgs))
-  )
-
-  return new Transaction().add(deleteAuctionInstruction)
+  try {
+    const instruction = parseInstruction(deleteAuctionWasm(serialize(SCHEMA, deleteAuctionArgs)))
+    return new Transaction().add(instruction)
+  } catch (e) {
+    console.log("wasm error:", e)
+  }
 }

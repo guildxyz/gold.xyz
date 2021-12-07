@@ -28,10 +28,11 @@ export async function claimFunds(
     cycleNumber: currentCycleNumber,
     amount: amount,
   })
-
-  const claimFundsInstruction = parseInstruction(
-    claimFundsWasm(serialize(SCHEMA, claimFundsArgs))
-  )
-
-  return new Transaction().add(claimFundsInstruction)
+  
+  try {
+    const instruction = parseInstruction(claimFundsWasm(serialize(SCHEMA, claimFundsArgs)))
+    return new Transaction().add(instruction)
+  } catch (e) {
+    console.log("wasm error:", e)
+  }
 }

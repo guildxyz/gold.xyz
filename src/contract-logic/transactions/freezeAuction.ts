@@ -5,7 +5,6 @@ import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { FreezeAuctionArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
-//import { freezeAuctionWasm } from "../wasm-factory/instructions"
 
 export async function freezeAuction(
   connection: Connection,
@@ -28,9 +27,10 @@ export async function freezeAuction(
     cycleNumber: currentCycleNumber,
   })
 
-  const freezeAuctionInstruction = parseInstruction(
-    freezeAuctionWasm(serialize(SCHEMA, freezeAuctionArgs))
-  )
-
-  return new Transaction().add(freezeAuctionInstruction)
+  try {
+    const instruction = parseInstruction(freezeAuctionWasm(serialize(SCHEMA, freezeAuctionArgs)))
+    return new Transaction().add(instruction)
+  } catch (e) {
+    console.log("wasm error:", e)
+  }
 }

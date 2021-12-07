@@ -1,5 +1,5 @@
 import { Transaction } from "@solana/web3.js"
-import { deserializeUnchecked, serialize } from "borsh"
+import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY } from "../consts"
 import * as FrontendAuctionTypes from "../queries/getAuctions"
 import {
@@ -15,7 +15,6 @@ import {
 } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
-//import { initAuctionWasm } from "../wasm-factory/instructions"
 
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
@@ -75,12 +74,12 @@ export async function startAuction(
     auctionStartTimestamp: frontendAuctionConfig.startTimestamp,
   })
 
-  const initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)
-  console.log(initAuctionArgs)
-  console.log(deserializeUnchecked(SCHEMA, InitializeAuctionArgs, Buffer.from(initAuctionArgsSerialized)))
+  let initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)
 
-  
-  const instruction = parseInstruction(initAuctionWasm(initAuctionArgsSerialized))
-
-  return new Transaction().add(instruction)
+  try {
+    const instruction = parseInstruction(initAuctionWasm(initAuctionArgsSerialized))
+    return new Transaction().add(instruction)
+  } catch (e) {
+    console.log("wasm error:", e)
+  }
 }

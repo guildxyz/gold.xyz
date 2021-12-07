@@ -1,6 +1,6 @@
-import { Keypair } from "@solana/web3.js";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts";
-import { AuctionConfig, getAuction, getAuctions } from "./queries/getAuctions";
+import { AuctionConfig, getAuction, getAuctions, NFTData, TokenData } from "./queries/getAuctions";
 import { SECRET2, SECRET3 } from "./test";
 (async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
@@ -8,20 +8,29 @@ import { SECRET2, SECRET3 } from "./test";
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
   //await initializeContract(auctionOwner.publicKey);
 
+  const nftAsset: NFTData = {
+    type: "NFT",
+    name: "aaa",
+    symbol: "AAA",
+    uri: "aaaa.json",
+    isRepeated: false,
+  };
+
+  const tokenAsset: TokenData = {
+    type: "TOKEN",
+    decimals: 1,
+    perCycleAmount: 1000,
+    mintAddress: PublicKey.default,
+  }
+
   const auction: AuctionConfig = {
-    id: "aaa-aaa",
+    id: "token-test",
     name: "aaa-aaa",
     description: "aaa",
     socials: ["aaa.aaa"],
     goalTreasuryAmount: 100000000,
     ownerPubkey: auctionOwner.publicKey,
-    asset: {
-      type: "NFT",
-      name: "aaa",
-      symbol: "AAA",
-      uri: "aaaa.json",
-      isRepeated: false,
-    },
+    asset: tokenAsset,
     cyclePeriod: 60,
     numberOfCycles: 10,
     minBid: 10000,
