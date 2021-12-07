@@ -90,7 +90,7 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
       auctionRootStateData
     )
     auctionBaseArray.push({
-      id: auctionId,
+      id: parseAuctionId(auctionId),
       name: parseAuctionId(Uint8Array.from(auctionRootStateDeserialized.auctionName)),
       ownerPubkey: auctionRootStateDeserialized.auctionOwner,
       goalTreasuryAmount: auctionRootStateDeserialized.description.goalTreasuryAmount,
