@@ -75,7 +75,7 @@ const Page = (): JSX.Element => {
       <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
         <Center>
           <Image
-            src={asset.type === "NFT" ? asset?.uri : ""}
+            src={asset?.type === "NFT" ? asset?.uri : ""}
             alt="NFT"
             borderRadius="xl"
             maxH="calc(100vh - 400px)"
@@ -114,7 +114,7 @@ const Page = (): JSX.Element => {
               fontFamily="display"
               d="inline-block"
             >{`${
-              asset.type === "NFT" ? asset?.name : ""
+              asset?.type === "NFT" ? asset?.name : ""
             } #${currentCycle}`}</Heading>
           </Skeleton>
           <HStack
