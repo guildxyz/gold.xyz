@@ -1,36 +1,37 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONTRACT_ADMIN_PUBKEY } from "../consts"
+import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
-import { ClaimFundsArgs, SCHEMA } from "../schema"
+import { PlaceBidArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
-//import { claimFundsWasm } from "../wasm-factory/instructions"
+//import { placeBidWasm } from "../wasm-factory/instructions"
 
-export async function claimFunds(
+export async function placeBid(
   connection: Connection,
   auctionId: string,
-  auctionOwnerPubkey: PublicKey,
+  bidder: PublicKey,
   amount: number
 ) {
-  const { claimFundsWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
+  const { placeBidWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory");
   const auctionIdArray = padTo32Bytes(auctionId)
-
+  console.log(auctionIdArray)
+  const topBidder = await getTopBidder(connection, auctionIdArray)
   const currentCycleNumber = await getCurrentCycleNumberFromId(
     connection,
-    auctionIdArray,
+    auctionIdArray
   )
 
-  const claimFundsArgs = new ClaimFundsArgs({
-    contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
-    auctionOwnerPubkey: auctionOwnerPubkey,
+  const placeBidArgs = new PlaceBidArgs({
+    userMainPubkey: bidder,
     auctionId: auctionIdArray,
     cycleNumber: currentCycleNumber,
+    topBidderPubkey: topBidder,
     amount: amount,
   })
-  
+
   try {
-    const instruction = parseInstruction(claimFundsWasm(serialize(SCHEMA, claimFundsArgs)))
+    const instruction = parseInstruction(placeBidWasm(serialize(SCHEMA, placeBidArgs)))
     return new Transaction().add(instruction)
   } catch (e) {
     console.log("wasm error:", e)

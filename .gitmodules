@@ -1,0 +1,3 @@
+[submodule "zgen-solana"]
+	path = zgen-solana
+	url = https://github.com/AgoraSpaceDAO/zgen-solana.git
