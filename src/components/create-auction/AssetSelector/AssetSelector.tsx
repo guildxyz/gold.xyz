@@ -20,6 +20,6 @@ const options = [
   },
 ]
 
-const AssetSelector = () => <RadioCard options={options} name="asset" />
+const AssetSelector = () => <RadioCard options={options} name="asset.type" />
 
 export default AssetSelector

@@ -1,5 +1,5 @@
 import { PublicKey } from "@solana/web3.js"
-import { BigNumber as BN } from "bignumber.js"
+import BN from "bn.js"
 
 export class Creator {
   address: PublicKey

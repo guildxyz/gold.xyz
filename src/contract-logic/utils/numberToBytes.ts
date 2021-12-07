@@ -9,5 +9,5 @@ export function numberToBytes(num: number) {
     num = (num - byte) / 256
   }
 
-  return byteArray
+  return Uint8Array.from(byteArray)
 }
