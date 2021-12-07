@@ -2,7 +2,7 @@ import { FormControl, Textarea } from "@chakra-ui/react"
 import { useFormContext } from "react-hook-form"
 
 const Description = (): JSX.Element => {
-  const { register, setValue } = useFormContext()
+  const { register } = useFormContext()
 
   return (
     <FormControl>

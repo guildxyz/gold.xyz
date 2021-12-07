@@ -94,8 +94,13 @@ const Layout = ({
           pb={{ base: 20, md: 14 }}
           px={{ base: 4, sm: 6, md: 8, lg: 10 }}
         >
-          <VStack spacing={{ base: 2, md: 10 }} pb={{ base: 12, md: 14 }} w="full">
-            <HStack spacing={{ md: 8 }} alignItems="center" justify="space-between">
+          <VStack spacing={{ base: 6, md: 10 }} pb={{ base: 12, md: 14 }} w="full">
+            <HStack
+              spacing={{ md: 8 }}
+              alignItems="center"
+              justify="space-between"
+              w="full"
+            >
               <Heading
                 as="h1"
                 fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
@@ -109,7 +114,7 @@ const Layout = ({
               {action}
             </HStack>
             {showLayoutDescription && description?.length && (
-              <Text w="full" fontWeight="semibold" textAlign="center">
+              <Text w="full" fontWeight="semibold">
                 {description}
               </Text>
             )}
