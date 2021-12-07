@@ -1,8 +1,7 @@
 import { Keypair } from "@solana/web3.js";
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts";
 import { AuctionConfig, getAuction, getAuctions } from "./queries/getAuctions";
-import { SECRET2, SECRET3, sendTransaction } from "./test";
-import { startAuction } from "./transactions/startAuction";
+import { SECRET2, SECRET3 } from "./test";
 (async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
@@ -39,10 +38,10 @@ import { startAuction } from "./transactions/startAuction";
 
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  console.log("auction data:", await getAuction(CONNECTION, "aaa-aaa"))
+  console.log("auction data:", await getAuction(CONNECTION, auction.id))
 
   // Bid on an auction
-  //const bidTransaction = await placeBid(CONNECTION, auction.id, auctionOwner.publicKey, bidder.publicKey, 100000);
+  //const bidTransaction = await placeBid(CONNECTION, auction.id, bidder.publicKey, 100000);
   //await sendTransaction(bidTransaction, bidder);
   //console.log("Bid placed successfully.");
 

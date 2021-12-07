@@ -30,6 +30,8 @@ export async function placeBid(
     amount: amount,
   })
 
+  console.log(placeBidArgs)
+
   const placeBidInstruction = parseInstruction(
     placeBidWasm(serialize(SCHEMA, placeBidArgs))
   )

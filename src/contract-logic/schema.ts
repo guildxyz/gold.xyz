@@ -576,7 +576,6 @@ export const SCHEMA = new Map<any, any>([
       kind: "struct",
       fields: [
         ["userMainPubkey", "publicKey"],
-        ["auctionOwnerPubkey", "publicKey"],
         ["auctionId", [32]],
         ["cycleNumber", "u64"],
         ["topBidderPubkey", { kind: "option", type: "publicKey" }],

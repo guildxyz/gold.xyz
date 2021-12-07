@@ -210,7 +210,7 @@ export async function getAuction(
     description: auctionRootStateDeserialized.description.description,
     socials: auctionRootStateDeserialized.description.socials,
     goalTreasuryAmount: goalTreasuryAmount,
-    currentTreasuryAmount: treasuryFunds,
+    currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber(),
     ownerPubkey: auctionOwnerPubkey,
     asset: asset,
     bids: auctionCycleStateDeserialized.bidHistory
