@@ -29,7 +29,7 @@ module.exports = withTM({
       new WasmPackPlugin({
         crateDirectory: resolve("./zgen-solana/zgsol-fund-client"),
         args: "--log-level warn",
-        outDir: "wasm-factory",
+        outDir: "../../wasm-factory",
         outName: "instructions",
       })
     )

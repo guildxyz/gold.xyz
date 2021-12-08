@@ -21,7 +21,7 @@ export async function getRootState(connection: Connection, auctionRootStatePubke
 
 export async function getRootStatePubkey(auctionId: Uint8Array) {
   const { getRootStatePubkeyWasm } = await import(
-    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
+    "../../../wasm-factory"
   )
   const pubkeyBytes = await getRootStatePubkeyWasm(auctionId)
   return new PublicKey(pubkeyBytes)
@@ -30,7 +30,7 @@ export async function getRootStatePubkey(auctionId: Uint8Array) {
 // CYCLE STATES
 export async function getNthCycleStatePubkey(auctionRootStatePubkey: PublicKey, n: number) {
   const { getCycleStatePubkeyWasm } = await import(
-    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
+    "../../../wasm-factory"
   )
   const pubkeyBytes = getCycleStatePubkeyWasm(auctionRootStatePubkey.toBytes(), numberToBytes(n))
   return new PublicKey(pubkeyBytes)

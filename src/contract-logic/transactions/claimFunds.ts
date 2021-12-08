@@ -13,7 +13,7 @@ export async function claimFunds(
   auctionOwnerPubkey: PublicKey,
   amount: number
 ) {
-  const { claimFundsWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory")
+  const { claimFundsWasm } = await import("../../../wasm-factory")
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)

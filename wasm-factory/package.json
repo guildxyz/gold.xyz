@@ -1,0 +1,12 @@
+{
+  "name": "zgsol-fund-client",
+  "version": "0.1.0",
+  "files": [
+    "instructions_bg.wasm",
+    "instructions.js",
+    "instructions.d.ts"
+  ],
+  "module": "instructions.js",
+  "types": "instructions.d.ts",
+  "sideEffects": false
+}

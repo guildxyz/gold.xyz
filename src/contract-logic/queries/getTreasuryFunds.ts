@@ -3,7 +3,7 @@ import { padTo32Bytes } from "../utils/padTo32Bytes"
 
 export async function getTreasuryFunds(connection: Connection, auctionId: string) {
   const { getAuctionBankPubkeyWasm } = await import(
-    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
+    "../../../wasm-factory"
   )
 
   const auctionIdBuffer = padTo32Bytes(auctionId)

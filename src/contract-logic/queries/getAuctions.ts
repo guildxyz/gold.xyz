@@ -62,7 +62,7 @@ export type Auction = AuctionConfig &
 
 async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
   const { getAuctionPoolPubkeyWasm } = await import(
-    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
+    "../../../wasm-factory"
   )
   const auctionPoolPubkey = new PublicKey(
     await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
@@ -105,7 +105,7 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
 
 export async function getAuction(connection: Connection, id: string, n?: number): Promise<Auction> {
   const { getDecimalsFromMintAccountDataWasm } = await import(
-    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
+    "../../../wasm-factory"
   )
   const auctionPool = await getAuctionPool(connection)
 

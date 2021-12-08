@@ -5,7 +5,7 @@ import { Metadata, METADATA_SCHEMA } from "../metadata_schema"
 
 export async function getMasterMetadata(connection: Connection, auctionId: Uint8Array) {
   const { getMasterMetadataPubkeyWasm, getMasterMintPubkeyWasm } = await import(
-    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
+    "../../../wasm-factory"
   )
   const masterMintPubkey = new PublicKey(await getMasterMintPubkeyWasm(auctionId))
   const masterMetadataPubkey = new PublicKey(
