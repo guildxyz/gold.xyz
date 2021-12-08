@@ -11,7 +11,7 @@ export async function deleteAuction(
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { deleteAuctionWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory")
+  const { deleteAuctionWasm } = await import("../../../wasm-factory")
   const auctionIdArray = padTo32Bytes(auctionId)
 
   const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)

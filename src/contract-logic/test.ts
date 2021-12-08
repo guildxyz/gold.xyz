@@ -37,7 +37,7 @@ export async function sendTransaction(transaction: Transaction, signer: Keypair)
 }
 
 export async function initializeContract(auctionOwnerPubkey: PublicKey) {
-  const { initContractWasm } = await import("../../zgen-solana/zgsol-fund-client/wasm-factory")
+  const { initContractWasm } = await import("../../wasm-factory")
   await CONNECTION.confirmTransaction(
     await CONNECTION.requestAirdrop(CONTRACT_ADMIN_KEYPAIR.publicKey, 100000000)
   )

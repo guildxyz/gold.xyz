@@ -13,7 +13,7 @@ export async function placeBid(
   bidder: PublicKey,
   amount: number
 ) {
-  const { placeBidWasm } = await import("../../../zgen-solana/zgsol-fund-client/wasm-factory")
+  const { placeBidWasm } = await import("../../../wasm-factory")
   const auctionIdArray = padTo32Bytes(auctionId)
   console.log(auctionIdArray)
   const topBidder = await getTopBidder(connection, auctionIdArray)

@@ -25,14 +25,16 @@ module.exports = withTM({
       type: "webassembly/sync",
     })
 
-    config.plugins.push(
-      new WasmPackPlugin({
-        crateDirectory: resolve("./zgen-solana/zgsol-fund-client"),
-        args: "--log-level warn",
-        outDir: "wasm-factory",
-        outName: "instructions",
-      })
-    )
+    if (!process.env.IS_VERCEL) {
+      config.plugins.push(
+        new WasmPackPlugin({
+          crateDirectory: resolve("./zgen-solana/zgsol-fund-client"),
+          args: "--log-level warn",
+          outDir: "../../wasm-factory",
+          outName: "instructions",
+        })
+      )
+    }
 
     // From https://github.com/vercel/next.js/issues/22581#issuecomment-864476385
     const ssrPlugin = config.plugins.find((plugin) => plugin instanceof SSRPlugin)

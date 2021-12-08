@@ -2,9 +2,7 @@ import { Connection, PublicKey } from "@solana/web3.js"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 
 export async function getTreasuryFunds(connection: Connection, auctionId: string) {
-  const { getAuctionBankPubkeyWasm } = await import(
-    "../../../zgen-solana/zgsol-fund-client/wasm-factory"
-  )
+  const { getAuctionBankPubkeyWasm } = await import("../../../wasm-factory")
 
   const auctionIdBuffer = padTo32Bytes(auctionId)
   const auctionBankPubkey = new PublicKey(await getAuctionBankPubkeyWasm(auctionIdBuffer))
