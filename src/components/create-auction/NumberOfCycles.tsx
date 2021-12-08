@@ -16,7 +16,7 @@ const NumberOfCycles = () => {
     formState: { errors },
   } = useFormContext()
 
-  const maxSupply = watch("nftData.maxSupply")
+  const maxSupply = watch("asset.maxSupply")
 
   useEffect(() => {
     if (maxSupply) {

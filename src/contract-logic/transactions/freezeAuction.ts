@@ -1,33 +1,31 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONTRACT_ADMIN_PUBKEY } from "../consts"
+import { getTopBidder } from "../queries/getTopBidder"
 import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
-import { ClaimFundsArgs, SCHEMA } from "../schema"
+import { FreezeAuctionArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
-//import { claimFundsWasm } from "../wasm-factory/instructions"
 
-export async function claimFunds(
+export async function freezeAuction(
   connection: Connection,
   auctionId: string,
-  auctionOwnerPubkey: PublicKey,
-  amount: number
+  auctionOwnerPubkey: PublicKey
 ) {
-  const { claimFundsWasm } = await import("../../../wasm-factory")
+  const { freezeAuctionWasm } = await import("../../../wasm-factory")
   const auctionIdArray = padTo32Bytes(auctionId)
 
+  const topBidder = await getTopBidder(connection, auctionIdArray)
   const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)
 
-  const claimFundsArgs = new ClaimFundsArgs({
-    contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
+  const freezeAuctionArgs = new FreezeAuctionArgs({
     auctionOwnerPubkey: auctionOwnerPubkey,
     auctionId: auctionIdArray,
+    topBidderPubkey: topBidder,
     cycleNumber: currentCycleNumber,
-    amount: amount,
   })
 
   try {
-    const instruction = parseInstruction(claimFundsWasm(serialize(SCHEMA, claimFundsArgs)))
+    const instruction = parseInstruction(freezeAuctionWasm(serialize(SCHEMA, freezeAuctionArgs)))
     return new Transaction().add(instruction)
   } catch (e) {
     console.log("wasm error:", e)

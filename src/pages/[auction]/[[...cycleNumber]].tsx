@@ -52,7 +52,7 @@ const Page = (): JSX.Element => {
 
   const {
     name = router.query.auction as string,
-    nftData,
+    asset,
     bids,
     currentCycle = 0,
     endTimestamp,
@@ -75,7 +75,7 @@ const Page = (): JSX.Element => {
       <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
         <Center>
           <Image
-            src={nftData?.uri}
+            src={asset?.type === "NFT" ? asset?.uri : ""}
             alt="NFT"
             borderRadius="xl"
             maxH="calc(100vh - 400px)"
@@ -107,13 +107,15 @@ const Page = (): JSX.Element => {
               </Link>
             )}
           </HStack>
-          <Skeleton isLoaded={!!nftData} w="fit-content">
+          <Skeleton isLoaded={!!asset} w="fit-content">
             <Heading
               as="h3"
               fontSize="4xl"
               fontFamily="display"
               d="inline-block"
-            >{`${nftData?.name} #${currentCycle}`}</Heading>
+            >{`${
+              asset?.type === "NFT" ? asset?.name : ""
+            } #${currentCycle}`}</Heading>
           </Skeleton>
           <HStack
             divider={<Divider orientation="vertical" />}
