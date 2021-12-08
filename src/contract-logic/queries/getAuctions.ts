@@ -65,7 +65,7 @@ async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
     "../../../wasm-factory"
   )
   const auctionPoolPubkey = new PublicKey(
-    await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
+    await getAuctionPoolPubkeyWasm()
   )
   //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
