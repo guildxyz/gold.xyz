@@ -1,9 +1,11 @@
-import { Divider, Flex, VStack } from "@chakra-ui/react"
+import { Divider, Flex, Stack, VStack } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
 import Section from "components/common/Section"
 import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import AssetSelector from "components/create-auction/AssetSelector"
+import Description from "components/create-auction/Description"
+import GoalAmount from "components/create-auction/GoalAmount"
 import NameAndIcon from "components/create-auction/NameAndIcon"
 import NFTData from "components/create-auction/NFTData"
 import NumberOfCycles from "components/create-auction/NumberOfCycles"
@@ -18,8 +20,8 @@ const CreateGuildPage = (): JSX.Element => {
     mode: "all",
     defaultValues: {
       name: "",
-      asset: "NFT",
-      nftData: {
+      asset: {
+        type: "NFT",
         name: "",
         symbol: "",
       },
@@ -38,8 +40,21 @@ const CreateGuildPage = (): JSX.Element => {
         {connected ? (
           <>
             <VStack spacing={10} alignItems="start">
-              <Section title="Auction name">
-                <NameAndIcon />
+              <Stack w="full" direction={{ base: "column", md: "row" }} spacing="10">
+                <Section title="Choose a name for your auction">
+                  <NameAndIcon />
+                </Section>
+                <Section
+                  title="Set goal treasury amount"
+                  maxW={{ base: "2xs", lg: "xs" }}
+                  flexShrink="0"
+                >
+                  <GoalAmount />
+                </Section>
+              </Stack>
+
+              <Section title="Description">
+                <Description />
               </Section>
 
               <Divider />

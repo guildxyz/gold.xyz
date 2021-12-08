@@ -2,3 +2,4 @@
 **/out/*
 **/.next/*
 src/contract-logic
+zgen-solana

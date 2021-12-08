@@ -29,25 +29,25 @@ const NFTData = () => {
     <>
       <Section title="NFT collection name and symbol">
         <HStack alignItems="start">
-          <FormControl isInvalid={errors?.nftData?.name} maxWidth="sm" w="full">
+          <FormControl isInvalid={errors?.asset?.name} maxWidth="sm" w="full">
             <Input
               size="lg"
-              {...register("nftData.name", {
+              {...register("asset.name", {
                 required: "This field is required.",
               })}
             />
-            <FormErrorMessage>{errors?.nftData?.name?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors?.asset?.name?.message}</FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={errors?.nftData?.symbol} w="auto">
+          <FormControl isInvalid={errors?.asset?.symbol} w="auto">
             <Input
               size="lg"
               w="24"
               placeholder="SYMBL"
-              {...register("nftData.symbol", {
+              {...register("asset.symbol", {
                 required: "This field is required.",
               })}
             />
-            <FormErrorMessage>{errors?.nftData?.symbol?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors?.asset?.symbol?.message}</FormErrorMessage>
           </FormControl>
         </HStack>
       </Section>

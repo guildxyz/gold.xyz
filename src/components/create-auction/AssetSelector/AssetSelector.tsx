@@ -27,7 +27,7 @@ const AssetSelector = () => {
 
   const { field } = useController({
     control,
-    name: "asset",
+    name: "asset.type",
     rules: { required: "You must pick an asset type" },
     defaultValue: "NFT",
   })

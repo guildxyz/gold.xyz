@@ -23,7 +23,7 @@ type Props = {
 }
 
 const NFTCard = ({ index, id, preview, removeNft }: Props) => {
-  const name = useWatch({ name: "nftData.name" })
+  const name = useWatch({ name: "asset.name" })
   const { fields, append, remove } = useFieldArray({ name: `nfts.${id}.traits` })
 
   const addTrait = () =>

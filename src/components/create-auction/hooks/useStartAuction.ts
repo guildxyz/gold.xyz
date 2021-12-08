@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { Auction } from "contract-logic/queries/getAuctions"
+import { Auction, AuctionConfig, NFTData } from "contract-logic/queries/getAuctions"
 import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
@@ -22,14 +22,14 @@ type AuctionFormData = Auction & {
 }
 
 const useStartAuction = () => {
-  const [data, setData] = useState<AuctionFormData>()
+  const [data, setData] = useState<AuctionConfig>()
   const toast = useToast()
   const { connection } = useConnection()
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const { sendTransaction, publicKey } = useWallet()
 
-  const handleStartAuction = async (data_: AuctionFormData) => {
+  const handleStartAuction = async (data_: AuctionConfig) => {
     console.log(data_)
     const tx = await startAuction(data_)
     console.log(tx)
@@ -43,7 +43,7 @@ const useStartAuction = () => {
     console.log("success", "Transaction successful!", signature)
   }
 
-  const { onSubmit, response, error, isLoading } = useSubmit<Auction, any>(
+  const { onSubmit, response, error, isLoading } = useSubmit<AuctionConfig, any>(
     handleStartAuction,
     {
       onSuccess: () => {
@@ -75,7 +75,7 @@ const useStartAuction = () => {
     if (imageResponse?.publicUrl)
       onSubmit({
         ...data,
-        nftData: { ...data.nftData, uri: imageResponse.publicUrl },
+        asset: { ...data.asset, uri: imageResponse.publicUrl } as NFTData,
       })
   }, [imageResponse])
 
@@ -93,19 +93,21 @@ const useStartAuction = () => {
           },
         ])
       )
-
-      setData({
+      const finalData = {
         ..._data,
         cyclePeriod: (_data.customCyclePeriod ?? _data.cyclePeriod) * DAY_IN_SECONDS,
         ownerPubkey: publicKey,
-      })
-      onSubmitImage({
-        folder: _data.id,
-        name: _data.nftData.name,
-        symbol: _data.nftData.symbol,
-        description: "",
-        nfts: _data.nfts,
-      })
+      }
+      if (_data.asset.type === "NFT") {
+        setData(finalData)
+        onSubmitImage({
+          folder: _data.id,
+          name: _data.asset.name,
+          symbol: _data.asset.symbol,
+          description: "",
+          nfts: _data.nfts,
+        })
+      } else onSubmit(finalData)
     },
     error: error || imageError,
     isImageLoading,

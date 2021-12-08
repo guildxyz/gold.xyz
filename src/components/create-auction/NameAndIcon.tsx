@@ -22,7 +22,6 @@ const NameAndIcon = () => {
         {/* <IconSelector /> */}
         <Input
           size="lg"
-          maxWidth="sm"
           {...register("name", {
             required: "This field is required.",
             maxLength: {
@@ -32,8 +31,8 @@ const NameAndIcon = () => {
             validate: (input) =>
               input?.trim() !== "404" || 'Name "404" is not allowed.',
             onBlur: ({ target: { value } }) => {
-              if (!dirtyFields?.nftData?.name) {
-                setValue("nftData.name", value)
+              if (!dirtyFields?.asset?.name) {
+                setValue("asset.name", value)
               }
             },
           })}
