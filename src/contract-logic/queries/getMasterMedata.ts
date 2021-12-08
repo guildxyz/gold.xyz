@@ -1,6 +1,5 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
-import { METADATA_PROGRAM_ID, PREFIX, PROGRAM_ID } from "../consts"
 import { Metadata, METADATA_SCHEMA } from "../metadata_schema"
 
 export async function getMasterMetadata(connection: Connection, auctionId: Uint8Array) {

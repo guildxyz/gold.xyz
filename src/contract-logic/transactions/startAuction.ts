@@ -28,7 +28,7 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
   })
   const auctionDescription = new AuctionDescription({
     description: frontendAuctionConfig.description,
-    socials: frontendAuctionConfig.socials,
+    socials: frontendAuctionConfig.socials ?? [],
     goalTreasuryAmount: frontendAuctionConfig.goalTreasuryAmount,
   })
 

@@ -20,18 +20,14 @@ export async function getRootState(connection: Connection, auctionRootStatePubke
 }
 
 export async function getRootStatePubkey(auctionId: Uint8Array) {
-  const { getRootStatePubkeyWasm } = await import(
-    "../../../wasm-factory"
-  )
+  const { getRootStatePubkeyWasm } = await import("../../../wasm-factory")
   const pubkeyBytes = await getRootStatePubkeyWasm(auctionId)
   return new PublicKey(pubkeyBytes)
 }
 
 // CYCLE STATES
 export async function getNthCycleStatePubkey(auctionRootStatePubkey: PublicKey, n: number) {
-  const { getCycleStatePubkeyWasm } = await import(
-    "../../../wasm-factory"
-  )
+  const { getCycleStatePubkeyWasm } = await import("../../../wasm-factory")
   const pubkeyBytes = getCycleStatePubkeyWasm(auctionRootStatePubkey.toBytes(), numberToBytes(n))
   return new PublicKey(pubkeyBytes)
 }
