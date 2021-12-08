@@ -12,6 +12,7 @@ import {
   Image,
   SimpleGrid,
   Skeleton,
+  Spacer,
   Stat,
   StatLabel,
   StatNumber,
@@ -53,6 +54,7 @@ const Page = (): JSX.Element => {
   const {
     name = router.query.auction as string,
     description,
+    goalTreasuryAmount,
     asset,
     bids,
     currentCycle = 0,
@@ -69,10 +71,18 @@ const Page = (): JSX.Element => {
       description={description}
       showLayoutDescription
       action={
-        publicKey &&
-        ownerPubkey &&
-        publicKey?.toString() === ownerPubkey?.toString() &&
-        isActive && <SettingsMenu />
+        <>
+          {goalTreasuryAmount && (
+            <Tag size="lg" mb="-8px !important">
+              Goal: {goalTreasuryAmount} SOL
+            </Tag>
+          )}
+          <Spacer />
+          {publicKey &&
+            ownerPubkey &&
+            publicKey?.toString() === ownerPubkey?.toString() &&
+            isActive && <SettingsMenu />}
+        </>
       }
     >
       <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">

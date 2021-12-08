@@ -96,7 +96,7 @@ const Layout = ({
         >
           <VStack spacing={{ base: 6, md: 10 }} pb={{ base: 12, md: 14 }} w="full">
             <HStack
-              spacing={{ md: 8 }}
+              spacing={{ base: 4, md: 8 }}
               alignItems="center"
               justify="space-between"
               w="full"
@@ -107,6 +107,7 @@ const Layout = ({
                 fontFamily="display"
                 isTruncated
                 maxW="full"
+                flexShrink="0"
               >
                 {title}
               </Heading>
