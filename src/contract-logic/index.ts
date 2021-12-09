@@ -1,18 +1,23 @@
 import { Keypair, PublicKey } from "@solana/web3.js"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { AuctionConfig, getAuction, getAuctions, NFTData, TokenData } from "./queries/getAuctions"
-import { SECRET2, SECRET3 } from "./test"
+import { SECRET2, SECRET3, sendTransaction } from "./test"
+import { deleteAuction } from "./transactions/deleteAuction"
+import { freezeAuction } from "./transactions/freezeAuction"
+import { startAuction } from "./transactions/startAuction"
+import { placeBid } from "./transactions/placeBid"
 ;(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
+  console.log("CONTRACT ADMIN", CONTRACT_ADMIN_KEYPAIR.publicKey.toString())
   //await initializeContract(auctionOwner.publicKey);
 
   const nftAsset: NFTData = {
     type: "NFT",
     name: "aaa",
     symbol: "AAA",
-    uri: "aaaa.json",
+    uri: "aaaa/0.json",
     isRepeated: false,
   }
 
@@ -24,21 +29,18 @@ import { SECRET2, SECRET3 } from "./test"
   }
 
   const auction: AuctionConfig = {
-    id: "token-test",
-    name: "aaa-aaa",
-    description: "aaa",
+    id: "nft-test",
+    name: "NFT Test",
+    description: "xd",
     socials: ["aaa.aaa"],
     goalTreasuryAmount: 100000000,
     ownerPubkey: auctionOwner.publicKey,
-    asset: tokenAsset,
+    asset: nftAsset,
     cyclePeriod: 60,
-    numberOfCycles: 10,
+    numberOfCycles: 20,
     minBid: 10000,
     startTimestamp: null,
   }
-
-  console.log(CONTRACT_ADMIN_KEYPAIR.publicKey.toString())
-  console.log(await getAuctions(CONNECTION))
 
   // Create Auction
   //const startAuctionTransaction = await startAuction(auction);
@@ -47,10 +49,11 @@ import { SECRET2, SECRET3 } from "./test"
 
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  console.log("auction data:", await getAuction(CONNECTION, "test-bot2"))
+  console.log("auction data:", await getAuction(CONNECTION, "nft-test"))
 
   // Bid on an auction
-  //const bidTransaction = await placeBid(CONNECTION, auction.id, bidder.publicKey, 100000);
+  //CONNECTION.requestAirdrop(bidder.publicKey, 100000000);
+  //const bidTransaction = await placeBid(CONNECTION, auction.id, bidder.publicKey, 234000);
   //await sendTransaction(bidTransaction, bidder);
   //console.log("Bid placed successfully.");
 
