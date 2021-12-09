@@ -8,6 +8,7 @@ import { parseAuctionId } from "../utils/parseAuctionId"
 import { getMasterMetadata } from "./getMasterMedata"
 import { getTreasuryFunds } from "./getTreasuryFunds"
 import { getCurrentCycleState } from "./readCycleState"
+import BN from "bn.js"
 
 export type Bid = {
   bidderPubkey: PublicKey
@@ -63,9 +64,10 @@ export type Auction = AuctionConfig &
 async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
   const { getAuctionPoolPubkeyWasm } = await import("../../../wasm-factory")
   const auctionPoolPubkey = new PublicKey(
-    await getAuctionPoolPubkeyWasm(CONTRACT_ADMIN_PUBKEY.toBytes())
+    await getAuctionPoolPubkeyWasm()
   )
   //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
+  console.log(auctionPoolPubkey.toString());
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   return deserializeUnchecked(SCHEMA, AuctionPool, auctionPoolData)
@@ -73,7 +75,6 @@ async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
 
 export async function getAuctions(connection: Connection): Promise<Array<AuctionBase>> {
   const auctionPool = await getAuctionPool(connection)
-
   let auctionBaseArray = []
 
   let poolIterator = auctionPool.pool.entries()
@@ -87,12 +88,18 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
       AuctionRootState,
       auctionRootStateData
     )
+
+    let goalTreasuryAmount = null;
+    if (auctionRootStateDeserialized.description.goalTreasuryAmount != null) {
+      goalTreasuryAmount = auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber() / LAMPORTS;
+    }
+
     auctionBaseArray.push({
       id: parseAuctionId(auctionId),
       name: parseAuctionId(Uint8Array.from(auctionRootStateDeserialized.auctionName)),
       ownerPubkey: auctionRootStateDeserialized.auctionOwner,
-      goalTreasuryAmount: auctionRootStateDeserialized.description.goalTreasuryAmount,
-      currentTreasuryAmount: 100, // TODO: insert field from auctionRootState
+      goalTreasuryAmount,
+      currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber() / LAMPORTS,
     })
 
     currentEntry = poolIterator.next()
@@ -179,10 +186,9 @@ export async function getAuction(connection: Connection, id: string, n?: number)
 
   let goalTreasuryAmount = null
   if (auctionRootStateDeserialized.description.goalTreasuryAmount != null) {
-    goalTreasuryAmount = auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber()
+    goalTreasuryAmount = auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber() / LAMPORTS;
   }
 
-  const treasuryFunds = await getTreasuryFunds(CONNECTION, id)
   let currentCycleNumber: number
   if (n) {
     currentCycleNumber = n
@@ -196,11 +202,11 @@ export async function getAuction(connection: Connection, id: string, n?: number)
     description: auctionRootStateDeserialized.description.description,
     socials: auctionRootStateDeserialized.description.socials,
     goalTreasuryAmount: goalTreasuryAmount,
-    currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber(),
+    currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber() / LAMPORTS,
     ownerPubkey: auctionOwnerPubkey,
     asset: asset,
     bids: auctionCycleStateDeserialized.bidHistory
-      .map((bid) => ({ ...bid, amount: bid.bidAmount.toNumber() / LAMPORTS }))
+      .map((bid) => ({ bidderPubkey: bid.bidderPubkey, amount: bid.bidAmount.toNumber() / LAMPORTS }))
       .reverse(),
     cyclePeriod: auctionRootStateDeserialized.auctionConfig.cyclePeriod.toNumber(),
     currentCycle: currentCycleNumber,

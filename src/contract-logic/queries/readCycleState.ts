@@ -2,10 +2,6 @@ import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
 import { AuctionCycleState, AuctionRootState, SCHEMA } from "../schema"
 import { numberToBytes } from "../utils/numberToBytes"
-//import {
-//  getCycleStatePubkeyWasm,
-//  getRootStatePubkeyWasm,
-//} from "../wasm-factory/instructions"
 
 // ROOT STATES
 export async function getRootState(connection: Connection, auctionRootStatePubkey: PublicKey) {
