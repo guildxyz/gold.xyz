@@ -31,10 +31,9 @@ export function deleteAuctionWasm(serialized_input: Uint8Array): string;
 */
 export function initContractWasm(serialized_input: Uint8Array): string;
 /**
-* @param {Uint8Array} admin_pubkey
 * @returns {Uint8Array}
 */
-export function getAuctionPoolPubkeyWasm(admin_pubkey: Uint8Array): Uint8Array;
+export function getAuctionPoolPubkeyWasm(): Uint8Array;
 /**
 * @param {Uint8Array} auction_id
 * @returns {Uint8Array}

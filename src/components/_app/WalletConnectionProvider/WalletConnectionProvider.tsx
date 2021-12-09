@@ -11,7 +11,7 @@ import WalletModalProvider from "../WalletModalProvider"
 
 const WalletConnectionProvider: FC = ({ children }) => {
   // Can be set to 'devnet', 'testnet', or 'mainnet-beta'
-  const network = WalletAdapterNetwork.Testnet
+  const network = WalletAdapterNetwork.Devnet
   const endpoint = useMemo(() => clusterApiUrl(network), [network])
 
   // @solana/wallet-adapter-wallets includes all the adapters but supports tree shaking --

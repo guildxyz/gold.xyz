@@ -7,7 +7,7 @@ export function placeBidWasm(a: number, b: number, c: number): void;
 export function claimFundsWasm(a: number, b: number, c: number): void;
 export function deleteAuctionWasm(a: number, b: number, c: number): void;
 export function initContractWasm(a: number, b: number, c: number): void;
-export function getAuctionPoolPubkeyWasm(a: number, b: number, c: number): void;
+export function getAuctionPoolPubkeyWasm(a: number): void;
 export function getAuctionBankPubkeyWasm(a: number, b: number, c: number): void;
 export function getRootStatePubkeyWasm(a: number, b: number, c: number): void;
 export function getCycleStatePubkeyWasm(a: number, b: number, c: number, d: number, e: number): void;
