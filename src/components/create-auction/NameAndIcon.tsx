@@ -22,7 +22,6 @@ const NameAndIcon = () => {
         {/* <IconSelector /> */}
         <Input
           size="lg"
-          maxWidth="sm"
           {...register("name", {
             required: "This field is required.",
             maxLength: {

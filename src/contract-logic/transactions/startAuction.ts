@@ -1,6 +1,6 @@
 import { Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONTRACT_ADMIN_PUBKEY } from "../consts"
+import { CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
 import { AuctionConfig as AuctionConfigType } from "../queries/getAuctions"
 import {
   AuctionConfig,
@@ -24,12 +24,12 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,
     numberOfCycles: frontendAuctionConfig.numberOfCycles,
-    minimumBidAmount: frontendAuctionConfig.minBid,
+    minimumBidAmount: frontendAuctionConfig.minBid * LAMPORTS,
   })
   const auctionDescription = new AuctionDescription({
     description: frontendAuctionConfig.description,
-    socials: frontendAuctionConfig.socials,
-    goalTreasuryAmount: frontendAuctionConfig.goalTreasuryAmount,
+    socials: frontendAuctionConfig.socials ?? [],
+    goalTreasuryAmount: frontendAuctionConfig.goalTreasuryAmount * LAMPORTS,
   })
 
   let createTokenArgs: CreateTokenArgs
@@ -62,6 +62,7 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
   }
 
   const initAuctionArgs = new InitializeAuctionArgs({
+    contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
     auctionOwnerPubkey: frontendAuctionConfig.ownerPubkey,
     auctionId: padTo32Bytes(frontendAuctionConfig.id),
     auctionName: padTo32Bytes(frontendAuctionConfig.id),

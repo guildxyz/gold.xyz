@@ -5,17 +5,16 @@ import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { PlaceBidArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
-//import { placeBidWasm } from "../wasm-factory/instructions"
+import { LAMPORTS } from "../consts"
 
 export async function placeBid(
   connection: Connection,
   auctionId: string,
   bidder: PublicKey,
-  amount: number
+  amount: number // in SOL
 ) {
   const { placeBidWasm } = await import("../../../wasm-factory")
   const auctionIdArray = padTo32Bytes(auctionId)
-  console.log(auctionIdArray)
   const topBidder = await getTopBidder(connection, auctionIdArray)
   const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)
 
@@ -24,7 +23,7 @@ export async function placeBid(
     auctionId: auctionIdArray,
     cycleNumber: currentCycleNumber,
     topBidderPubkey: topBidder,
-    amount: amount,
+    amount: amount * LAMPORTS,
   })
 
   try {

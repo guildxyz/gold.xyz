@@ -6,7 +6,6 @@
     "instructions.js",
     "instructions.d.ts"
   ],
-  "module": "instructions.js",
-  "types": "instructions.d.ts",
-  "sideEffects": false
+  "main": "instructions.js",
+  "types": "instructions.d.ts"
 }

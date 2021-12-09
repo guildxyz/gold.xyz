@@ -28,7 +28,7 @@ const NumberOfCycles = () => {
   return (
     <FormControl isInvalid={errors?.numberOfCycles} isRequired>
       {/* <FormLabel>Number of rounds</FormLabel> */}
-      <NumberInput size="lg" maxW="sm">
+      <NumberInput size="lg" maxW={{ base: "2xs", lg: "xs" }}>
         <NumberInputField
           {...register("numberOfCycles", {
             required: "This field is required.",

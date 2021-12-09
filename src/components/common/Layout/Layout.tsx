@@ -6,8 +6,10 @@ import {
   HStack,
   Icon,
   IconButton,
+  Text,
   useBreakpointValue,
   useColorMode,
+  VStack,
 } from "@chakra-ui/react"
 import { useRouter } from "next/dist/client/router"
 import Head from "next/head"
@@ -21,6 +23,7 @@ type Props = {
   imageUrl?: string
   title: string
   description?: string
+  showLayoutDescription?: boolean
   action?: ReactNode | undefined
   maxWidth?: string
 }
@@ -29,6 +32,7 @@ const Layout = ({
   imageUrl,
   title,
   description,
+  showLayoutDescription,
   action,
   maxWidth = "container.xl",
   children,
@@ -90,24 +94,32 @@ const Layout = ({
           pb={{ base: 20, md: 14 }}
           px={{ base: 4, sm: 6, md: 8, lg: 10 }}
         >
-          <HStack
-            spacing={{ md: 8 }}
-            alignItems="center"
-            justify="space-between"
-            pb={{ base: 8, md: 16 }}
-          >
-            <Heading
-              as="h1"
-              fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
-              fontFamily="display"
-              isTruncated
-              maxW="full"
+          <VStack spacing={{ base: 6, md: 10 }} pb={{ base: 12, md: 14 }} w="full">
+            <HStack
+              spacing={{ base: 4, md: 8 }}
+              alignItems="center"
+              justify="space-between"
+              w="full"
             >
-              {title}
-            </Heading>
+              <Heading
+                as="h1"
+                fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+                fontFamily="display"
+                isTruncated
+                maxW="full"
+                flexShrink="0"
+              >
+                {title}
+              </Heading>
 
-            {action}
-          </HStack>
+              {action}
+            </HStack>
+            {showLayoutDescription && description?.length && (
+              <Text w="full" fontWeight="semibold">
+                {description}
+              </Text>
+            )}
+          </VStack>
           {children}
         </Container>
       </Box>
