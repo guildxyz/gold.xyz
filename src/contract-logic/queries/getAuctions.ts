@@ -67,6 +67,7 @@ async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
     await getAuctionPoolPubkeyWasm()
   )
   //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
+  console.log(auctionPoolPubkey.toString());
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   return deserializeUnchecked(SCHEMA, AuctionPool, auctionPoolData)
