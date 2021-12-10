@@ -59,6 +59,7 @@ const Page = (): JSX.Element => {
     name = router.query.auction as string,
     description,
     goalTreasuryAmount,
+    currentTreasuryAmount,
     bids,
     currentCycle = 0,
     endTimestamp,
@@ -77,7 +78,21 @@ const Page = (): JSX.Element => {
         <>
           {goalTreasuryAmount && (
             <Tag size="lg" mb="-8px !important">
-              Goal: {goalTreasuryAmount} SOL
+              Current:
+              <Text
+                as="span"
+                fontWeight="bold"
+                mx="1"
+              >{`${currentTreasuryAmount} SOL`}</Text>
+              <Text as="span" colorScheme="gray" mr="2" ml="1">
+                /
+              </Text>
+              Goal:
+              <Text
+                as="span"
+                fontWeight="bold"
+                mx="1"
+              >{`${goalTreasuryAmount} SOL`}</Text>
             </Tag>
           )}
           <Spacer />
