@@ -3,7 +3,7 @@ import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import NFTCard from "./components/NFTCard"
 
@@ -24,6 +24,15 @@ const NFTData = () => {
     )
     setValue("nfts", newNfts)
   }
+
+  useEffect(() => {
+    register("asset.isRepeated")
+  }, [])
+
+  useEffect(() => {
+    if (nfts.length === 1) setValue("asset.isRepeated", true)
+    else setValue("asset.isRepeated", false)
+  }, [nfts])
 
   return (
     <>

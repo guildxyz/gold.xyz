@@ -6,13 +6,18 @@ const NumberOfCycles = () => {
   const {
     register,
     setValue,
+    trigger,
     formState: { errors, dirtyFields },
   } = useFormContext()
 
   const nfts = useWatch({ name: "nfts" })
-  const maxSupply = useMemo(() => Object.keys(nfts).length ?? 0, [nfts])
+  const maxSupply = useMemo(
+    () => (Object.keys(nfts).length <= 1 ? undefined : Object.keys(nfts).length),
+    [nfts]
+  )
 
   useEffect(() => {
+    trigger("numberOfCycles")
     if (!dirtyFields?.numberOfCycles) setValue("numberOfCycles", maxSupply)
   }, [maxSupply, setValue, dirtyFields])
 
@@ -25,7 +30,7 @@ const NumberOfCycles = () => {
           valueAsNumber: true,
           max: {
             value: maxSupply,
-            message: "Can't exceed max NFT supply",
+            message: `Can't exceed max NFT supply (${maxSupply})`,
           },
         })}
         size="lg"
