@@ -14,7 +14,7 @@ const SubmitButton = () => {
       size="lg"
       isLoading={isLoading || isImageLoading}
       loadingText={(() => {
-        if (isImageLoading) return "Uploading image to IPFS"
+        if (isImageLoading) return "Uploading image(s) to IPFS"
         if (isLoading) return "Loading"
       })()}
       onClick={handleSubmit(onSubmit)}

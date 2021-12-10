@@ -70,6 +70,12 @@ const useStartAuction = () => {
 
   return {
     onSubmit: (_data) => {
+      // Filtering out invalid traits
+      _data.nfts.forEach((nft) => {
+        nft.traits = nft.traits.filter(
+          ({ key, value }) => key.length > 0 && value.length > 0
+        )
+      })
       const finalData = {
         ..._data,
         cyclePeriod: (_data.customCyclePeriod ?? _data.cyclePeriod) * DAY_IN_SECONDS,
@@ -77,7 +83,13 @@ const useStartAuction = () => {
       }
       if (_data.asset.type === "NFT") {
         setData(finalData)
-        onSubmitImage({ files: _data.nftImage, folder: _data.id })
+        onSubmitImage({
+          folder: _data.id,
+          name: _data.asset.name,
+          symbol: _data.asset.symbol,
+          description: "",
+          nfts: _data.nfts,
+        })
       } else onSubmit(finalData)
     },
     error: error || imageError,

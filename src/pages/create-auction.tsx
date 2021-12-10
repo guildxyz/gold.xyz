@@ -1,4 +1,4 @@
-import { Divider, Flex, Stack, Tag, VStack } from "@chakra-ui/react"
+import { Divider, Flex, Stack, VStack } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
 import Section from "components/common/Section"
@@ -6,8 +6,8 @@ import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import AssetSelector from "components/create-auction/AssetSelector"
 import Description from "components/create-auction/Description"
 import GoalAmount from "components/create-auction/GoalAmount"
-import MinBid from "components/create-auction/MinBid"
 import NameAndIcon from "components/create-auction/NameAndIcon"
+import NFTData from "components/create-auction/NFTData"
 import NumberOfCycles from "components/create-auction/NumberOfCycles"
 import RoundSelector from "components/create-auction/RoundSelector"
 import SubmitButton from "components/create-auction/SubmitButton"
@@ -16,7 +16,19 @@ import { FormProvider, useForm } from "react-hook-form"
 
 const CreateGuildPage = (): JSX.Element => {
   const { connected } = useWallet()
-  const methods = useForm({ mode: "all" })
+  const methods = useForm({
+    mode: "all",
+    defaultValues: {
+      name: "",
+      asset: {
+        type: "NFT",
+        name: "",
+        symbol: "",
+      },
+      nfts: [],
+      numberOfCycles: 0,
+    },
+  })
 
   useWarnIfUnsavedChanges(
     methods.formState?.isDirty && !methods.formState.isSubmitted
@@ -47,11 +59,13 @@ const CreateGuildPage = (): JSX.Element => {
 
               <Divider />
 
-              <Section title="Set asset">
+              <Section title="Asset type">
                 <AssetSelector />
               </Section>
 
-              <Section
+              <NFTData />
+
+              {/* <Section
                 title={
                   <>
                     Set the minimum price
@@ -60,15 +74,15 @@ const CreateGuildPage = (): JSX.Element => {
                 }
               >
                 <MinBid />
-              </Section>
+              </Section> */}
 
               <Divider />
 
-              <Section title="Set round term">
+              <Section title="Round term">
                 <RoundSelector />
               </Section>
 
-              <Section title="Set the number of rounds">
+              <Section title="Number of rounds">
                 <NumberOfCycles />
               </Section>
             </VStack>

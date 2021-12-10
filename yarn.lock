@@ -1846,9 +1846,9 @@
   "resolved" "https://registry.npmjs.org/@next/react-refresh-utils/-/react-refresh-utils-11.1.2.tgz"
   "version" "11.1.2"
 
-"@next/swc-linux-x64-gnu@11.1.2":
-  "integrity" "sha512-YcDHTJjn/8RqvyJVB6pvEKXihDcdrOwga3GfMv/QtVeLphTouY4BIcEUfrG5+26Nf37MP1ywN3RRl1TxpurAsQ=="
-  "resolved" "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-11.1.2.tgz"
+"@next/swc-darwin-x64@11.1.2":
+  "integrity" "sha512-PGOp0E1GisU+EJJlsmJVGE+aPYD0Uh7zqgsrpD3F/Y3766Ptfbe1lEPPWnRDl+OzSSrSrX1lkyM/Jlmh5OwNvA=="
+  "resolved" "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-11.1.2.tgz"
   "version" "11.1.2"
 
 "@node-rs/helper@1.2.1":
@@ -2716,6 +2716,11 @@
   "integrity" "sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ=="
   "resolved" "https://registry.npmjs.org/astral-regex/-/astral-regex-2.0.0.tgz"
   "version" "2.0.0"
+
+"attr-accept@^2.2.1":
+  "integrity" "sha512-7prDjvt9HmqiZ0cl5CRjtS84sEyhsHP2coDkaZKRKVfCDo9s7iw7ChVmar78Gu9pC4SoR/28wFu/G5JJhTnqEg=="
+  "resolved" "https://registry.npmjs.org/attr-accept/-/attr-accept-2.2.2.tgz"
+  "version" "2.2.2"
 
 "available-typed-arrays@^1.0.5":
   "integrity" "sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw=="
@@ -4389,6 +4394,13 @@
   dependencies:
     "flat-cache" "^3.0.4"
 
+"file-selector@^0.2.2":
+  "integrity" "sha512-ZDsQNbrv6qRi1YTDOEWzf5J2KjZ9KMI1Q2SGeTkCJmNNW25Jg4TW4UMcmoqcg4WrAyKRcpBXdbWRxkfrOzVRbA=="
+  "resolved" "https://registry.npmjs.org/file-selector/-/file-selector-0.2.4.tgz"
+  "version" "0.2.4"
+  dependencies:
+    "tslib" "^2.0.3"
+
 "file-uri-to-path@1.0.0":
   "integrity" "sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw=="
   "resolved" "https://registry.npmjs.org/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz"
@@ -4513,6 +4525,11 @@
   "integrity" "sha1-FQStJSMVjKpA20onh8sBQRmU6k8="
   "resolved" "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   "version" "1.0.0"
+
+"fsevents@~2.3.1":
+  "integrity" "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="
+  "resolved" "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
+  "version" "2.3.2"
 
 "function-bind@^1.1.1":
   "integrity" "sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A=="
@@ -6397,6 +6414,15 @@
     "object-assign" "^4.1.1"
     "scheduler" "^0.20.2"
 
+"react-dropzone@^11.4.2":
+  "integrity" "sha512-ocYzYn7Qgp0tFc1gQtUTOaHHSzVTwhWHxxY+r7cj2jJTPfMTZB5GWSJHdIVoxsl+EQENpjJ/6Zvcw0BqKZQ+Eg=="
+  "resolved" "https://registry.npmjs.org/react-dropzone/-/react-dropzone-11.4.2.tgz"
+  "version" "11.4.2"
+  dependencies:
+    "attr-accept" "^2.2.1"
+    "file-selector" "^0.2.2"
+    "prop-types" "^15.7.2"
+
 "react-fast-compare@3.2.0":
   "integrity" "sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA=="
   "resolved" "https://registry.npmjs.org/react-fast-compare/-/react-fast-compare-3.2.0.tgz"
@@ -6490,7 +6516,7 @@
     "loose-envify" "^1.4.0"
     "prop-types" "^15.6.2"
 
-"react@^15.3.0 || ^16.0.0 || ^17.0.0", "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || 17.x", "react@^17.0.2", "react@>= 16.8.0 || 17.x.x || 18.x.x", "react@>=16", "react@>=16.6.0", "react@>=16.8 || ^17.0.0", "react@>=16.8.0", "react@>=16.8.6", "react@17.0.2":
+"react@^15.3.0 || ^16.0.0 || ^17.0.0", "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || 17.x", "react@^17.0.2", "react@>= 16.8", "react@>= 16.8.0 || 17.x.x || 18.x.x", "react@>=16", "react@>=16.6.0", "react@>=16.8 || ^17.0.0", "react@>=16.8.0", "react@>=16.8.6", "react@17.0.2":
   "integrity" "sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA=="
   "resolved" "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
   "version" "17.0.2"
@@ -7803,7 +7829,7 @@
   "resolved" "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   "version" "0.1.0"
 
-"zgsol-borsh-schema@file:/home/gyozosz/Desktop/work/0_git/gold.xyz/src/contract-logic":
+"zgsol-borsh-schema@file:/Users/valid/work/gold.xyz/src/contract-logic":
   "resolved" "file:src/contract-logic"
   "version" "1.0.0"
   dependencies:
