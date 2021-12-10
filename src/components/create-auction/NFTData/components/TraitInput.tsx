@@ -15,11 +15,6 @@ type Props = {
   unselectTrait: () => void
 }
 
-const placeholders = [
-  ["eg.: color", "eg.: red"],
-  ["eg.: time", "eg.: season 1"],
-]
-
 const TraitInput = ({ nftId, traitIndex, unselectTrait }: Props): ReactElement => {
   const { register } = useFormContext()
   const key = useWatch({ name: `nfts.${nftId}.traits.${traitIndex}.key` })
@@ -29,7 +24,7 @@ const TraitInput = ({ nftId, traitIndex, unselectTrait }: Props): ReactElement =
       <Input
         borderRightWidth={0}
         borderRightRadius={0}
-        placeholder={placeholders[traitIndex]?.[0] ?? ""}
+        placeholder={"eg.: color"}
         {...register(`nfts.${nftId}.traits.${traitIndex}.key`)}
       />
 
@@ -38,7 +33,7 @@ const TraitInput = ({ nftId, traitIndex, unselectTrait }: Props): ReactElement =
       <Input
         borderLeftWidth={0}
         borderLeftRadius={0}
-        placeholder={placeholders[traitIndex]?.[1] ?? ""}
+        placeholder={"eg.: red"}
         {...register(`nfts.${nftId}.traits.${traitIndex}.value`)}
       />
       {key?.length <= 0 && (
@@ -49,7 +44,7 @@ const TraitInput = ({ nftId, traitIndex, unselectTrait }: Props): ReactElement =
             variant="ghost"
             borderRadius="0"
             px="2"
-            aria-label="Remove trait"
+            aria-label="Remove property"
           >
             <X />
           </Button>

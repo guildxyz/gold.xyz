@@ -66,7 +66,7 @@ const UploadFile = ({ setPreviews }: Props) => {
         htmlFor="dropzone"
         width="full"
         height="full"
-        minH="320px"
+        minH="300px"
         _hover={{
           textDecor: "none",
           bg: colorMode === "light" ? "gray.100" : "whiteAlpha.50",

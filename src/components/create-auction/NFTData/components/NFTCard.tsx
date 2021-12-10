@@ -11,7 +11,6 @@ import {
 import Card from "components/common/Card"
 import CardMotionWrapper from "components/common/CardMotionWrapper"
 import { Plus, TrashSimple } from "phosphor-react"
-import { useEffect } from "react"
 import { useFieldArray, useWatch } from "react-hook-form"
 import TraitInput from "./TraitInput"
 
@@ -31,13 +30,6 @@ const NFTCard = ({ index, id, preview, removeNft }: Props) => {
       key: "",
       value: "",
     })
-
-  useEffect(() => {
-    if (fields.length <= 0) {
-      addTrait()
-      addTrait()
-    }
-  }, [])
 
   return (
     <CardMotionWrapper zIndex="1">
@@ -79,9 +71,9 @@ const NFTCard = ({ index, id, preview, removeNft }: Props) => {
             fontSize="xs"
             borderRadius="lg"
             leftIcon={<Plus />}
-            aria-label="Add trait"
+            aria-label="Add property"
           >
-            Add trait
+            Add property
           </Button>
         </VStack>
       </Card>
