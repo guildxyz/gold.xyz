@@ -8,51 +8,29 @@ import {
   useColorMode,
 } from "@chakra-ui/react"
 import { FilePlus } from "phosphor-react"
-import { Dispatch, SetStateAction } from "react"
-import { useFormContext, useWatch } from "react-hook-form"
+import { FieldArrayMethodProps, useFormContext } from "react-hook-form"
 import useDropzone from "./hooks/useDropzone"
 
 type Props = {
-  setPreviews: Dispatch<SetStateAction<Record<string, string>>>
+  addNft: (
+    value: Partial<unknown> | Partial<unknown>[],
+    options?: FieldArrayMethodProps
+  ) => void
 }
 
-const UploadFile = ({ setPreviews }: Props) => {
+const UploadFile = ({ addNft }: Props) => {
   const {
-    setValue,
     formState: { errors },
   } = useFormContext()
-
-  const nfts = useWatch({ name: "nfts" })
-
-  const addNfts = (
-    data: {
-      file: File
-      traits: Array<{ key: string; value: string }>
-    }[]
-  ) => {
-    const currentIds = Object.keys(nfts).map(parseInt)
-    const newId = currentIds.length === 0 ? 0 : Math.max(...currentIds) + 1
-    const newNfts = data.map((file, i) => [newId + i, file])
-    setValue("nfts", { ...nfts, ...Object.fromEntries(newNfts) })
-    return newNfts.map(([id]) => id)
-  }
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (files) => {
-      const newIds = addNfts(
+    onDrop: (files) =>
+      addNft(
         files.map((file) => ({
           file,
           traits: [],
+          preview: URL.createObjectURL(file),
         }))
-      )
-
-      setPreviews((prev) => ({
-        ...prev,
-        ...Object.fromEntries(
-          files.map((file, i) => [newIds[i], URL.createObjectURL(file)])
-        ),
-      }))
-    },
+      ),
   })
 
   const { colorMode } = useColorMode()

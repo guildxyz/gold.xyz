@@ -1,4 +1,5 @@
 import useToast from "hooks/useToast"
+import { useState } from "react"
 import {
   DropEvent,
   FileRejection,
@@ -15,10 +16,12 @@ type Props = {
 }
 
 const useDropzone = ({ onDrop, maxFileSizeMb = 10 }: Props) => {
+  const [previews, setPreviews] = useState<string[]>([])
   const toast = useToast()
 
   const dropzone = useReactDropzone({
     onDrop: (acceptedFiles, fileRejections, event) => {
+      setPreviews(acceptedFiles.map((file) => URL.createObjectURL(file)))
       fileRejections.forEach((file) =>
         toast({
           status: "error",
@@ -33,7 +36,7 @@ const useDropzone = ({ onDrop, maxFileSizeMb = 10 }: Props) => {
     noClick: true,
   })
 
-  return dropzone
+  return { ...dropzone, previews }
 }
 
 export default useDropzone
