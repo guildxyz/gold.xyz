@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { Auction, AuctionConfig, NFTData } from "contract-logic/queries/getAuctions"
+import { AuctionConfig, NFTData } from "contract-logic/queries/getAuctions"
 import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
@@ -9,15 +9,6 @@ import { useEffect, useState } from "react"
 import { useSWRConfig } from "swr"
 
 const DAY_IN_SECONDS = 86400
-
-type AuctionFormData = Auction & {
-  nfts: Array<{
-    preview: string
-    traits: Array<{ key: string; value: string }>
-    file: File
-    name: string
-  }>
-}
 
 const useStartAuction = () => {
   const [data, setData] = useState<AuctionConfig>()
