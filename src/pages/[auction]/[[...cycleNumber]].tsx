@@ -32,12 +32,16 @@ import useAuction from "components/[auction]/hooks/useAuction"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
+import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error } = useAuction()
   const { publicKey } = useWallet()
   const router = useRouter()
+  const { data: nftData } = useSWRImmutable(
+    auction?.asset?.type === "NFT" ? auction.asset.uri : null
+  )
 
   if (error)
     return (
@@ -55,7 +59,6 @@ const Page = (): JSX.Element => {
     name = router.query.auction as string,
     description,
     goalTreasuryAmount,
-    asset,
     bids,
     currentCycle = 0,
     endTimestamp,
@@ -88,7 +91,7 @@ const Page = (): JSX.Element => {
       <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
         <Center>
           <Image
-            src={asset?.type === "NFT" ? asset?.uri : ""}
+            src={nftData?.image}
             alt="NFT"
             borderRadius="xl"
             maxH="calc(100vh - 400px)"
@@ -120,15 +123,10 @@ const Page = (): JSX.Element => {
               </Link>
             )}
           </HStack>
-          <Skeleton isLoaded={!!asset} w="fit-content">
-            <Heading
-              as="h3"
-              fontSize="4xl"
-              fontFamily="display"
-              d="inline-block"
-            >{`${
-              asset?.type === "NFT" ? asset?.name : ""
-            } #${currentCycle}`}</Heading>
+          <Skeleton isLoaded={!!nftData} w="fit-content">
+            <Heading as="h3" fontSize="4xl" fontFamily="display" d="inline-block">
+              {nftData?.name}
+            </Heading>
           </Skeleton>
           <HStack
             divider={<Divider orientation="vertical" />}
