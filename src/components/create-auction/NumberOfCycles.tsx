@@ -17,8 +17,8 @@ const NumberOfCycles = () => {
   )
 
   useEffect(() => {
-    trigger("numberOfCycles")
     if (!dirtyFields?.numberOfCycles) setValue("numberOfCycles", maxSupply)
+    if (maxSupply) trigger("numberOfCycles")
   }, [maxSupply, setValue, dirtyFields])
 
   return (
