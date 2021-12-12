@@ -1,188 +1,85 @@
 import { PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
+import Enum from "./extensions/enum";
+import Struct from "./extensions/struct";
 import { borshPublicKey } from "./extensions/publicKey";
 
 borshPublicKey();
 
-export class AuctionDescription {
+export class AuctionDescription extends Struct {
     description: string;
     socials: string[];
     goalTreasuryAmount: BN | null;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class AuctionConfig {
+export class AuctionConfig extends Struct {
     cyclePeriod: BN;
     encorePeriod: BN;
     numberOfCycles: BN | null;
     minimumBidAmount: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class AuctionStatus {
+export class AuctionStatus extends Struct {
     currentAuctionCycle: BN;
     isFrozen: boolean;
     isActive: boolean;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class BidData {
+export class BidData extends Struct {
     bidderPubkey: PublicKey;
     bidAmount: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class CreateTokenArgs {
+export class CreateTokenArgs extends Enum {
     createTokenArgsNft: CreateTokenArgsNft;
     createTokenArgsToken: CreateTokenArgsToken;
-    enum: string;
-    constructor(properties) {
-        if (Object.keys(properties).length !== 1) {
-            throw new Error('Enum can only take single value');
-        }
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-            this.enum = key;
-        });
-    }
-
 };
 
-export class CreateTokenArgsNft {
+export class CreateTokenArgsNft extends Struct {
     metadataArgs: CreateMetadataAccountArgs;
     isRepeating: boolean;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class CreateTokenArgsToken {
+export class CreateTokenArgsToken extends Struct {
     decimals: number;
     perCycleAmount: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class TokenType {
+export class TokenType extends Enum {
     tokenTypeNft: TokenTypeNft;
     tokenTypeToken: TokenTypeToken;
-    enum: string;
-    constructor(properties) {
-        if (Object.keys(properties).length !== 1) {
-            throw new Error('Enum can only take single value');
-        }
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-            this.enum = key;
-        });
-    }
-
 };
 
-export class TokenTypeNft {
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
+export class TokenTypeNft extends Struct {
 };
 
-export class TokenTypeToken {
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
+export class TokenTypeToken extends Struct {
 };
 
-export class NftData {
+export class NftData extends Struct {
     masterEdition: PublicKey;
     isRepeating: boolean;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class TokenData {
+export class TokenData extends Struct {
     mint: PublicKey;
     perCycleAmount: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class TokenConfig {
+export class TokenConfig extends Enum {
     tokenConfigNft: TokenConfigNft;
     tokenConfigToken: TokenConfigToken;
-    enum: string;
-    constructor(properties) {
-        if (Object.keys(properties).length !== 1) {
-            throw new Error('Enum can only take single value');
-        }
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-            this.enum = key;
-        });
-    }
-
 };
 
-export class TokenConfigNft {
+export class TokenConfigNft extends Struct {
     unnamed: NftData;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class TokenConfigToken {
+export class TokenConfigToken extends Struct {
     unnamed: TokenData;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class AuctionRootState {
+export class AuctionRootState extends Struct {
     auctionName: [32];
     auctionOwner: PublicKey;
     description: AuctionDescription;
@@ -190,113 +87,59 @@ export class AuctionRootState {
     tokenConfig: TokenConfig;
     status: AuctionStatus;
     currentTreasury: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class AuctionCycleState {
+export class AuctionCycleState extends Struct {
     startTime: BN;
     endTime: BN;
     bidHistory: BidData[];
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class AuctionPool {
+export class AuctionPool extends Struct {
     pool: Map<[32], PublicKey>;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class ContractBankState {
+export class ContractBankState extends Struct {
     contractAdminPubkey: PublicKey;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class CloseAuctionCycleArgs {
+export class CloseAuctionCycleArgs extends Struct {
     payerPubkey: PublicKey;
     auctionOwnerPubkey: PublicKey;
     topBidderPubkey: PublicKey | null;
     auctionId: [32];
     nextCycleNum: BN;
     tokenType: TokenType;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class DeleteAuctionArgs {
+export class DeleteAuctionArgs extends Struct {
     contractAdminPubkey: PublicKey;
     auctionOwnerPubkey: PublicKey;
     auctionId: [32];
     currentAuctionCycle: BN;
     numOfCyclesToDelete: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class FreezeAuctionArgs {
+export class FreezeAuctionArgs extends Struct {
     auctionOwnerPubkey: PublicKey;
     auctionId: [32];
     topBidderPubkey: PublicKey | null;
     cycleNumber: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class PlaceBidArgs {
+export class PlaceBidArgs extends Struct {
     userMainPubkey: PublicKey;
     auctionId: [32];
     cycleNumber: BN;
     topBidderPubkey: PublicKey | null;
     amount: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class InitializeContractArgs {
+export class InitializeContractArgs extends Struct {
     contractAdminPubkey: PublicKey;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class InitializeAuctionArgs {
+export class InitializeAuctionArgs extends Struct {
     auctionOwnerPubkey: PublicKey;
     auctionId: [32];
     auctionName: [32];
@@ -304,63 +147,33 @@ export class InitializeAuctionArgs {
     auctionDescription: AuctionDescription;
     createTokenArgs: CreateTokenArgs;
     auctionStartTimestamp: BN | null;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class ClaimFundsArgs {
+export class ClaimFundsArgs extends Struct {
     contractAdminPubkey: PublicKey;
     auctionOwnerPubkey: PublicKey;
     auctionId: [32];
     cycleNumber: BN;
     amount: BN;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class Data {
+export class Data extends Struct {
     name: string;
     symbol: string;
     uri: string;
     sellerFeeBasisPoints: number;
     creators: Creator[] | null;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class Creator {
+export class Creator extends Struct {
     address: PublicKey;
     verified: boolean;
     share: number;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
-export class CreateMetadataAccountArgs {
+export class CreateMetadataAccountArgs extends Struct {
     data: Data;
     isMutable: boolean;
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            this[key] = properties[key];
-        });
-    }
-
 };
 
 export const SCHEMA = new Map<any, any>([
