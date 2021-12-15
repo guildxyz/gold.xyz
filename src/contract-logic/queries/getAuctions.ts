@@ -1,14 +1,12 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
-import { CONNECTION, CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
+import { LAMPORTS } from "../consts"
 import { MasterEditionV2, METADATA_SCHEMA } from "../metadata_schema"
 import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
 import { getMasterMetadata } from "./getMasterMedata"
-import { getTreasuryFunds } from "./getTreasuryFunds"
 import { getCurrentCycleState } from "./readCycleState"
-import BN from "bn.js"
 
 export type Bid = {
   bidderPubkey: PublicKey
@@ -189,6 +187,11 @@ export async function getAuction(connection: Connection, id: string, n?: number)
     goalTreasuryAmount = auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber() / LAMPORTS;
   }
 
+  let numberOfCycles = null
+  if (auctionRootStateDeserialized.auctionConfig.numberOfCycles != null) {
+    numberOfCycles = auctionRootStateDeserialized.auctionConfig.numberOfCycles.toNumber();
+  }
+
   let currentCycleNumber: number
   if (n) {
     currentCycleNumber = n
@@ -210,7 +213,7 @@ export async function getAuction(connection: Connection, id: string, n?: number)
       .reverse(),
     cyclePeriod: auctionRootStateDeserialized.auctionConfig.cyclePeriod.toNumber(),
     currentCycle: currentCycleNumber,
-    numberOfCycles: auctionRootStateDeserialized.auctionConfig.numberOfCycles.toNumber(),
+    numberOfCycles: numberOfCycles,
     minBid: auctionRootStateDeserialized.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
     startTimestamp: auctionCycleStateDeserialized.startTime.toNumber() * 1000,
     endTimestamp: auctionCycleStateDeserialized.endTime.toNumber() * 1000,
