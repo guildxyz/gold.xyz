@@ -18,6 +18,7 @@ module.exports = withTM({
     config.experiments = {
       syncWebAssembly: true,
       topLevelAwait: true,
+      layers: true,
     }
 
     config.module.rules.push({
