@@ -2,10 +2,13 @@ import {
   Checkbox,
   FormControl,
   FormErrorMessage,
+  HStack,
   Input,
   Stack,
   Text,
+  Tooltip,
 } from "@chakra-ui/react"
+import { Question } from "phosphor-react"
 import { useEffect, useMemo, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 
@@ -65,7 +68,15 @@ const NumberOfCycles = () => {
         </Text>
 
         <Checkbox checked={isInfinite} onChange={handleChange}>
-          Infinite auction
+          <HStack>
+            <span>Infinite auction</span>
+            <Tooltip
+              label="You can upload more NFT images gradually, and freeze the auction permanently if you want it to end. If it runs out of set NFTs, it'll auction ones with just the incremented index as their data."
+              shouldWrapChildren
+            >
+              <Question />
+            </Tooltip>
+          </HStack>
         </Checkbox>
       </Stack>
       <FormErrorMessage>{errors?.numberOfCycles?.message}</FormErrorMessage>
