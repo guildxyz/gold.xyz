@@ -30,9 +30,7 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
             mirrored: false,
           }}
         >
-          <WalletConnectionProvider>
-            <Component {...pageProps} />
-          </WalletConnectionProvider>
+          <Component {...pageProps} />
         </IconContext.Provider>
       </SWRConfig>
     </Chakra>
