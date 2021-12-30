@@ -29,11 +29,11 @@ import { placeBid } from "./transactions/placeBid"
   }
 
   const auction: AuctionConfig = {
-    id: "nft-test-3",
-    name: "NFT Test 3",
+    id: "totally-two",
+    name: "Totally Two",
     description: "xd",
     socials: ["aaa.aaa"],
-    goalTreasuryAmount: 1000,
+    goalTreasuryAmount: undefined,
     ownerPubkey: auctionOwner.publicKey,
     asset: nftAsset,
     cyclePeriod: 60,
@@ -48,7 +48,7 @@ import { placeBid } from "./transactions/placeBid"
   //console.log("Auction created successfully.");
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  console.log("auction data:", await getAuction(CONNECTION, auction.id))
+  console.log(await getAuction(CONNECTION, "goldxyz-dao", 2))
   // CLAIM FUNDS
   //let claimFundsTransaction = await claimFunds(CONNECTION, auction.id, auctionOwner.publicKey, 0.5)
   //await sendTransaction(claimFundsTransaction, auctionOwner)
@@ -60,12 +60,12 @@ import { placeBid } from "./transactions/placeBid"
   //console.log("Bid placed successfully.");
 
   // Freeze auction
-  //const freezeAuctionTransaction = await freezeAuction(CONNECTION, auction.id, auctionOwner.publicKey)
+  //const freezeAuctionTransaction = await freezeAuction(CONNECTION, auction.id, auction.ownerPubkey)
   //await sendTransaction(freezeAuctionTransaction, auctionOwner)
   //console.log("Auction frozen successfully.")
 
   // Delete auction
-  //const deleteAuctionTransaction = await deleteAuction(CONNECTION, auction.id, auctionOwner.publicKey)
+  //const deleteAuctionTransaction = await deleteAuction(CONNECTION, auction.id, auction.ownerPubkey)
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("Auction deleted successfully.")
 })()

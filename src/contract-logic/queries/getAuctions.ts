@@ -6,7 +6,7 @@ import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
 import { getMasterMetadata } from "./getMasterMedata"
-import { getCurrentCycleState } from "./readCycleState"
+import { getCurrentCycleState, readNthCycleState } from "./readCycleState"
 
 export type Bid = {
   bidderPubkey: PublicKey
@@ -65,7 +65,6 @@ async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
     await getAuctionPoolPubkeyWasm()
   )
   //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
-  console.log(auctionPoolPubkey.toString());
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   return deserializeUnchecked(SCHEMA, AuctionPool, auctionPoolData)
@@ -132,11 +131,19 @@ export async function getAuction(connection: Connection, id: string, n?: number)
 
     currentEntry = poolIterator.next()
   }
-
-  const auctionCycleStateDeserialized = await getCurrentCycleState(
-    connection,
-    auctionRootStatePubkey
-  )
+  let auctionCycleStateDeserialized;
+  if (n) {
+    auctionCycleStateDeserialized = await readNthCycleState(
+      connection,
+      auctionRootStatePubkey,
+      n
+    )
+  } else {
+    auctionCycleStateDeserialized = await getCurrentCycleState(
+      connection,
+      auctionRootStatePubkey
+    )
+  }
   const auctionOwnerPubkey = new PublicKey(auctionRootStateDeserialized.auctionOwner)
 
   let asset: TokenData | NFTData
