@@ -56,16 +56,6 @@ export async function getCurrentCycleNumberFromId(connection: Connection, auctio
   return cycleNumber
 }
 
-export async function getNextCycleStatePubkey(
-  connection: Connection,
-  auctionRootStatePubkey: PublicKey
-) {
-  const cycleNumber = +(await getCurrentCycleNumber(connection, auctionRootStatePubkey)) + 1
-  const auctionCycleStatePubkey = getNthCycleStatePubkey(auctionRootStatePubkey, cycleNumber)
-
-  return auctionCycleStatePubkey
-}
-
 export async function getCurrentCycleState(
   connection: Connection,
   auctionRootStatePubkey: PublicKey

@@ -64,7 +64,6 @@ async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
   const auctionPoolPubkey = new PublicKey(
     await getAuctionPoolPubkeyWasm()
   )
-  //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   return deserializeUnchecked(SCHEMA, AuctionPool, auctionPoolData)
@@ -105,45 +104,9 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
   return auctionBaseArray
 }
 
+// TODO remove connection
 export async function getAuction(connection: Connection, id: string, n?: number): Promise<Auction> {
-  const { getDecimalsFromMintAccountDataWasm } = await import("../../../wasm-factory")
-  const auctionPool = await getAuctionPool(connection)
-
-  const auctionId = Uint8Array.from(padTo32Bytes(id))
-
-  let auctionRootStatePubkey
-  let auctionRootStateDeserialized
-  let poolIterator = auctionPool.pool.entries()
-  let currentEntry = poolIterator.next()
-  while (!currentEntry.done) {
-    const [auctionId, rootPubkey] = currentEntry.value
-    if (parseAuctionId(auctionId) == id) {
-      auctionRootStatePubkey = rootPubkey
-      const auctionRootStateAccountInfo = await connection.getAccountInfo(auctionRootStatePubkey)
-      const auctionRootStateData: Buffer = auctionRootStateAccountInfo!.data
-      auctionRootStateDeserialized = deserializeUnchecked(
-        SCHEMA,
-        AuctionRootState,
-        auctionRootStateData
-      )
-      break
-    }
-
-    currentEntry = poolIterator.next()
-  }
-  let auctionCycleStateDeserialized;
-  if (n) {
-    auctionCycleStateDeserialized = await readNthCycleState(
-      connection,
-      auctionRootStatePubkey,
-      n
-    )
-  } else {
-    auctionCycleStateDeserialized = await getCurrentCycleState(
-      connection,
-      auctionRootStatePubkey
-    )
-  }
+  // TODO
   const auctionOwnerPubkey = new PublicKey(auctionRootStateDeserialized.auctionOwner)
 
   let asset: TokenData | NFTData
