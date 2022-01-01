@@ -11,12 +11,12 @@ export async function freezeAuction(
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { freezeAuctionWasm } = await import("../../../wasm-factory")
+  const { freezeAuctionWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
+
+  const topBidder = await getTopBidderWasm(auctionId)
+  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
+
   const auctionIdArray = padTo32Bytes(auctionId)
-
-  const topBidder = await getTopBidder(connection, auctionIdArray)
-  const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)
-
   const freezeAuctionArgs = new FreezeAuctionArgs({
     auctionOwnerPubkey: auctionOwnerPubkey,
     auctionId: auctionIdArray,

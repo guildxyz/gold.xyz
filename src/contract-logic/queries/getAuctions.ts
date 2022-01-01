@@ -103,88 +103,54 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
 
 // TODO remove connection
 export async function getAuction(connection: Connection, id: string, n?: number): Promise<Auction> {
-  // TODO
-  const auctionOwnerPubkey = new PublicKey(auctionRootStateDeserialized.auctionOwner)
+  const { getAuctionWasm } = await import("../../../wasm-factory")
+  const auctionData: Buffer = await getAuctionWasm(id, n);
+  const auction = deserializeUnchecked(
+    SCHEMA,
+    FrontendAuction,
+    auctionData,
+  );
 
   let asset: TokenData | NFTData
-  if (auctionRootStateDeserialized.tokenConfig.tokenConfigNft) {
-    // read master edition account (for current child edition)
-    const masterEditionAccountInfo = await connection.getAccountInfo(
-      new PublicKey(auctionRootStateDeserialized.tokenConfig.tokenConfigNft.unnamed.masterEdition)
-    )
-    const masterEditionData: Buffer = masterEditionAccountInfo!.data
-    const masterEditionDeserialized = deserializeUnchecked(
-      METADATA_SCHEMA,
-      MasterEditionV2,
-      masterEditionData
-    )
-
-    const masterMetadata = await getMasterMetadata(connection, auctionId)
-
+  if (auction.tokenConfig.frontendTokenConfigNft) {
     asset = {
       type: "NFT",
-      name: masterMetadata.name,
-      symbol: masterMetadata.symbol,
-      uri: masterMetadata.uri,
-      isRepeated: false,
+      name: auction.tokenConfig.frontendTokenConfigNft.name,
+      symbol: auction.tokenConfig.frontendTokenConfigNft.symbol,
+      uri: auction.tokenConfig.frontendTokenConfigNft.uri,
+      isRepeated: auction.tokenConfig.frontendTokenConfigNft.isRepeating,
     }
-  } else if (auctionRootStateDeserialized.tokenConfig.tokenConfigToken) {
-    const mintPubkey = auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint
-    const mintInfo = await connection.getAccountInfo(mintPubkey)
-    const mintData: Buffer = mintInfo!.data
-
-    let decimals
-    try {
-      decimals = await getDecimalsFromMintAccountDataWasm(Uint8Array.from(mintData))
-    } catch (e) {
-      console.log("wasm error:", e)
-    }
-
+  } else if (auction.tokenConfig.frontendTokenConfigToken) {
     asset = {
       type: "TOKEN",
-      decimals: decimals,
-      mintAddress: mintPubkey,
-      perCycleAmount:
-        auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.perCycleAmount.toNumber(),
+      decimals: auction.tokenConfig.frontendTokenConfigToken.decimals,
+      mintAddress: auction.tokenConfig.frontendTokenConfigToken.mint,
+      perCycleAmount: auction.tokenConfig.frontendTokenConfigToken.perCycleAmount
     }
   }
 
-  let goalTreasuryAmount = null
-  if (auctionRootStateDeserialized.description.goalTreasuryAmount != null) {
-    goalTreasuryAmount = auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber() / LAMPORTS;
-  }
-
-  let numberOfCycles = null
-  if (auctionRootStateDeserialized.auctionConfig.numberOfCycles != null) {
-    numberOfCycles = auctionRootStateDeserialized.auctionConfig.numberOfCycles.toNumber();
-  }
-
-  let currentCycleNumber: number
-  if (n) {
-    currentCycleNumber = n
-  } else {
-    currentCycleNumber = auctionRootStateDeserialized.status.currentAuctionCycle.toNumber()
-  }
+  const goalTreasuryAmount = Number(auction.rootState.description.goalTreasuryAmount) / LAMPORTS;
+  const numberOfCycles = Number(auction.rootState.auctionConfig.numberOfCycles);
 
   return {
     id: id,
-    name: parseAuctionId(Uint8Array.from(auctionRootStateDeserialized.auctionName)),
-    description: auctionRootStateDeserialized.description.description,
-    socials: auctionRootStateDeserialized.description.socials,
-    goalTreasuryAmount: goalTreasuryAmount,
-    currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber() / LAMPORTS,
-    ownerPubkey: auctionOwnerPubkey,
+    name: parseAuctionId(Uint8Array.from(auction.rootState.auctionName)),
+    description: auction.rootState.description.description,
+    socials: auction.rootState.description.socials,
+    goalTreasuryAmount,
+    currentTreasuryAmount: auction.rootState.currentTreasury.toNumber() / LAMPORTS,
+    ownerPubkey: auction.rootState.auctionOwner,
     asset: asset,
-    bids: auctionCycleStateDeserialized.bidHistory
+    bids: auction.cycleState.bidHistory
       .map((bid) => ({ bidderPubkey: bid.bidderPubkey, amount: bid.bidAmount.toNumber() / LAMPORTS }))
       .reverse(),
-    cyclePeriod: auctionRootStateDeserialized.auctionConfig.cyclePeriod.toNumber(),
-    currentCycle: currentCycleNumber,
-    numberOfCycles: numberOfCycles,
-    minBid: auctionRootStateDeserialized.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
-    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber() * 1000,
-    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber() * 1000,
-    isActive: auctionRootStateDeserialized.status.isActive,
-    isFrozen: auctionRootStateDeserialized.status.isFrozen,
+    cyclePeriod: auction.rootState.auctionConfig.cyclePeriod.toNumber(),
+    currentCycle: auction.rootState.status.currentCycleNumber,
+    numberOfCycles: auction.rootState.auctionConfig.numberOfCycles,
+    minBid: auction.rootState.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
+    startTimestamp: auction.cycleState.startTime.toNumber() * 1000,
+    endTimestamp: auction.cycleState.endTime.toNumber() * 1000,
+    isActive: auction.rootState.status.isActive,
+    isFrozen: auction.rootState.status.isFrozen,
   }
 }

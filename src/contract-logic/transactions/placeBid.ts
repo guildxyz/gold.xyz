@@ -13,11 +13,11 @@ export async function placeBid(
   bidder: PublicKey,
   amount: number // in SOL
 ) {
-  const { placeBidWasm } = await import("../../../wasm-factory")
-  const auctionIdArray = padTo32Bytes(auctionId)
-  const topBidder = await getTopBidder(connection, auctionIdArray)
-  const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)
+  const { placeBidWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
+  const topBidder = await getTopBidderWasm(auctionId)
+  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
 
+  const auctionIdArray = padTo32Bytes(auctionId)
   const placeBidArgs = new PlaceBidArgs({
     userMainPubkey: bidder,
     auctionId: auctionIdArray,

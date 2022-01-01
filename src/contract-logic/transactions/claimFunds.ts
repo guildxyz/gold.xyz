@@ -12,11 +12,11 @@ export async function claimFunds(
   auctionOwnerPubkey: PublicKey,
   amount: number
 ) {
-  const { claimFundsWasm } = await import("../../../wasm-factory")
+  const { claimFundsWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
+
+  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
+
   const auctionIdArray = padTo32Bytes(auctionId)
-
-  const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)
-
   const claimFundsArgs = new ClaimFundsArgs({
     contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
     auctionOwnerPubkey: auctionOwnerPubkey,
