@@ -1,7 +1,7 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
 import { LAMPORTS } from "../consts"
-import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
+import { AuctionPool, AuctionRootState, FrontendAuction, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
 
@@ -101,14 +101,19 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
   return auctionBaseArray
 }
 
-// TODO remove connection
-export async function getAuction(connection: Connection, id: string, n?: number): Promise<Auction> {
+export async function getAuction(id: string, n?: number): Promise<Auction> {
   const { getAuctionWasm } = await import("../../../wasm-factory")
-  const auctionData: Buffer = await getAuctionWasm(id, n);
+  let cycle;
+  if (n) {
+    cycle = BigInt(n);
+  } else {
+    cycle = null
+  }
+  const auctionData: Uint8Array = await getAuctionWasm(id, cycle);
   const auction = deserializeUnchecked(
     SCHEMA,
     FrontendAuction,
-    auctionData,
+    Buffer.from(auctionData),
   );
 
   let asset: TokenData | NFTData
@@ -125,7 +130,7 @@ export async function getAuction(connection: Connection, id: string, n?: number)
       type: "TOKEN",
       decimals: auction.tokenConfig.frontendTokenConfigToken.decimals,
       mintAddress: auction.tokenConfig.frontendTokenConfigToken.mint,
-      perCycleAmount: auction.tokenConfig.frontendTokenConfigToken.perCycleAmount
+      perCycleAmount: Number(auction.tokenConfig.frontendTokenConfigToken.perCycleAmount)
     }
   }
 
@@ -145,8 +150,8 @@ export async function getAuction(connection: Connection, id: string, n?: number)
       .map((bid) => ({ bidderPubkey: bid.bidderPubkey, amount: bid.bidAmount.toNumber() / LAMPORTS }))
       .reverse(),
     cyclePeriod: auction.rootState.auctionConfig.cyclePeriod.toNumber(),
-    currentCycle: auction.rootState.status.currentCycleNumber,
-    numberOfCycles: auction.rootState.auctionConfig.numberOfCycles,
+    currentCycle: Number(auction.rootState.status.currentAuctionCycle),
+    numberOfCycles: Number(auction.rootState.auctionConfig.numberOfCycles),
     minBid: auction.rootState.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
     startTimestamp: auction.cycleState.startTime.toNumber() * 1000,
     endTimestamp: auction.cycleState.endTime.toNumber() * 1000,

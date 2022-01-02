@@ -33,7 +33,7 @@ import { placeBid } from "./transactions/placeBid"
     name: "Totally Two",
     description: "xd",
     socials: ["aaa.aaa"],
-    goalTreasuryAmount: undefined,
+    goalTreasuryAmount: null,
     ownerPubkey: auctionOwner.publicKey,
     asset: nftAsset,
     cyclePeriod: 60,
@@ -48,7 +48,7 @@ import { placeBid } from "./transactions/placeBid"
   //console.log("Auction created successfully.");
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  console.log(await getAuction(CONNECTION, "goldxyz-dao", 2))
+  console.log(await getAuction("goldxyz-dao", 2))
   // CLAIM FUNDS
   //let claimFundsTransaction = await claimFunds(CONNECTION, auction.id, auctionOwner.publicKey, 0.5)
   //await sendTransaction(claimFundsTransaction, auctionOwner)
