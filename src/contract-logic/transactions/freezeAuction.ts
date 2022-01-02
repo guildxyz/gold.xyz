@@ -1,13 +1,10 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { getTopBidder } from "../queries/getTopBidder"
-import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { FreezeAuctionArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
 
 export async function freezeAuction(
-  connection: Connection,
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {

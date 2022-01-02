@@ -1,14 +1,11 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { getTopBidder } from "../queries/getTopBidder"
-import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { PlaceBidArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
 import { LAMPORTS } from "../consts"
 
 export async function placeBid(
-  connection: Connection,
   auctionId: string,
   bidder: PublicKey,
   amount: number // in SOL

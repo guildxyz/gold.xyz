@@ -1,20 +1,16 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY, NUM_OF_CYCLES_TO_DELETE } from "../consts"
-import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { DeleteAuctionArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
 
 export async function deleteAuction(
-  connection: Connection,
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
   const { deleteAuctionWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
-
-  const currentCycleNumber = await getCurrentCycleWasm(auctionIdArray)
-
+  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
   const auctionIdArray = padTo32Bytes(auctionId)
   const deleteAuctionArgs = new DeleteAuctionArgs({
     contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
