@@ -135,6 +135,7 @@ export async function getAuction(id: string, n?: number): Promise<Auction> {
   }
 
   const goalTreasuryAmount = Number(auction.rootState.description.goalTreasuryAmount) / LAMPORTS;
+  // TODO what if this is null
   const numberOfCycles = Number(auction.rootState.auctionConfig.numberOfCycles);
 
   return {
@@ -151,7 +152,7 @@ export async function getAuction(id: string, n?: number): Promise<Auction> {
       .reverse(),
     cyclePeriod: auction.rootState.auctionConfig.cyclePeriod.toNumber(),
     currentCycle: Number(auction.rootState.status.currentAuctionCycle),
-    numberOfCycles: Number(auction.rootState.auctionConfig.numberOfCycles),
+    numberOfCycles,
     minBid: auction.rootState.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
     startTimestamp: auction.cycleState.startTime.toNumber() * 1000,
     endTimestamp: auction.cycleState.endTime.toNumber() * 1000,
