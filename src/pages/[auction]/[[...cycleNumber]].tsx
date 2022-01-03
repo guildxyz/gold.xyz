@@ -61,6 +61,7 @@ const Page = (): JSX.Element => {
     goalTreasuryAmount,
     currentTreasuryAmount,
     bids,
+    thisCycle,
     currentCycle = 0,
     endTimestamp,
     isActive = true,
@@ -116,21 +117,21 @@ const Page = (): JSX.Element => {
         </Center>
         <VStack alignItems="stretch" spacing="8">
           <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
-            {currentCycle > 1 && (
+            {thisCycle > 1 && (
               <Link
                 fontSize="sm"
                 opacity="0.6"
-                href={`/${router.query.auction}/${currentCycle - 1}`}
+                href={`/${router.query.auction}/${thisCycle - 1}`}
               >
                 <Icon as={CaretLeft} mr="2" />
                 Prev cycle
               </Link>
             )}
-            {currentCycle < numberOfCycles && !isActive && !isFrozen && (
+            {thisCycle < currentCycle && (
               <Link
                 fontSize="sm"
                 opacity="0.6"
-                href={`/${router.query.auction}/${currentCycle + 1}`}
+                href={`/${router.query.auction}/${thisCycle + 1}`}
                 ml="auto"
               >
                 Next cycle
