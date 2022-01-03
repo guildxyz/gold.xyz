@@ -166,7 +166,7 @@ export async function getAuction(connection: Connection, id: string, n?: number)
       name: masterMetadata.name,
       symbol: masterMetadata.symbol,
       uri: masterMetadata.uri,
-      isRepeated: false,
+      isRepeated: !!auctionRootStateDeserialized.tokenConfig.tokenConfigNft.unnamed.isRepeating,
     }
   } else if (auctionRootStateDeserialized.tokenConfig.tokenConfigToken) {
     const mintPubkey = auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint
