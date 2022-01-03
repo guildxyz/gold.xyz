@@ -21,6 +21,7 @@ type Props = {
 
 const NFTCard = ({ index, removeNft }: Props) => {
   const name = useWatch({ name: "asset.name" })
+  const isRepeated = useWatch({ name: "asset.isRepeated" })
   const preview = useWatch({ name: `nfts.${index}.preview` })
   const { fields, append, remove } = useFieldArray({ name: `nfts.${index}.traits` })
 
@@ -38,9 +39,9 @@ const NFTCard = ({ index, removeNft }: Props) => {
         </Center>
         <VStack p="5" pt="3" spacing="3">
           <HStack width="full" justifyContent="space-between">
-            <Text fontWeight="bold">
-              {name} #{index}
-            </Text>
+            <Text fontWeight="bold">{`${name} #${
+              isRepeated ? "[0, 1, ...]" : index + 1
+            }`}</Text>
             <Tooltip label="Remove NFT">
               <IconButton
                 size="sm"
