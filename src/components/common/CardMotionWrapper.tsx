@@ -1,16 +1,18 @@
 import { Box, EASINGS } from "@chakra-ui/react"
 import { motion } from "framer-motion"
 import { PropsWithChildren } from "react"
+import { Rest } from "types"
 
 const MotionBox = motion(Box)
 
 type Props = {
   animateOnMount?: boolean
-}
+} & Rest
 
 const CardMotionWrapper = ({
   animateOnMount = true,
   children,
+  ...rest
 }: PropsWithChildren<Props>): JSX.Element => (
   <MotionBox
     layout="position"
@@ -29,6 +31,7 @@ const CardMotionWrapper = ({
     }}
     transition={{ duration: 0.3, ease: EASINGS.easeInOut }}
     sx={{ "> *": { height: "full" } }}
+    {...rest}
   >
     {children}
   </MotionBox>

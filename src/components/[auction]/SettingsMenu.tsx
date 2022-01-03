@@ -31,7 +31,7 @@ const SettingsMenu = () => {
   const alertCancelRef = useRef()
 
   const handleFreezeAuction = async () => {
-    const tx = await freezeAuction(connection, auction?.id, auction?.ownerPubkey)
+    const tx = await freezeAuction(auction?.id, auction?.ownerPubkey)
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
