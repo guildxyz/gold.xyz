@@ -70,6 +70,8 @@ const Page = (): JSX.Element => {
     numberOfCycles,
   } = auction ?? {}
 
+  const isCycleActive = isActive && thisCycle === currentCycle
+
   return (
     <Layout
       title={name}
@@ -150,13 +152,13 @@ const Page = (): JSX.Element => {
             alignItems="flex-start"
           >
             <Stat size="lg">
-              <StatLabel>{isActive ? "Current bid" : "Winning bid"}</StatLabel>
+              <StatLabel>{isCycleActive ? "Current bid" : "Winning bid"}</StatLabel>
               <Skeleton isLoaded={!!bids}>
                 <HighestBid amount={bids?.[0]?.amount} />
               </Skeleton>
             </Stat>
             <Stat size="lg">
-              {isActive ? (
+              {isCycleActive ? (
                 <>
                   <StatLabel>Ends in</StatLabel>
                   <Skeleton isLoaded={!!endTimestamp}>
@@ -175,13 +177,14 @@ const Page = (): JSX.Element => {
               )}
             </Stat>
           </HStack>
-          {isActive ? (
-            <Bid />
-          ) : (
-            <Box>
-              <Tag size="lg">Auction ended</Tag>
-            </Box>
-          )}
+          {isCycleActive !== undefined &&
+            (isCycleActive ? (
+              <Bid />
+            ) : (
+              <Box>
+                <Tag size="lg">Auction ended</Tag>
+              </Box>
+            ))}
           <VStack>
             {bids?.slice(0, 2).map((bid) => (
               <Flex
