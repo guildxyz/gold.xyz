@@ -58,7 +58,7 @@ const SettingsMenu = () => {
     console.log("success", "Transaction successful!", signature)
   }
 
-  const { onSubmit: onFreeze, isLoadingFreeze } = useSubmit(handleFreezeAuction, {
+  const { onSubmit: onFreeze, isLoading: isLoadingFreeze } = useSubmit(handleFreezeAuction, {
     onSuccess: () => {
       toast({
         title: `Auction successfully frozen!`,
@@ -75,7 +75,7 @@ const SettingsMenu = () => {
       }),
   })
 
-  const { onSubmit: onClaim, isLoadingClaim } = useSubmit(handleClaimFunds, {
+  const { onSubmit: onClaim, isLoading: isLoadingClaim } = useSubmit(handleClaimFunds, {
     onSuccess: () => {
       toast({
         title: `Funds successfully claimed!`,
