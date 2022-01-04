@@ -28,7 +28,8 @@ const SettingsMenu = () => {
   const { connection } = useConnection()
   const { sendTransaction } = useWallet()
   const toast = useToast()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen: isOpenClaim, onOpen: onOpenClaim, onClose: onCloseClaim } = useDisclosure()
+  const { isOpen: isOpenFreeze, onOpen: onOpenFreeze, onClose: onCloseFreeze } = useDisclosure()
   const alertCancelRef = useRef()
 
   const handleFreezeAuction = async () => {
@@ -101,18 +102,18 @@ const SettingsMenu = () => {
           icon={<Icon as={Gear} />}
         />
         <MenuList border="none" shadow="md">
-          <MenuItem py="2" icon={<CurrencyDollarSimple />} onClick={onOpen} color="green.300">
+          <MenuItem py="2" icon={<CurrencyDollarSimple />} onClick={onOpenClaim} color="green.300">
             Claim funds
           </MenuItem>
-          <MenuItem py="2" icon={<Snowflake />} onClick={onOpen} color="red.300">
+          <MenuItem py="2" icon={<Snowflake />} onClick={onOpenFreeze} color="red.300">
             Freeze auction
           </MenuItem>
         </MenuList>
       </Menu>
       <AlertDialog
-        isOpen={isOpen}
+        isOpen={isOpenClaim}
         leastDestructiveRef={alertCancelRef}
-        onClose={onClose}
+        onClose={onCloseClaim}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
@@ -124,7 +125,7 @@ const SettingsMenu = () => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={alertCancelRef} onClick={onClose}>
+              <Button ref={alertCancelRef} onClick={onCloseClaim}>
                 Cancel
               </Button>
               <Button
@@ -140,9 +141,9 @@ const SettingsMenu = () => {
         </AlertDialogOverlay>
       </AlertDialog>
       <AlertDialog
-        isOpen={isOpen}
+        isOpen={isOpenFreeze}
         leastDestructiveRef={alertCancelRef}
-        onClose={onClose}
+        onClose={onCloseFreeze}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
@@ -154,7 +155,7 @@ const SettingsMenu = () => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={alertCancelRef} onClick={onClose}>
+              <Button ref={alertCancelRef} onClick={onCloseFreeze}>
                 Cancel
               </Button>
               <Button
