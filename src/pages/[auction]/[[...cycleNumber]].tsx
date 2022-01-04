@@ -59,6 +59,7 @@ const Page = (): JSX.Element => {
     name = router.query.auction as string,
     description,
     goalTreasuryAmount,
+    availableTreasuryAmount,
     currentTreasuryAmount,
     bids,
     thisCycle,
