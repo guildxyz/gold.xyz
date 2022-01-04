@@ -65,7 +65,7 @@ const SettingsMenu = () => {
         status: "success",
       })
       mutate()
-      onClose()
+      onCloseFreeze()
     },
     onError: (e) =>
       toast({
@@ -82,7 +82,7 @@ const SettingsMenu = () => {
         status: "success",
       })
       mutate()
-      onClose()
+      onCloseClaim()
     },
     onError: (e) =>
       toast({
