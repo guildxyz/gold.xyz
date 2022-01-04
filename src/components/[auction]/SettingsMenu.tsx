@@ -16,9 +16,10 @@ import {
 } from "@chakra-ui/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { freezeAuction } from "contract-logic/transactions/freezeAuction"
+import { claimFunds } from "contract-logic/transactions/claimFunds"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
-import { Gear, Snowflake } from "phosphor-react"
+import { Gear, Snowflake, CurrencyDollarSimple } from "phosphor-react"
 import { useRef } from "react"
 import useAuction from "./hooks/useAuction"
 
@@ -43,7 +44,20 @@ const SettingsMenu = () => {
     console.log("success", "Transaction successful!", signature)
   }
 
-  const { onSubmit: onFreeze, isLoading } = useSubmit(handleFreezeAuction, {
+  const handleClaimFunds = async () => {
+    const tx = await claimFunds(auction?.id, auction?.ownerPubkey, auction?.availableTreasuryAmount)
+    console.log(tx)
+    const signature = await sendTransaction(tx, connection, {
+      skipPreflight: false,
+      preflightCommitment: "singleGossip",
+    })
+    console.log("info", "Transaction sent:", signature)
+
+    await connection.confirmTransaction(signature, "processed")
+    console.log("success", "Transaction successful!", signature)
+  }
+
+  const { onSubmit: onFreeze, isLoadingFreeze } = useSubmit(handleFreezeAuction, {
     onSuccess: () => {
       toast({
         title: `Auction successfully frozen!`,
@@ -60,6 +74,23 @@ const SettingsMenu = () => {
       }),
   })
 
+  const { onSubmit: onClaim, isLoadingClaim } = useSubmit(handleClaimFunds, {
+    onSuccess: () => {
+      toast({
+        title: `Funds successfully claimed!`,
+        status: "success",
+      })
+      mutate()
+      onClose()
+    },
+    onError: (e) =>
+      toast({
+        title: "Error claiming funds",
+        description: e.toString(),
+        status: "error",
+      }),
+  })
+
   return (
     <>
       <Menu placement="bottom-end">
@@ -70,11 +101,44 @@ const SettingsMenu = () => {
           icon={<Icon as={Gear} />}
         />
         <MenuList border="none" shadow="md">
+          <MenuItem py="2" icon={<CurrencyDollarSimple />} onClick={onOpen} color="green.300">
+            Claim funds
+          </MenuItem>
           <MenuItem py="2" icon={<Snowflake />} onClick={onOpen} color="red.300">
             Freeze auction
           </MenuItem>
         </MenuList>
       </Menu>
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={alertCancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader>Claim funds</AlertDialogHeader>
+
+            <AlertDialogBody>
+              You have currently {auction?.availableTreasuryAmount.toFixed(2)} SOL in your treasury.
+              Would you like to claim this amount?
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={alertCancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="green"
+                onClick={onClaim}
+                isLoading={isLoadingClaim}
+                ml={3}
+              >
+                Claim
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
       <AlertDialog
         isOpen={isOpen}
         leastDestructiveRef={alertCancelRef}
@@ -96,7 +160,7 @@ const SettingsMenu = () => {
               <Button
                 colorScheme="red"
                 onClick={onFreeze}
-                isLoading={isLoading}
+                isLoading={isLoadingFreeze}
                 ml={3}
               >
                 Freeze

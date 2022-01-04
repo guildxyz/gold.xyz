@@ -49,6 +49,7 @@ export type AuctionBase = AuctionBaseConfig & {
 
 export type Auction = AuctionConfig &
   AuctionBase & {
+    availableTreasuryAmount,
     bids: Bid[]
     thisCycle: number
     currentCycle: number
@@ -103,19 +104,28 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
 }
 
 export async function getAuction(id: string, n?: number): Promise<Auction> {
-  const { getAuctionWasm } = await import("../../../wasm-factory")
+  const { getAuctionWasm, getTreasuryWasm } = await import("../../../wasm-factory")
   let cycle;
   if (n) {
     cycle = BigInt(n);
   } else {
     cycle = null;
   }
-  const auctionData: Uint8Array = await getAuctionWasm(id, cycle);
-  const auction = deserializeUnchecked(
-    SCHEMA,
-    FrontendAuction,
-    Buffer.from(auctionData),
-  );
+
+  let auction;
+  let availableLamports;
+  try {
+    const auctionData: Uint8Array = await getAuctionWasm(id, cycle);
+    auction = deserializeUnchecked(
+      SCHEMA,
+      FrontendAuction,
+      Buffer.from(auctionData),
+    );
+
+    availableLamports = await getTreasuryWasm(id);
+  } catch(error) {
+    console.log("wasm error:", error)
+  }
 
   let asset: TokenData | NFTData
   if (auction.tokenConfig.frontendTokenConfigNft) {
@@ -151,6 +161,7 @@ export async function getAuction(id: string, n?: number): Promise<Auction> {
     description: auction.rootState.description.description,
     socials: auction.rootState.description.socials,
     goalTreasuryAmount,
+    availableTreasuryAmount: Number(availableLamports) / LAMPORTS,
     currentTreasuryAmount: auction.rootState.currentTreasury.toNumber() / LAMPORTS,
     ownerPubkey: auction.rootState.auctionOwner,
     asset: asset,

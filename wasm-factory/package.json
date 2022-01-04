@@ -4,7 +4,6 @@
   "files": [
     "instructions_bg.wasm",
     "instructions.js",
-    "instructions_bg.js",
     "instructions.d.ts"
   ],
   "module": "instructions.js",

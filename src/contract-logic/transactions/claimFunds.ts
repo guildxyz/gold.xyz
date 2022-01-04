@@ -8,8 +8,8 @@ import { parseInstruction } from "../utils/parseInstruction"
 export async function claimFunds(
   auctionId: string,
   auctionOwnerPubkey: PublicKey,
-  amount: number
-) {
+  amount: number,
+): Promise<Transaction> {
   const { claimFundsWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
 
   const currentCycleNumber = await getCurrentCycleWasm(auctionId)
