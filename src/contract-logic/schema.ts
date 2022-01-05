@@ -176,6 +176,30 @@ export class CreateMetadataAccountArgs extends Struct {
     isMutable: boolean;
 };
 
+export class FrontendTokenConfig extends Enum {
+    frontendTokenConfigNft: FrontendTokenConfigNft;
+    frontendTokenConfigToken: FrontendTokenConfigToken;
+};
+
+export class FrontendTokenConfigNft extends Struct {
+    name: string;
+    symbol: string;
+    uri: string;
+    isRepeating: boolean;
+};
+
+export class FrontendTokenConfigToken extends Struct {
+    mint: PublicKey;
+    decimals: number;
+    perCycleAmount: BN;
+};
+
+export class FrontendAuction extends Struct {
+    rootState: AuctionRootState;
+    cycleState: AuctionCycleState;
+    tokenConfig: FrontendTokenConfig;
+};
+
 export const SCHEMA = new Map<any, any>([
     [
             ClaimFundsArgs,
@@ -460,6 +484,46 @@ export const SCHEMA = new Map<any, any>([
                 kind: 'struct', fields: [
 			['data', Data],
 			['isMutable', 'u8'],
+                ],
+            },
+    ],
+    [
+            FrontendTokenConfig,
+            {
+                kind: 'enum', field: 'enum', values: [
+			['frontendTokenConfigNft', FrontendTokenConfigNft],
+			['frontendTokenConfigToken', FrontendTokenConfigToken],
+                ],
+            },
+    ],
+    [
+            FrontendTokenConfigNft,
+            {
+                kind: 'struct', fields: [
+			['name', 'string'],
+			['symbol', 'string'],
+			['uri', 'string'],
+			['isRepeating', 'u8'],
+                ],
+            },
+    ],
+    [
+            FrontendTokenConfigToken,
+            {
+                kind: 'struct', fields: [
+			['mint', 'publicKey'],
+			['decimals', 'u8'],
+			['perCycleAmount', 'u64'],
+                ],
+            },
+    ],
+    [
+            FrontendAuction,
+            {
+                kind: 'struct', fields: [
+			['rootState', AuctionRootState],
+			['cycleState', AuctionCycleState],
+			['tokenConfig', FrontendTokenConfig],
                 ],
             },
     ],

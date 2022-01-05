@@ -1,12 +1,9 @@
 import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
 import { LAMPORTS } from "../consts"
-import { MasterEditionV2, METADATA_SCHEMA } from "../metadata_schema"
-import { AuctionPool, AuctionRootState, SCHEMA } from "../schema"
+import { AuctionPool, AuctionRootState, FrontendAuction, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
-import { getMasterMetadata } from "./getMasterMedata"
-import { getCurrentCycleState, readNthCycleState } from "./readCycleState"
 
 export type Bid = {
   bidderPubkey: PublicKey
@@ -53,6 +50,7 @@ export type AuctionBase = AuctionBaseConfig & {
 export type Auction = AuctionConfig &
   AuctionBase & {
     bids: Bid[]
+    thisCycle: number
     currentCycle: number
     endTimestamp: number
     isActive: boolean
@@ -64,7 +62,6 @@ async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
   const auctionPoolPubkey = new PublicKey(
     await getAuctionPoolPubkeyWasm()
   )
-  //const auctionPoolPubkey = new PublicKey("C9ZF33Rga9fmimugAKNxmaPXid48Pbyfgi9tpyE5nkFJ");
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   return deserializeUnchecked(SCHEMA, AuctionPool, auctionPoolData)
@@ -105,126 +102,69 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
   return auctionBaseArray
 }
 
-export async function getAuction(connection: Connection, id: string, n?: number): Promise<Auction> {
-  const { getDecimalsFromMintAccountDataWasm } = await import("../../../wasm-factory")
-  const auctionPool = await getAuctionPool(connection)
-
-  const auctionId = Uint8Array.from(padTo32Bytes(id))
-
-  let auctionRootStatePubkey
-  let auctionRootStateDeserialized
-  let poolIterator = auctionPool.pool.entries()
-  let currentEntry = poolIterator.next()
-  while (!currentEntry.done) {
-    const [auctionId, rootPubkey] = currentEntry.value
-    if (parseAuctionId(auctionId) == id) {
-      auctionRootStatePubkey = rootPubkey
-      const auctionRootStateAccountInfo = await connection.getAccountInfo(auctionRootStatePubkey)
-      const auctionRootStateData: Buffer = auctionRootStateAccountInfo!.data
-      auctionRootStateDeserialized = deserializeUnchecked(
-        SCHEMA,
-        AuctionRootState,
-        auctionRootStateData
-      )
-      break
-    }
-
-    currentEntry = poolIterator.next()
-  }
-  let auctionCycleStateDeserialized;
+export async function getAuction(id: string, n?: number): Promise<Auction> {
+  const { getAuctionWasm } = await import("../../../wasm-factory")
+  let cycle;
   if (n) {
-    auctionCycleStateDeserialized = await readNthCycleState(
-      connection,
-      auctionRootStatePubkey,
-      n
-    )
+    cycle = BigInt(n);
   } else {
-    auctionCycleStateDeserialized = await getCurrentCycleState(
-      connection,
-      auctionRootStatePubkey
-    )
+    cycle = null;
   }
-  const auctionOwnerPubkey = new PublicKey(auctionRootStateDeserialized.auctionOwner)
+  const auctionData: Uint8Array = await getAuctionWasm(id, cycle);
+  const auction = deserializeUnchecked(
+    SCHEMA,
+    FrontendAuction,
+    Buffer.from(auctionData),
+  );
 
   let asset: TokenData | NFTData
-  if (auctionRootStateDeserialized.tokenConfig.tokenConfigNft) {
-    // read master edition account (for current child edition)
-    const masterEditionAccountInfo = await connection.getAccountInfo(
-      new PublicKey(auctionRootStateDeserialized.tokenConfig.tokenConfigNft.unnamed.masterEdition)
-    )
-    const masterEditionData: Buffer = masterEditionAccountInfo!.data
-    const masterEditionDeserialized = deserializeUnchecked(
-      METADATA_SCHEMA,
-      MasterEditionV2,
-      masterEditionData
-    )
-
-    const masterMetadata = await getMasterMetadata(connection, auctionId)
-
+  if (auction.tokenConfig.frontendTokenConfigNft) {
     asset = {
       type: "NFT",
-      name: masterMetadata.name,
-      symbol: masterMetadata.symbol,
-      uri: masterMetadata.uri,
-      isRepeated: false,
+      name: auction.tokenConfig.frontendTokenConfigNft.name,
+      symbol: auction.tokenConfig.frontendTokenConfigNft.symbol,
+      uri: auction.tokenConfig.frontendTokenConfigNft.uri,
+      isRepeated: auction.tokenConfig.frontendTokenConfigNft.isRepeating,
     }
-  } else if (auctionRootStateDeserialized.tokenConfig.tokenConfigToken) {
-    const mintPubkey = auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.mint
-    const mintInfo = await connection.getAccountInfo(mintPubkey)
-    const mintData: Buffer = mintInfo!.data
-
-    let decimals
-    try {
-      decimals = await getDecimalsFromMintAccountDataWasm(Uint8Array.from(mintData))
-    } catch (e) {
-      console.log("wasm error:", e)
-    }
-
+  } else if (auction.tokenConfig.frontendTokenConfigToken) {
     asset = {
       type: "TOKEN",
-      decimals: decimals,
-      mintAddress: mintPubkey,
-      perCycleAmount:
-        auctionRootStateDeserialized.tokenConfig.tokenConfigToken.unnamed.perCycleAmount.toNumber(),
+      decimals: auction.tokenConfig.frontendTokenConfigToken.decimals,
+      mintAddress: auction.tokenConfig.frontendTokenConfigToken.mint,
+      perCycleAmount: Number(auction.tokenConfig.frontendTokenConfigToken.perCycleAmount)
     }
   }
 
-  let goalTreasuryAmount = null
-  if (auctionRootStateDeserialized.description.goalTreasuryAmount != null) {
-    goalTreasuryAmount = auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber() / LAMPORTS;
-  }
-
-  let numberOfCycles = null
-  if (auctionRootStateDeserialized.auctionConfig.numberOfCycles != null) {
-    numberOfCycles = auctionRootStateDeserialized.auctionConfig.numberOfCycles.toNumber();
-  }
-
-  let currentCycleNumber: number
+  const goalTreasuryAmount = Number(auction.rootState.description.goalTreasuryAmount) / LAMPORTS;
+  const numberOfCycles = Number(auction.rootState.auctionConfig.numberOfCycles);
+  const currentCycle = Number(auction.rootState.status.currentAuctionCycle);
+  let thisCycle;
   if (n) {
-    currentCycleNumber = n
+    thisCycle = n;
   } else {
-    currentCycleNumber = auctionRootStateDeserialized.status.currentAuctionCycle.toNumber()
+    thisCycle = currentCycle;
   }
 
   return {
     id: id,
-    name: parseAuctionId(Uint8Array.from(auctionRootStateDeserialized.auctionName)),
-    description: auctionRootStateDeserialized.description.description,
-    socials: auctionRootStateDeserialized.description.socials,
-    goalTreasuryAmount: goalTreasuryAmount,
-    currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber() / LAMPORTS,
-    ownerPubkey: auctionOwnerPubkey,
+    name: parseAuctionId(Uint8Array.from(auction.rootState.auctionName)),
+    description: auction.rootState.description.description,
+    socials: auction.rootState.description.socials,
+    goalTreasuryAmount,
+    currentTreasuryAmount: auction.rootState.currentTreasury.toNumber() / LAMPORTS,
+    ownerPubkey: auction.rootState.auctionOwner,
     asset: asset,
-    bids: auctionCycleStateDeserialized.bidHistory
+    bids: auction.cycleState.bidHistory
       .map((bid) => ({ bidderPubkey: bid.bidderPubkey, amount: bid.bidAmount.toNumber() / LAMPORTS }))
       .reverse(),
-    cyclePeriod: auctionRootStateDeserialized.auctionConfig.cyclePeriod.toNumber(),
-    currentCycle: currentCycleNumber,
-    numberOfCycles: numberOfCycles,
-    minBid: auctionRootStateDeserialized.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
-    startTimestamp: auctionCycleStateDeserialized.startTime.toNumber() * 1000,
-    endTimestamp: auctionCycleStateDeserialized.endTime.toNumber() * 1000,
-    isActive: auctionRootStateDeserialized.status.isActive,
-    isFrozen: auctionRootStateDeserialized.status.isFrozen,
+    cyclePeriod: auction.rootState.auctionConfig.cyclePeriod.toNumber(),
+    thisCycle,
+    currentCycle,
+    numberOfCycles,
+    minBid: auction.rootState.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
+    startTimestamp: auction.cycleState.startTime.toNumber() * 1000,
+    endTimestamp: auction.cycleState.endTime.toNumber() * 1000,
+    isActive: auction.rootState.status.isActive,
+    isFrozen: auction.rootState.status.isFrozen,
   }
 }

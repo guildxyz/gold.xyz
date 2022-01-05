@@ -1,3 +1,13 @@
+import fetch from "node-fetch";
+// @ts-ignore
+global.fetch = fetch;
+// @ts-ignore
+global.Headers = fetch.Headers;
+// @ts-ignore
+global.Request = fetch.Request;
+// @ts-ignore
+global.Response = fetch.Response;
+
 import { Keypair, PublicKey } from "@solana/web3.js"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { AuctionConfig, getAuction, getAuctions, NFTData, TokenData } from "./queries/getAuctions"
@@ -29,11 +39,11 @@ import { placeBid } from "./transactions/placeBid"
   }
 
   const auction: AuctionConfig = {
-    id: "totally-two",
-    name: "Totally Two",
+    id: "totally-three",
+    name: "Totally Three",
     description: "xd",
     socials: ["aaa.aaa"],
-    goalTreasuryAmount: undefined,
+    goalTreasuryAmount: null,
     ownerPubkey: auctionOwner.publicKey,
     asset: nftAsset,
     cyclePeriod: 60,
@@ -48,24 +58,25 @@ import { placeBid } from "./transactions/placeBid"
   //console.log("Auction created successfully.");
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  console.log(await getAuction(CONNECTION, "goldxyz-dao", 2))
+  console.log(await getAuction("goldxyz-dao"))
   // CLAIM FUNDS
-  //let claimFundsTransaction = await claimFunds(CONNECTION, auction.id, auctionOwner.publicKey, 0.5)
+  //let claimFundsTransaction = await claimFunds(auction.id, auctionOwner.publicKey, 0.5)
   //await sendTransaction(claimFundsTransaction, auctionOwner)
   //console.log("successfully claimed funds");
   // Bid on an auction
   //CONNECTION.requestAirdrop(bidder.publicKey, 100000000);
-  //const bidTransaction = await placeBid(CONNECTION, auction.id, bidder.publicKey, 2.2);
+  //const bidTransaction = await placeBid(auction.id, bidder.publicKey, 0.6);
   //await sendTransaction(bidTransaction, bidder);
   //console.log("Bid placed successfully.");
+  //console.log(await getAuction("totally-three"))
 
   // Freeze auction
-  //const freezeAuctionTransaction = await freezeAuction(CONNECTION, auction.id, auction.ownerPubkey)
+  //const freezeAuctionTransaction = await freezeAuction(auction.id, auction.ownerPubkey)
   //await sendTransaction(freezeAuctionTransaction, auctionOwner)
   //console.log("Auction frozen successfully.")
 
-  // Delete auction
-  //const deleteAuctionTransaction = await deleteAuction(CONNECTION, auction.id, auction.ownerPubkey)
+  //// Delete auction
+  //const deleteAuctionTransaction = await deleteAuction(auction.id, auction.ownerPubkey)
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("Auction deleted successfully.")
 })()

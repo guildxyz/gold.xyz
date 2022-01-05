@@ -61,13 +61,16 @@ const Page = (): JSX.Element => {
     goalTreasuryAmount,
     currentTreasuryAmount,
     bids,
-    currentCycle = 0,
+    thisCycle,
+    currentCycle,
     endTimestamp,
-    isActive = true,
+    isActive,
     isFrozen,
     ownerPubkey,
     numberOfCycles,
   } = auction ?? {}
+
+  const isCycleActive = isActive && thisCycle === currentCycle
 
   return (
     <Layout
@@ -116,21 +119,21 @@ const Page = (): JSX.Element => {
         </Center>
         <VStack alignItems="stretch" spacing="8">
           <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
-            {currentCycle > 1 && (
+            {thisCycle > 1 && (
               <Link
                 fontSize="sm"
                 opacity="0.6"
-                href={`/${router.query.auction}/${currentCycle - 1}`}
+                href={`/${router.query.auction}/${thisCycle - 1}`}
               >
                 <Icon as={CaretLeft} mr="2" />
                 Prev cycle
               </Link>
             )}
-            {currentCycle < numberOfCycles && !isActive && !isFrozen && (
+            {thisCycle < currentCycle && (
               <Link
                 fontSize="sm"
                 opacity="0.6"
-                href={`/${router.query.auction}/${currentCycle + 1}`}
+                href={`/${router.query.auction}/${thisCycle + 1}`}
                 ml="auto"
               >
                 Next cycle
@@ -149,13 +152,13 @@ const Page = (): JSX.Element => {
             alignItems="flex-start"
           >
             <Stat size="lg">
-              <StatLabel>{isActive ? "Current bid" : "Winning bid"}</StatLabel>
+              <StatLabel>{isCycleActive ? "Current bid" : "Winning bid"}</StatLabel>
               <Skeleton isLoaded={!!bids}>
                 <HighestBid amount={bids?.[0]?.amount} />
               </Skeleton>
             </Stat>
             <Stat size="lg">
-              {isActive ? (
+              {isCycleActive ? (
                 <>
                   <StatLabel>Ends in</StatLabel>
                   <Skeleton isLoaded={!!endTimestamp}>
@@ -174,13 +177,14 @@ const Page = (): JSX.Element => {
               )}
             </Stat>
           </HStack>
-          {isActive ? (
-            <Bid />
-          ) : (
-            <Box>
-              <Tag size="lg">Auction ended</Tag>
-            </Box>
-          )}
+          {isCycleActive !== undefined &&
+            (isCycleActive ? (
+              <Bid />
+            ) : (
+              <Box>
+                <Tag size="lg">Auction ended</Tag>
+              </Box>
+            ))}
           <VStack>
             {bids?.slice(0, 2).map((bid) => (
               <Flex

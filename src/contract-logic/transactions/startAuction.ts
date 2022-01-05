@@ -19,7 +19,7 @@ import { parseInstruction } from "../utils/parseInstruction"
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
 export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
-  const { initAuctionWasm } = await import("../../../wasm-factory")
+  const { initializeAuctionWasm } = await import("../../../wasm-factory")
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
     encorePeriod: 300,
@@ -75,7 +75,7 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
   let initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)
 
   try {
-    const instruction = parseInstruction(initAuctionWasm(initAuctionArgsSerialized))
+    const instruction = parseInstruction(initializeAuctionWasm(initAuctionArgsSerialized))
     return new Transaction().add(instruction)
   } catch (e) {
     console.log("wasm error:", e)

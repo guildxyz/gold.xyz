@@ -5,12 +5,11 @@ import { useEffect } from "react"
 import useSWR from "swr"
 
 const useAuction = () => {
-  const { connection } = useConnection()
   const router = useRouter()
 
   const handleGetAuction = async (_, id: string, cycleNumber: string) => {
-    if (!cycleNumber) return getAuction(connection, id)
-    return getAuction(connection, id, parseInt(cycleNumber))
+    if (!cycleNumber) return getAuction(id)
+    return getAuction(id, parseInt(cycleNumber))
   }
 
   const { data, isValidating, error, mutate } = useSWR(

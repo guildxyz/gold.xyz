@@ -53,7 +53,8 @@ handler.post(
           uploadImage(
             `${folder}/${fieldname}.json`,
             JSON.stringify({
-              name: `${name} #${index}`,
+              // if one image is repeated, index is 0, otherwise it starts from 1
+              name: `${name} #${req.files.length === 1 ? index : index + 1}`,
               symbol,
               description,
               image: uploadedPublicUrl,

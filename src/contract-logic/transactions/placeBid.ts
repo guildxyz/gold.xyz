@@ -1,23 +1,20 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { getTopBidder } from "../queries/getTopBidder"
-import { getCurrentCycleNumberFromId } from "../queries/readCycleState"
 import { PlaceBidArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
 import { LAMPORTS } from "../consts"
 
 export async function placeBid(
-  connection: Connection,
   auctionId: string,
   bidder: PublicKey,
   amount: number // in SOL
 ) {
-  const { placeBidWasm } = await import("../../../wasm-factory")
-  const auctionIdArray = padTo32Bytes(auctionId)
-  const topBidder = await getTopBidder(connection, auctionIdArray)
-  const currentCycleNumber = await getCurrentCycleNumberFromId(connection, auctionIdArray)
+  const { placeBidWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
+  const topBidder = await getTopBidderWasm(auctionId)
+  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
 
+  const auctionIdArray = padTo32Bytes(auctionId)
   const placeBidArgs = new PlaceBidArgs({
     userMainPubkey: bidder,
     auctionId: auctionIdArray,
