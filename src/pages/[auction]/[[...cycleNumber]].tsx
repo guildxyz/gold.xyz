@@ -100,9 +100,9 @@ const Page = (): JSX.Element => {
             </Tag>
           )}
           <Spacer />
-          {//publicKey &&
-           // ownerPubkey &&
-           // publicKey?.toString() === ownerPubkey?.toString() &&
+          {publicKey &&
+            ownerPubkey &&
+            publicKey?.toString() === ownerPubkey?.toString() &&
             isActive && <SettingsMenu />}
         </>
       }
