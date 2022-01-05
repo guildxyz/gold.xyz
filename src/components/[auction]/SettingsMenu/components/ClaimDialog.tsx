@@ -66,7 +66,7 @@ const ClaimDialog = ({ isOpen, onClose }) => {
           <AlertDialogHeader>Claim funds</AlertDialogHeader>
 
           <AlertDialogBody>
-            You have currently {auction?.availableTreasuryAmount.toFixed(2)} SOL in
+            You have currently {auction?.availableTreasuryAmount} SOL available in
             your treasury. Would you like to claim this amount?
           </AlertDialogBody>
 
