@@ -34,7 +34,7 @@ const ClaimDialog = ({ isOpen, onClose }) => {
     })
     console.log("info", "Transaction sent:", signature)
 
-    await connection.confirmTransaction(signature, "processed")
+    await connection.confirmTransaction(signature, "finalized")
     console.log("success", "Transaction successful!", signature)
   }
 

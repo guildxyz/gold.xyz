@@ -28,7 +28,7 @@ const useStartAuction = () => {
     })
     console.log("info", "Transaction sent:", signature)
 
-    await connection.confirmTransaction(signature, "processed")
+    await connection.confirmTransaction(signature, "finalized")
     console.log("success", "Transaction successful!", signature)
   }
 
@@ -78,7 +78,10 @@ const useStartAuction = () => {
       })
       const finalData = {
         ..._data,
-        cyclePeriod: (_data.customCyclePeriod ?? _data.cyclePeriod) * DAY_IN_SECONDS,
+        cyclePeriod:
+          (_data.cyclePeriod === "CUSTOM"
+            ? _data.customCyclePeriod
+            : _data.cyclePeriod) * DAY_IN_SECONDS,
         ownerPubkey: publicKey,
       }
       if (_data.asset.type === "NFT") {
