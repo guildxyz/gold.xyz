@@ -78,6 +78,7 @@ const ClaimDialog = ({ isOpen, onClose }) => {
               colorScheme="green"
               onClick={onSubmit}
               isLoading={isLoading}
+              isDisabled={!auction?.availableTreasuryAmount}
               ml={3}
             >
               Claim
