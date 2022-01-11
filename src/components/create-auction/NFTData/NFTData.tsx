@@ -5,10 +5,31 @@ import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
 import { useCallback, useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
-import limiter from "utils/ipfsLimiter"
-import ipfsUpload from "utils/ipfsUpload"
+import { v4 as uuidv4 } from "uuid"
 import NFTCard from "./components/NFTCard"
 import useDropzone from "./hooks/useDropzone"
+
+const uploadImages = async (
+  files: File[],
+  clientId: string,
+  ids: string[]
+): Promise<string[]> => {
+  const formData = new FormData()
+  files.forEach((file, index) => formData.append(ids[index], file))
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-file/${clientId}`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  )
+
+  const body = await response.json()
+
+  if (response.ok) return body
+  else throw Error(body.message ?? "Failed to upload images")
+}
 
 const NFTData = () => {
   const [progresses, setProgresses] = useState<Record<string, number>>({})
@@ -48,33 +69,44 @@ const NFTData = () => {
     onDrop,
   })
 
-  useEffect(() => {
-    limiter.schedule(() =>
-      Promise.all(
-        acceptedFiles.map((file, index) =>
-          file.arrayBuffer().then((data) => {
-            const fieldIndex = fields.length - acceptedFiles.length + index
-            ipfsUpload({
-              data,
-              onProgress: (progress) => {
-                if (fields[fieldIndex])
-                  setProgresses((prev) => ({
-                    ...prev,
-                    [fields[fieldIndex].id]: progress,
-                  }))
-              },
-            }).then((result) => {
-              if (fields[fieldIndex])
-                setHashes((prev) => ({
-                  ...prev,
-                  [fields[fieldIndex].id]: result.path,
-                }))
-            })
-          })
-        )
-      )
+  const setupEventSource = useCallback((clientId: string) => {
+    const source = new EventSource(
+      `${process.env.NEXT_PUBLIC_UPLOADER_API}/${clientId}`
     )
-  }, [fields])
+
+    source.addEventListener("progress", (event: Event) => {
+      try {
+        const [id, progress] = JSON.parse((event as Event & { data: string }).data)
+        setProgresses((prev) => ({ ...prev, [id]: progress }))
+      } catch (error) {
+        console.error(`Failed to parse SSE "progress" event message`, error)
+      }
+    })
+
+    source.addEventListener("hash", (event: Event) => {
+      try {
+        const [id, hash] = JSON.parse((event as Event & { data: string }).data)
+        setHashes((prev) => ({ ...prev, [id]: hash }))
+      } catch (error) {
+        console.error(`Failed to parse SSE "hash" event message`, error)
+      }
+    })
+
+    return source
+  }, [])
+
+  useEffect(() => {
+    if (acceptedFiles.length > 0) {
+      const uploadProgressId = uuidv4()
+      const progressEventSource = setupEventSource(uploadProgressId)
+
+      uploadImages(
+        acceptedFiles,
+        uploadProgressId,
+        fields.slice(fields.length - acceptedFiles.length).map((field) => field.id)
+      ).finally(() => progressEventSource.close())
+    }
+  }, [setupEventSource, fields]) // Intentionally leaving out acceptedFiles
 
   return (
     <>

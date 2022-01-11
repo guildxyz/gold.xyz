@@ -6,7 +6,6 @@ import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
-import { ipfsUploadAll } from "utils/ipfsUpload"
 
 const DAY_IN_SECONDS = 86400
 
@@ -92,16 +91,23 @@ const useStartAuction = () => {
         })
       )
 
-      const dir = await ipfsUploadAll({ data: metaDatas })
-
-      console.log(dir.cid.toString())
+      const cid = await fetch(
+        `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-metadata`,
+        {
+          method: "POST",
+          body: JSON.stringify({ data: metaDatas }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      ).then((res) => res.json())
 
       setData(finalData)
 
       if (_data.asset.type === "NFT")
         onSubmit({
           ...finalData,
-          asset: { ...finalData.asset, uri: `ipfs://${dir.cid.toString()}/0.json` },
+          asset: { ...finalData.asset, uri: `ipfs://${cid}/0.json` },
         })
       else onSubmit(finalData)
     },
