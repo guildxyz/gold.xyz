@@ -9,12 +9,9 @@ import { useEffect, useRef } from "react"
 import { useFormContext } from "react-hook-form"
 
 const CustomRound = ({ isChecked }) => {
-  const {
-    register,
-    setValue,
-    formState: { errors },
-  } = useFormContext()
+  const { register, setValue } = useFormContext()
   const inputRef = useRef(null)
+  const { ref, ...rest } = register("customCyclePeriod")
 
   useEffect(() => {
     if (isChecked) inputRef.current.focus()
@@ -27,8 +24,11 @@ const CustomRound = ({ isChecked }) => {
       <InputGroup>
         <NumberInput w="full">
           <NumberInputField
-            {...register("customCyclePeriod")}
-            ref={inputRef}
+            {...rest}
+            ref={(e) => {
+              ref(e)
+              inputRef.current = e
+            }}
             onClick={handleClick}
             h="12"
             borderRadius="xl"
