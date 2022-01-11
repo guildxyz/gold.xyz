@@ -8,38 +8,27 @@ import {
   useColorMode,
 } from "@chakra-ui/react"
 import { FilePlus } from "phosphor-react"
-import { FieldArrayMethodProps, useFormContext } from "react-hook-form"
-import useDropzone from "./hooks/useDropzone"
+import { DropzoneInputProps, DropzoneRootProps } from "react-dropzone"
+import { useFormContext } from "react-hook-form"
 
 type Props = {
-  addNft: (
-    value: Partial<unknown> | Partial<unknown>[],
-    options?: FieldArrayMethodProps
-  ) => void
+  dropzoneProps: DropzoneRootProps
+  inputProps: DropzoneInputProps
+  isDragActive: boolean
 }
 
-const UploadFile = ({ addNft }: Props) => {
+const UploadFile = ({ dropzoneProps, inputProps, isDragActive }: Props) => {
   const {
     formState: { errors },
   } = useFormContext()
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (files) =>
-      addNft(
-        files.map((file) => ({
-          file,
-          traits: [],
-          preview: URL.createObjectURL(file),
-        }))
-      ),
-  })
 
   const { colorMode } = useColorMode()
 
   return (
     <FormControl isInvalid={!!errors.nftImage} d="flex" flexDir="column">
-      <input id="dropzone" {...getInputProps()} hidden />
+      <input id="dropzone" {...inputProps} hidden />
       <Box
-        {...getRootProps()}
+        {...dropzoneProps}
         as="label"
         htmlFor="dropzone"
         width="full"

@@ -3,11 +3,16 @@ import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
-import { useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
+import limiter from "utils/ipfsLimiter"
+import ipfsUpload from "utils/ipfsUpload"
 import NFTCard from "./components/NFTCard"
+import useDropzone from "./hooks/useDropzone"
 
 const NFTData = () => {
+  const [progresses, setProgresses] = useState<Record<string, number>>({})
+  const [hashes, setHashes] = useState<Record<string, string>>({})
   const { fields, append, remove } = useFieldArray({ name: "nfts" })
   const {
     register,
@@ -25,6 +30,51 @@ const NFTData = () => {
     if (nfts.length === 1) setValue("asset.isRepeated", true)
     else setValue("asset.isRepeated", false)
   }, [nfts])
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      append(
+        acceptedFiles.map((file) => ({
+          file,
+          traits: [],
+          preview: URL.createObjectURL(file),
+        }))
+      )
+    },
+    [append]
+  )
+
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
+    onDrop,
+  })
+
+  useEffect(() => {
+    limiter.schedule(() =>
+      Promise.all(
+        acceptedFiles.map((file, index) =>
+          file.arrayBuffer().then((data) => {
+            const fieldIndex = fields.length - acceptedFiles.length + index
+            ipfsUpload({
+              data,
+              onProgress: (progress) => {
+                if (fields[fieldIndex])
+                  setProgresses((prev) => ({
+                    ...prev,
+                    [fields[fieldIndex].id]: progress,
+                  }))
+              },
+            }).then((result) => {
+              if (fields[fieldIndex])
+                setHashes((prev) => ({
+                  ...prev,
+                  [fields[fieldIndex].id]: result.path,
+                }))
+            })
+          })
+        )
+      )
+    )
+  }, [fields])
 
   return (
     <>
@@ -66,11 +116,17 @@ const NFTData = () => {
                 key={field.id}
                 index={index}
                 removeNft={() => remove(index)}
+                progress={progresses[field.id] ?? 0}
+                imageHash={hashes[field.id] ?? ""}
               />
             ))}
             {/* </AnimatePresence> */}
             <CardMotionWrapper>
-              <UploadFile addNft={append} />
+              <UploadFile
+                dropzoneProps={getRootProps()}
+                inputProps={getInputProps()}
+                isDragActive={isDragActive}
+              />
             </CardMotionWrapper>
           </AnimateSharedLayout>
         </Grid>

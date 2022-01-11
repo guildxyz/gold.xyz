@@ -32,6 +32,7 @@ import useAuction from "components/[auction]/hooks/useAuction"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
+import { useEffect } from "react"
 import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
@@ -40,8 +41,12 @@ const Page = (): JSX.Element => {
   const { publicKey } = useWallet()
   const router = useRouter()
   const { data: nftData } = useSWRImmutable(
-    auction?.asset?.type === "NFT" ? auction.asset.uri : null
+    auction?.asset?.type === "NFT"
+      ? `https://ipfs.fleek.co/ipfs/${auction.asset.uri.split("ipfs://")[1]}`
+      : null
   )
+
+  useEffect(() => console.log(nftData), [nftData])
 
   if (error)
     return (
@@ -109,7 +114,7 @@ const Page = (): JSX.Element => {
       <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
         <Center>
           <Image
-            src={nftData?.image}
+            src={`https://ipfs.fleek.co/ipfs/${nftData?.image?.split("ipfs://")[1]}`}
             alt="NFT"
             borderRadius="xl"
             maxH="calc(100vh - 400px)"
