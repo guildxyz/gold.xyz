@@ -1,4 +1,5 @@
 import { Divider, Flex, Stack, VStack } from "@chakra-ui/react"
+import { DevTool } from "@hookform/devtools"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
 import Section from "components/common/Section"
@@ -95,6 +96,9 @@ const CreateGuildPage = (): JSX.Element => {
           <WalletNotConnectedAlert />
         )}
       </Layout>
+      {process.env.NODE_ENV === "development" && (
+        <DevTool control={methods.control} />
+      )}
     </FormProvider>
   )
 }
