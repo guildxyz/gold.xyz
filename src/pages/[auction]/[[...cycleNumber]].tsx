@@ -103,7 +103,7 @@ const Page = (): JSX.Element => {
           {publicKey &&
             ownerPubkey &&
             publicKey?.toString() === ownerPubkey?.toString() &&
-            isActive && <SettingsMenu />}
+            !!isActive && <SettingsMenu />}
         </>
       }
     >
