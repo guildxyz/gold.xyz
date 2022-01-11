@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form"
 import useStartAuction from "./hooks/useStartAuction"
 
 const SubmitButton = () => {
-  const { onSubmit, isLoading, isImageLoading, response } = useStartAuction()
+  const { onSubmit, isLoading, response } = useStartAuction()
 
   const { handleSubmit } = useFormContext()
 
@@ -12,11 +12,8 @@ const SubmitButton = () => {
       // disabled={isLoading || isImageLoading || isSigning || response}
       flexShrink={0}
       size="lg"
-      isLoading={isLoading || isImageLoading}
-      loadingText={(() => {
-        if (isImageLoading) return "Uploading image(s) to IPFS"
-        if (isLoading) return "Loading"
-      })()}
+      isLoading={isLoading}
+      loadingText="Loading"
       onClick={handleSubmit(onSubmit)}
     >
       {response ? "Success" : "Summon"}
