@@ -28,7 +28,7 @@ const useStartAuction = () => {
     })
     console.log("info", "Transaction sent:", signature)
 
-    await connection.confirmTransaction(signature, "processed")
+    await connection.confirmTransaction(signature, "finalized")
     console.log("success", "Transaction successful!", signature)
   }
 
@@ -42,7 +42,7 @@ const useStartAuction = () => {
           status: "success",
         })
         mutate("auctions")
-          router.push(`/${data.id}`)
+        router.push(`/${data.id}`)
       },
       onError: (e) =>
         toast({
