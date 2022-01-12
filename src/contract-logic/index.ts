@@ -36,8 +36,8 @@ global.Response = fetch.Response
   }
 
   const auction: AuctionConfig = {
-    id: "delete-this4",
-    name: "Delete this4",
+    id: "delete-this5",
+    name: "Delete this5",
     description: "xd",
     socials: ["aaa.aaa"],
     goalTreasuryAmount: null,
@@ -81,5 +81,5 @@ global.Response = fetch.Response
   //const deleteAuctionTransaction = await deleteAuction(auction.id, auction.ownerPubkey)
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("Auction deleted successfully.")
-  await deleteAuctionAdmin(auction.id, auctionOwner.publicKey, "./transactions/gold-admin-secret.json");
+  await deleteAuctionAdmin(auction.id, auctionOwner.publicKey, "./transactions/test-gold-admin-secret.json");
 })()
