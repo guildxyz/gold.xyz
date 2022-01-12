@@ -1,7 +1,7 @@
 import { Keypair, PublicKey } from "@solana/web3.js"
 import fetch from "node-fetch"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { getAuction, getAuctions } from "./queries/getAuctions"
+import { getAuction, getAuctions, getAuctionCycle } from "./queries/getAuctions"
 import { AuctionConfig, NFTData, TokenData } from "./queries/types"
 import { SECRET2, SECRET3 } from "./test"
 // @ts-ignore
@@ -19,42 +19,44 @@ global.Response = fetch.Response
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
   console.log("CONTRACT ADMIN", CONTRACT_ADMIN_KEYPAIR.publicKey.toString())
   //await initializeContract(auctionOwner.publicKey);
-  const nftAsset: NFTData = {
-    type: "NFT",
-    name: "aaa",
-    symbol: "AAA",
-    uri: "aaaa/0.json",
-    isRepeated: false,
-  }
+  //const nftAsset: NFTData = {
+  //  type: "NFT",
+  //  name: "aaa",
+  //  symbol: "AAA",
+  //  uri: "aaaa/0.json",
+  //  isRepeated: false,
+  //}
 
-  const tokenAsset: TokenData = {
-    type: "TOKEN",
-    decimals: 1,
-    perCycleAmount: 1000,
-    mintAddress: PublicKey.default,
-  }
+  //const tokenAsset: TokenData = {
+  //  type: "TOKEN",
+  //  decimals: 1,
+  //  perCycleAmount: 1000,
+  //  mintAddress: PublicKey.default,
+  //}
 
-  const auction: AuctionConfig = {
-    id: "totally-three",
-    name: "Totally Three",
-    description: "xd",
-    socials: ["aaa.aaa"],
-    goalTreasuryAmount: null,
-    ownerPubkey: auctionOwner.publicKey,
-    asset: nftAsset,
-    cyclePeriod: 60,
-    numberOfCycles: 20,
-    minBid: 0.01,
-    startTimestamp: null,
-  }
+  //const auction: AuctionConfig = {
+  //  id: "totally-three",
+  //  name: "Totally Three",
+  //  description: "xd",
+  //  socials: ["aaa.aaa"],
+  //  goalTreasuryAmount: null,
+  //  ownerPubkey: auctionOwner.publicKey,
+  //  asset: nftAsset,
+  //  cyclePeriod: 60,
+  //  numberOfCycles: 20,
+  //  minBid: 0.01,
+  //  startTimestamp: null,
+  //}
 
   // Create Auction
   //const startAuctionTransaction = await startAuction(auction);
   //await sendTransaction(startAuctionTransaction, auctionOwner);
   //console.log("Auction created successfully.");
   // Query auction
-  console.log(await getAuctions(CONNECTION))
-  console.log(await getAuction("goldxyz-dao"))
+  //console.log(await getAuctions(CONNECTION))
+  const auction = await getAuction("goldxyz-dao");
+  console.log(auction);
+  console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
   // CLAIM FUNDS
   //let claimFundsTransaction = await claimFunds(auction.id, auctionOwner.publicKey, 0.5)
   //await sendTransaction(claimFundsTransaction, auctionOwner)

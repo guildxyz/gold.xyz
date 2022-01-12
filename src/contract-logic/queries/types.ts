@@ -35,7 +35,6 @@ export type AuctionConfig = AuctionBaseConfig & {
   cyclePeriod: number
   numberOfCycles: number
   minBid: number
-  startTimestamp?: number
 }
 
 export type AuctionBase = AuctionBaseConfig & {
@@ -46,9 +45,9 @@ export type Auction = AuctionConfig &
   AuctionBase & {
     availableTreasuryAmount: number
     currentCycle: number
-    endTimestamp: number
     isActive: boolean
     isFrozen: boolean
+    rootStatePubkey: PublicKey
   }
 
 export type Cycle = {

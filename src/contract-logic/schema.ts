@@ -25,9 +25,10 @@ export class FrontendTokenConfigToken extends Struct {
 };
 
 export class FrontendAuction extends Struct {
+    rootStatePubkey: PublicKey;
     rootState: AuctionRootState;
-    cycleState: AuctionCycleState;
     tokenConfig: FrontendTokenConfig;
+    availableFunds: BN;
 };
 
 export class AuctionDescription extends Struct {
@@ -235,9 +236,10 @@ export const SCHEMA = new Map<any, any>([
             FrontendAuction,
             {
                 kind: 'struct', fields: [
+			['rootStatePubkey', 'publicKey'],
 			['rootState', AuctionRootState],
-			['cycleState', AuctionCycleState],
 			['tokenConfig', FrontendTokenConfig],
+			['availableFunds', 'u64'],
                 ],
             },
     ],
