@@ -10,7 +10,7 @@ export async function claimFunds(
   auctionOwnerPubkey: PublicKey,
   amount: number,
 ): Promise<Transaction> {
-  const { claimFundsWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
+  const { claimFundsWasm, getCurrentCycleWasm } = await import("../wasm-factory")
 
   const currentCycleNumber = await getCurrentCycleWasm(auctionId)
 
