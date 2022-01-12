@@ -20,6 +20,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
+import Card from "components/common/Card"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
@@ -77,8 +78,6 @@ const Page = (): JSX.Element => {
   return (
     <Layout
       title={name}
-      description={description}
-      showLayoutDescription
       action={
         publicKey &&
         ownerPubkey &&
@@ -86,113 +85,124 @@ const Page = (): JSX.Element => {
         !!isActive && <SettingsMenu />
       }
     >
-      <SimpleGrid
-        mb={8}
-        templateColumns={{ base: "1fr", lg: "5fr 4fr" }}
-        spacing="16"
-      >
-        <Center>
-          <Image
-            src={nftData?.image}
-            alt="NFT"
-            borderRadius="xl"
-            maxH="calc(100vh - 400px)"
-            shadow="xl"
-            fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
-          />
-        </Center>
-        <VStack alignItems="stretch" spacing="8">
-          <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
-            {thisCycle > 1 && (
-              <Link
-                fontSize="sm"
-                opacity="0.6"
-                href={`/${router.query.auction}/${thisCycle - 1}`}
-              >
-                <Icon as={CaretLeft} mr="2" />
-                Prev cycle
-              </Link>
-            )}
-            {thisCycle < currentCycle && (
-              <Link
-                fontSize="sm"
-                opacity="0.6"
-                href={`/${router.query.auction}/${thisCycle + 1}`}
-                ml="auto"
-              >
-                Next cycle
-                <Icon as={CaretRight} ml="2" />
-              </Link>
-            )}
-          </HStack>
-          <Skeleton isLoaded={!!nftData} w="fit-content">
-            <Heading as="h3" fontSize="4xl" fontFamily="display" d="inline-block">
-              {nftData?.name}
-            </Heading>
-          </Skeleton>
-          <HStack
-            divider={<Divider orientation="vertical" />}
-            spacing="8"
-            alignItems="flex-start"
-          >
-            <Stat size="lg">
-              <StatLabel>{isCycleActive ? "Current bid" : "Winning bid"}</StatLabel>
-              <Skeleton isLoaded={!!bids}>
-                <HighestBid amount={bids?.[0]?.amount} />
-              </Skeleton>
-            </Stat>
-            <Stat size="lg">
-              {isCycleActive ? (
-                <>
-                  <StatLabel>Ends in</StatLabel>
-                  <Skeleton isLoaded={!!endTimestamp}>
-                    <Countdown expiryTimestamp={endTimestamp} />
-                  </Skeleton>
-                </>
-              ) : (
-                <>
-                  <StatLabel>Winner</StatLabel>
-                  <StatNumber>
-                    {bids?.[0]?.bidderPubkey
-                      ? shortenHex(bids?.[0]?.bidderPubkey.toString())
-                      : "-"}
-                  </StatNumber>
-                </>
+      <Card mb={8}>
+        <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }}>
+          <Center bg="gray.900" p={12}>
+            <Image
+              src={nftData?.image}
+              alt="NFT"
+              borderRadius="xl"
+              maxH="calc(100vh - 400px)"
+              shadow="xl"
+              fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
+            />
+          </Center>
+          <VStack p={12} alignItems="stretch" spacing="8">
+            <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
+              {thisCycle > 1 && (
+                <Link
+                  fontSize="sm"
+                  opacity="0.6"
+                  href={`/${router.query.auction}/${thisCycle - 1}`}
+                >
+                  <Icon as={CaretLeft} mr="2" />
+                  Prev cycle
+                </Link>
               )}
-            </Stat>
-          </HStack>
-          {isCycleActive !== undefined &&
-            (isCycleActive ? (
-              <Bid />
-            ) : (
-              <Box>
-                <Tag size="lg">Auction ended</Tag>
-              </Box>
-            ))}
-          <VStack>
-            {bids?.slice(0, 2).map((bid) => (
-              <Flex
-                key={bid.amount.toString()}
-                bg="blackAlpha.300"
-                px="4"
-                py="3"
-                borderRadius="xl"
-                w="full"
-              >
-                <Identicon address={bid.bidderPubkey.toString()} size={20} />
-                <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
-                <Text ml="auto" fontWeight="semibold">
-                  {bid.amount} SOL
-                </Text>
-              </Flex>
-            ))}
-            <BidHistory />
+              {thisCycle < currentCycle && (
+                <Link
+                  fontSize="sm"
+                  opacity="0.6"
+                  href={`/${router.query.auction}/${thisCycle + 1}`}
+                  ml="auto"
+                >
+                  Next cycle
+                  <Icon as={CaretRight} ml="2" />
+                </Link>
+              )}
+            </HStack>
+            <Skeleton isLoaded={!!nftData} w="fit-content">
+              <Heading as="h3" fontSize="4xl" fontFamily="display" d="inline-block">
+                {nftData?.name}
+              </Heading>
+            </Skeleton>
+            <HStack
+              divider={<Divider orientation="vertical" />}
+              spacing="8"
+              alignItems="flex-start"
+            >
+              <Stat size="lg">
+                <StatLabel>
+                  {isCycleActive ? "Current bid" : "Winning bid"}
+                </StatLabel>
+                <Skeleton isLoaded={!!bids}>
+                  <HighestBid amount={bids?.[0]?.amount} />
+                </Skeleton>
+              </Stat>
+              <Stat size="lg">
+                {isCycleActive ? (
+                  <>
+                    <StatLabel>Ends in</StatLabel>
+                    <Skeleton isLoaded={!!endTimestamp}>
+                      <Countdown expiryTimestamp={endTimestamp} />
+                    </Skeleton>
+                  </>
+                ) : (
+                  <>
+                    <StatLabel>Winner</StatLabel>
+                    <StatNumber>
+                      {bids?.[0]?.bidderPubkey
+                        ? shortenHex(bids?.[0]?.bidderPubkey.toString())
+                        : "-"}
+                    </StatNumber>
+                  </>
+                )}
+              </Stat>
+            </HStack>
+            {isCycleActive !== undefined &&
+              (isCycleActive ? (
+                <Bid />
+              ) : (
+                <Box>
+                  <Tag size="lg">Auction ended</Tag>
+                </Box>
+              ))}
+            <VStack>
+              {bids?.slice(0, 2).map((bid) => (
+                <Flex
+                  key={bid.amount.toString()}
+                  bg="blackAlpha.300"
+                  px="4"
+                  py="3"
+                  borderRadius="xl"
+                  w="full"
+                >
+                  <Identicon address={bid.bidderPubkey.toString()} size={20} />
+                  <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
+                  <Text ml="auto" fontWeight="semibold">
+                    {bid.amount} SOL
+                  </Text>
+                </Flex>
+              ))}
+              <BidHistory />
+            </VStack>
           </VStack>
-        </VStack>
-      </SimpleGrid>
+        </SimpleGrid>
+      </Card>
 
-      <Section title="Auction details">
-        <ProgressBar />
+      <Section
+        title={
+          <Heading as="h2" fontSize="2xl" fontFamily="display">
+            Auction details
+          </Heading>
+        }
+      >
+        <ProgressBar pb={8} />
+
+        <Heading as="h3" fontSize="lg" fontFamily="display">
+          Description
+        </Heading>
+        <Text>{description}</Text>
       </Section>
     </Layout>
   )
