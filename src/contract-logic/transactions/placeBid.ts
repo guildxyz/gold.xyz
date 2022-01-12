@@ -10,7 +10,7 @@ export async function placeBid(
   bidder: PublicKey,
   amount: number // in SOL
 ) {
-  const { placeBidWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
+  const { placeBidWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../wasm-factory")
   const topBidder = await getTopBidderWasm(auctionId)
   const currentCycleNumber = await getCurrentCycleWasm(auctionId)
 

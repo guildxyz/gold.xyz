@@ -1,0 +1,11 @@
+{
+  "name": "agsol-gold-client",
+  "version": "0.1.0",
+  "files": [
+    "instructions_bg.wasm",
+    "instructions.js",
+    "instructions.d.ts"
+  ],
+  "main": "instructions.js",
+  "types": "instructions.d.ts"
+}

@@ -7,7 +7,7 @@ import { getAvailableFunds } from "./getAvailableFunds"
 import { Auction, AuctionBase, NFTData, TokenData } from "./types"
 
 async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
-  const { getAuctionPoolPubkeyWasm } = await import("../../../wasm-factory")
+  const { getAuctionPoolPubkeyWasm } = await import("../wasm-factory")
   const auctionPoolPubkey = new PublicKey(await getAuctionPoolPubkeyWasm())
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
@@ -51,7 +51,7 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
 }
 
 export async function getAuction(auction_id: string, n?: number): Promise<Auction> {
-  const { getAuctionWasm } = await import("../../../wasm-factory")
+  const { getAuctionWasm } = await import("../wasm-factory")
   let cycle
   if (n) {
     cycle = BigInt(n)

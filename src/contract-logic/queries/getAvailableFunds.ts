@@ -2,7 +2,7 @@ import { Bid } from "./types"
 import { LAMPORTS } from "../consts"
 
 export async function getAvailableFunds(id: string, last_bid?: Bid): Promise<number> {
-  const { getTreasuryWasm } = await import ("../../../wasm-factory")
+  const { getTreasuryWasm } = await import ("../wasm-factory")
   const sol = Number(await getTreasuryWasm(id)) / LAMPORTS
   let availableSol;
   if (last_bid) {

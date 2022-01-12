@@ -9,7 +9,7 @@ export async function deleteAuction(
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { deleteAuctionWasm, getCurrentCycleWasm } = await import("../../../wasm-factory")
+  const { deleteAuctionWasm, getCurrentCycleWasm } = await import("../wasm-factory")
   const currentCycleNumber = await getCurrentCycleWasm(auctionId)
   const auctionIdArray = padTo32Bytes(auctionId)
   const deleteAuctionArgs = new DeleteAuctionArgs({
