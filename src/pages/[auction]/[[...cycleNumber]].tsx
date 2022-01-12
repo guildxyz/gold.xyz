@@ -91,9 +91,7 @@ const Page = (): JSX.Element => {
             <Image
               src={nftData?.image}
               alt="NFT"
-              borderRadius="xl"
               maxH="calc(100vh - 400px)"
-              shadow="xl"
               fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
             />
           </Center>
@@ -190,20 +188,26 @@ const Page = (): JSX.Element => {
         </SimpleGrid>
       </Card>
 
-      <Section
-        title={
-          <Heading as="h2" fontSize="2xl" fontFamily="display">
-            Auction details
-          </Heading>
-        }
+      <SimpleGrid
+        templateColumns={{ base: "1fr", lg: "5fr 4fr" }}
+        gap={{ base: 12, lg: 0 }}
       >
-        <ProgressBar pb={8} />
+        <VStack order={{ base: 2, lg: 1 }} spacing={12} pr={{ base: 0, lg: 12 }}>
+          <Section title="Description">
+            <Text>{description}</Text>
+          </Section>
+        </VStack>
 
-        <Heading as="h3" fontSize="lg" fontFamily="display">
-          Description
-        </Heading>
-        <Text>{description}</Text>
-      </Section>
+        <VStack order={{ base: 1, lg: 2 }} spacing={12}>
+          <Section title="Progress">
+            <ProgressBar />
+          </Section>
+
+          <Section title="Links">
+            <Text>Todo...</Text>
+          </Section>
+        </VStack>
+      </SimpleGrid>
     </Layout>
   )
 }
