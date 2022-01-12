@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { AuctionConfig, NFTData } from "contract-logic/queries/getAuctions"
+import { AuctionConfig, NFTData } from "contract-logic/queries/types"
 import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"

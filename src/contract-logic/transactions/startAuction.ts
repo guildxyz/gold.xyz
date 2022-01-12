@@ -1,7 +1,7 @@
 import { Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
-import { AuctionConfig as AuctionConfigType } from "../queries/getAuctions"
+import { AuctionConfig as AuctionConfigType } from "../queries/types"
 import {
   AuctionConfig,
   AuctionDescription,
