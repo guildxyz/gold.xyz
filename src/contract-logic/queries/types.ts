@@ -44,11 +44,14 @@ export type AuctionBase = AuctionBaseConfig & {
 
 export type Auction = AuctionConfig &
   AuctionBase & {
-    availableTreasuryAmount: number,
-    bids: Bid[]
-    thisCycle: number
+    availableTreasuryAmount: number
     currentCycle: number
     endTimestamp: number
     isActive: boolean
     isFrozen: boolean
   }
+
+export type Cycle = {
+  bids: Bid[]
+  endTimestamp: number
+}
