@@ -1,4 +1,4 @@
-import { HStack, Progress, Skeleton, Text, VStack } from "@chakra-ui/react"
+import { HStack, Progress, Skeleton, Tag, Text, VStack } from "@chakra-ui/react"
 import { useMemo } from "react"
 import { Rest } from "types"
 import Countdown from "./Countdown"
@@ -19,11 +19,19 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
       {goalTreasuryAmount && (
         <VStack spacing={2} {...rest}>
           <HStack justifyContent="space-between" width="full">
-            <Text as="span" fontWeight="bold">{`${currentTreasuryAmount} SOL`}</Text>
-
-            <Text as="span">
-              {`${bids?.length || 0} bid${bids?.length > 1 ? "s" : ""}`}
+            <Text as="span" fontWeight="bold">
+              {currentTreasuryAmount}
+              <Text as="span" fontSize="xs">
+                {" SOL"}
+              </Text>
             </Text>
+
+            <HStack>
+              <Tag size="sm">{bids?.length || 0}</Tag>
+              <Text as="span" fontSize="sm">{` bid${
+                bids?.length > 1 ? "s" : ""
+              }`}</Text>
+            </HStack>
           </HStack>
 
           <Progress
@@ -34,10 +42,11 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
             value={percentage}
           />
 
-          <HStack justifyContent="space-between" width="full">
-            <Text as="span">{`${percentage.toFixed(
-              2
-            )}% of ${goalTreasuryAmount} SOL goal`}</Text>
+          <HStack justifyContent="space-between" width="full" fontSize="sm">
+            <Text as="span">
+              <Text as="span" fontWeight="bold">{`${percentage.toFixed(2)}%`}</Text>
+              {` of ${goalTreasuryAmount} SOL goal`}
+            </Text>
 
             <Skeleton isLoaded={!!endTimestamp}>
               <Countdown expiryTimestamp={endTimestamp} simple />

@@ -9,7 +9,7 @@ const Countdown = ({ expiryTimestamp, simple = false }) => {
 
   if (simple)
     return (
-      <Text as="span">
+      <Text as="span" colorScheme="gray">
         {!!days || !!hours || !!minutes || !!seconds
           ? `${days > 0 ? `${days}d ` : ""} ${hours > 0 ? `${hours}h ` : ""} ${
               minutes > 0 ? `${minutes}m ` : ""
