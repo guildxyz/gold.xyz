@@ -1,22 +1,18 @@
-import fetch from "node-fetch";
-// @ts-ignore
-global.fetch = fetch;
-// @ts-ignore
-global.Headers = fetch.Headers;
-// @ts-ignore
-global.Request = fetch.Request;
-// @ts-ignore
-global.Response = fetch.Response;
-
 import { Keypair, PublicKey } from "@solana/web3.js"
+import fetch from "node-fetch"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { AuctionConfig, getAuction, getAuctions, NFTData, TokenData } from "./queries/getAuctions"
-import { SECRET2, SECRET3, sendTransaction } from "./test"
-import { claimFunds } from "./transactions/claimFunds"
-import { deleteAuction } from "./transactions/deleteAuction"
-import { freezeAuction } from "./transactions/freezeAuction"
-import { startAuction } from "./transactions/startAuction"
-import { placeBid } from "./transactions/placeBid"
+import { getAuction, getAuctions } from "./queries/getAuctions"
+import { AuctionConfig, NFTData, TokenData } from "./queries/types"
+import { SECRET2, SECRET3 } from "./test"
+// @ts-ignore
+global.fetch = fetch
+// @ts-ignore
+global.Headers = fetch.Headers
+// @ts-ignore
+global.Request = fetch.Request
+// @ts-ignore
+global.Response = fetch.Response
+
 ;(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
