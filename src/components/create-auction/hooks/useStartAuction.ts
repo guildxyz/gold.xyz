@@ -66,6 +66,8 @@ const useStartAuction = () => {
         ownerPubkey: publicKey,
       }
 
+      if (_data.asset.type !== "NFT") return onSubmit(finalData)
+
       const metaDatas = _data.nfts.map((nft, index) =>
         JSON.stringify({
           // if one image is repeated, index is 0, otherwise it starts from 1
@@ -104,12 +106,10 @@ const useStartAuction = () => {
 
       setData(finalData)
 
-      if (_data.asset.type === "NFT")
-        onSubmit({
-          ...finalData,
-          asset: { ...finalData.asset, uri: `ipfs://${cid}/0.json` },
-        })
-      else onSubmit(finalData)
+      return onSubmit({
+        ...finalData,
+        asset: { ...finalData.asset, uri: `ipfs://${cid}/0.json` },
+      })
     },
     error,
     isLoading,
