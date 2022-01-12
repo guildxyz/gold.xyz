@@ -1,11 +1,22 @@
-import { StatGroup } from "@chakra-ui/react"
+import { StatGroup, Text } from "@chakra-ui/react"
 import { Stat, StatHelpText, StatNumber } from "@chakra-ui/stat"
 import { useTimer } from "react-timer-hook"
 
-const Countdown = ({ expiryTimestamp }) => {
+const Countdown = ({ expiryTimestamp, simple = false }) => {
   const { seconds, minutes, hours, days } = useTimer({
     expiryTimestamp: new Date(expiryTimestamp),
   })
+
+  if (simple)
+    return (
+      <Text as="span">
+        {!!days || !!hours || !!minutes || !!seconds
+          ? `${days > 0 ? `${days}d ` : ""} ${hours > 0 ? `${hours}h ` : ""} ${
+              minutes > 0 ? `${minutes}m ` : ""
+            } ${seconds}s left`
+          : "Ended!"}
+      </Text>
+    )
 
   return (
     <StatGroup sx={{ gap: "6px" }}>

@@ -12,7 +12,6 @@ import {
   Image,
   SimpleGrid,
   Skeleton,
-  Spacer,
   Stat,
   StatLabel,
   StatNumber,
@@ -24,11 +23,13 @@ import { useWallet } from "@solana/wallet-adapter-react"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
+import Section from "components/common/Section"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
+import ProgressBar from "components/[auction]/ProgressBar"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
@@ -79,35 +80,17 @@ const Page = (): JSX.Element => {
       description={description}
       showLayoutDescription
       action={
-        <>
-          {goalTreasuryAmount && (
-            <Tag size="lg" mb="-8px !important">
-              Current:
-              <Text
-                as="span"
-                fontWeight="bold"
-                mx="1"
-              >{`${currentTreasuryAmount} SOL`}</Text>
-              <Text as="span" colorScheme="gray" mr="2" ml="1">
-                /
-              </Text>
-              Goal:
-              <Text
-                as="span"
-                fontWeight="bold"
-                mx="1"
-              >{`${goalTreasuryAmount} SOL`}</Text>
-            </Tag>
-          )}
-          <Spacer />
-          {publicKey &&
-            ownerPubkey &&
-            publicKey?.toString() === ownerPubkey?.toString() &&
-            !!isActive && <SettingsMenu />}
-        </>
+        publicKey &&
+        ownerPubkey &&
+        publicKey?.toString() === ownerPubkey?.toString() &&
+        !!isActive && <SettingsMenu />
       }
     >
-      <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
+      <SimpleGrid
+        mb={8}
+        templateColumns={{ base: "1fr", lg: "5fr 4fr" }}
+        spacing="16"
+      >
         <Center>
           <Image
             src={nftData?.image}
@@ -207,6 +190,10 @@ const Page = (): JSX.Element => {
           </VStack>
         </VStack>
       </SimpleGrid>
+
+      <Section title="Auction details">
+        <ProgressBar />
+      </Section>
     </Layout>
   )
 }
