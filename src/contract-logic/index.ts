@@ -1,9 +1,10 @@
 import { Keypair, PublicKey } from "@solana/web3.js"
 import fetch from "node-fetch"
-import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { getAuction, getAuctions } from "./queries/getAuctions"
+import { CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { AuctionConfig, NFTData, TokenData } from "./queries/types"
-import { SECRET2, SECRET3 } from "./test"
+import { SECRET2, SECRET3, sendTransaction } from "./test"
+import { deleteAuctionAdmin } from "./transactions/deleteAuctionAdmin"
+import { freezeAuction } from "./transactions/freezeAuction"
 // @ts-ignore
 global.fetch = fetch
 // @ts-ignore
@@ -21,9 +22,9 @@ global.Response = fetch.Response
   //await initializeContract(auctionOwner.publicKey);
   const nftAsset: NFTData = {
     type: "NFT",
-    name: "aaa",
-    symbol: "AAA",
-    uri: "aaaa/0.json",
+    name: "delete",
+    symbol: "DELETE",
+    uri: "delete/0.json",
     isRepeated: false,
   }
 
@@ -35,30 +36,35 @@ global.Response = fetch.Response
   }
 
   const auction: AuctionConfig = {
-    id: "totally-three",
-    name: "Totally Three",
+    id: "delete-this4",
+    name: "Delete this4",
     description: "xd",
     socials: ["aaa.aaa"],
     goalTreasuryAmount: null,
     ownerPubkey: auctionOwner.publicKey,
-    asset: nftAsset,
+    asset: tokenAsset,
     cyclePeriod: 60,
     numberOfCycles: 20,
     minBid: 0.01,
     startTimestamp: null,
   }
 
+  
+
   // Create Auction
   //const startAuctionTransaction = await startAuction(auction);
   //await sendTransaction(startAuctionTransaction, auctionOwner);
   //console.log("Auction created successfully.");
+
   // Query auction
-  console.log(await getAuctions(CONNECTION))
-  console.log(await getAuction("goldxyz-dao"))
+  //console.log(await getAuctions(CONNECTION))
+  //console.log(await getAuction(auction.id))
+
   // CLAIM FUNDS
   //let claimFundsTransaction = await claimFunds(auction.id, auctionOwner.publicKey, 0.5)
   //await sendTransaction(claimFundsTransaction, auctionOwner)
   //console.log("successfully claimed funds");
+  
   // Bid on an auction
   //CONNECTION.requestAirdrop(bidder.publicKey, 100000000);
   //const bidTransaction = await placeBid(auction.id, bidder.publicKey, 0.6);
@@ -67,12 +73,13 @@ global.Response = fetch.Response
   //console.log(await getAuction("totally-three"))
 
   // Freeze auction
-  //const freezeAuctionTransaction = await freezeAuction(auction.id, auction.ownerPubkey)
-  //await sendTransaction(freezeAuctionTransaction, auctionOwner)
-  //console.log("Auction frozen successfully.")
+  const freezeAuctionTransaction = await freezeAuction(auction.id, auction.ownerPubkey)
+  await sendTransaction(freezeAuctionTransaction, auctionOwner)
+  console.log("Auction frozen successfully.")
 
   //// Delete auction
   //const deleteAuctionTransaction = await deleteAuction(auction.id, auction.ownerPubkey)
   //await sendTransaction(deleteAuctionTransaction, CONTRACT_ADMIN_KEYPAIR)
   //console.log("Auction deleted successfully.")
+  await deleteAuctionAdmin(auction.id, auctionOwner.publicKey, "./transactions/gold-admin-secret.json");
 })()

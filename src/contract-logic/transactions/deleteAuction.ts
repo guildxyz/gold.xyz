@@ -1,4 +1,4 @@
-import { Connection, PublicKey, Transaction } from "@solana/web3.js"
+import { PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { CONTRACT_ADMIN_PUBKEY, NUM_OF_CYCLES_TO_DELETE } from "../consts"
 import { DeleteAuctionArgs, SCHEMA } from "../schema"

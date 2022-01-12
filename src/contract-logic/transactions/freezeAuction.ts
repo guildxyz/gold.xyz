@@ -1,4 +1,4 @@
-import { Connection, PublicKey, Transaction } from "@solana/web3.js"
+import { PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
 import { FreezeAuctionArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
