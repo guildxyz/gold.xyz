@@ -97,6 +97,7 @@ const NFTData = () => {
         fields.slice(fields.length - acceptedFiles.length).map((field) => field.id)
       )
         .then((hashReport) => setHashes((prev) => ({ ...prev, ...hashReport })))
+        .catch(console.error)
         .finally(() => progressEventSource.close())
     }
   }, [setupEventSource, fields]) // Intentionally leaving out acceptedFiles
