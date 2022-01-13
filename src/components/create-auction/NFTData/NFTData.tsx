@@ -13,7 +13,7 @@ const uploadImages = async (
   files: File[],
   clientId: string,
   ids: string[]
-): Promise<string[]> => {
+): Promise<Record<string, string>> => {
   const formData = new FormData()
   files.forEach((file, index) => formData.append(ids[index], file))
 
@@ -76,19 +76,10 @@ const NFTData = () => {
 
     source.addEventListener("progress", (event: Event) => {
       try {
-        const [id, progress] = JSON.parse((event as Event & { data: string }).data)
-        setProgresses((prev) => ({ ...prev, [id]: progress }))
+        const progressReport = JSON.parse((event as Event & { data: string }).data)
+        setProgresses((prev) => ({ ...prev, ...progressReport }))
       } catch (error) {
         console.error(`Failed to parse SSE "progress" event message`, error)
-      }
-    })
-
-    source.addEventListener("hash", (event: Event) => {
-      try {
-        const [id, hash] = JSON.parse((event as Event & { data: string }).data)
-        setHashes((prev) => ({ ...prev, [id]: hash }))
-      } catch (error) {
-        console.error(`Failed to parse SSE "hash" event message`, error)
       }
     })
 
@@ -104,7 +95,9 @@ const NFTData = () => {
         acceptedFiles,
         uploadProgressId,
         fields.slice(fields.length - acceptedFiles.length).map((field) => field.id)
-      ).finally(() => progressEventSource.close())
+      )
+        .then((hashReport) => setHashes((prev) => ({ ...prev, ...hashReport })))
+        .finally(() => progressEventSource.close())
     }
   }, [setupEventSource, fields]) // Intentionally leaving out acceptedFiles
 
