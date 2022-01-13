@@ -64,6 +64,7 @@ const Page = (): JSX.Element => {
     name = router.query.auction as string,
     description,
     goalTreasuryAmount,
+    availableTreasuryAmount,
     currentTreasuryAmount,
     bids,
     thisCycle,
@@ -107,7 +108,7 @@ const Page = (): JSX.Element => {
           {publicKey &&
             ownerPubkey &&
             publicKey?.toString() === ownerPubkey?.toString() &&
-            isActive && <SettingsMenu />}
+            !!isActive && <SettingsMenu />}
         </>
       }
     >

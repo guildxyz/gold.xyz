@@ -2,66 +2,13 @@ import { Connection, PublicKey } from "@solana/web3.js"
 import { deserializeUnchecked } from "borsh"
 import { LAMPORTS } from "../consts"
 import { AuctionPool, AuctionRootState, FrontendAuction, SCHEMA } from "../schema"
-import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseAuctionId } from "../utils/parseAuctionId"
-
-export type Bid = {
-  bidderPubkey: PublicKey
-  amount: number
-}
-
-export type NFTData = {
-  type: "NFT"
-  name: string
-  symbol: string
-  uri: string
-  isRepeated: boolean
-}
-
-export type TokenData = {
-  type: "TOKEN"
-  decimals: number
-  mintAddress: PublicKey
-  perCycleAmount: number
-}
-
-export type AuctionBaseConfig = {
-  id: string
-  name: string
-  goalTreasuryAmount?: number
-  ownerPubkey: PublicKey
-}
-
-// TODO: customizable encore period? (The amount of time the highest bidder must be uncontested to win the cycle)
-export type AuctionConfig = AuctionBaseConfig & {
-  description: string
-  socials: string[]
-  asset: NFTData | TokenData
-  cyclePeriod: number
-  numberOfCycles: number
-  minBid: number
-  startTimestamp?: number
-}
-
-export type AuctionBase = AuctionBaseConfig & {
-  currentTreasuryAmount: number
-}
-
-export type Auction = AuctionConfig &
-  AuctionBase & {
-    bids: Bid[]
-    thisCycle: number
-    currentCycle: number
-    endTimestamp: number
-    isActive: boolean
-    isFrozen: boolean
-  }
+import { getAvailableFunds } from "./getAvailableFunds"
+import { Auction, AuctionBase, NFTData, TokenData } from "./types"
 
 async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
-  const { getAuctionPoolPubkeyWasm } = await import("../../../wasm-factory")
-  const auctionPoolPubkey = new PublicKey(
-    await getAuctionPoolPubkeyWasm()
-  )
+  const { getAuctionPoolPubkeyWasm } = await import("../wasm-factory")
+  const auctionPoolPubkey = new PublicKey(await getAuctionPoolPubkeyWasm())
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   return deserializeUnchecked(SCHEMA, AuctionPool, auctionPoolData)
@@ -83,9 +30,10 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
       auctionRootStateData
     )
 
-    let goalTreasuryAmount = null;
+    let goalTreasuryAmount = null
     if (auctionRootStateDeserialized.description.goalTreasuryAmount != null) {
-      goalTreasuryAmount = auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber() / LAMPORTS;
+      goalTreasuryAmount =
+        auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber() / LAMPORTS
     }
 
     auctionBaseArray.push({
@@ -102,20 +50,23 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
   return auctionBaseArray
 }
 
-export async function getAuction(id: string, n?: number): Promise<Auction> {
-  const { getAuctionWasm } = await import("../../../wasm-factory")
-  let cycle;
+export async function getAuction(auction_id: string, n?: number): Promise<Auction> {
+  const { getAuctionWasm } = await import("../wasm-factory")
+  let cycle
   if (n) {
-    cycle = BigInt(n);
+    cycle = BigInt(n)
   } else {
-    cycle = null;
+    cycle = null
   }
-  const auctionData: Uint8Array = await getAuctionWasm(id, cycle);
-  const auction = deserializeUnchecked(
-    SCHEMA,
-    FrontendAuction,
-    Buffer.from(auctionData),
-  );
+
+  let auction
+  let availableLamports
+  try {
+    const auctionData: Uint8Array = await getAuctionWasm(auction_id, cycle)
+    auction = deserializeUnchecked(SCHEMA, FrontendAuction, Buffer.from(auctionData))
+  } catch (error) {
+    console.log("wasm error: ", error)
+  }
 
   let asset: TokenData | NFTData
   if (auction.tokenConfig.frontendTokenConfigNft) {
@@ -131,32 +82,42 @@ export async function getAuction(id: string, n?: number): Promise<Auction> {
       type: "TOKEN",
       decimals: auction.tokenConfig.frontendTokenConfigToken.decimals,
       mintAddress: auction.tokenConfig.frontendTokenConfigToken.mint,
-      perCycleAmount: Number(auction.tokenConfig.frontendTokenConfigToken.perCycleAmount)
+      perCycleAmount: Number(auction.tokenConfig.frontendTokenConfigToken.perCycleAmount),
     }
   }
 
-  const goalTreasuryAmount = Number(auction.rootState.description.goalTreasuryAmount) / LAMPORTS;
-  const numberOfCycles = Number(auction.rootState.auctionConfig.numberOfCycles);
-  const currentCycle = Number(auction.rootState.status.currentAuctionCycle);
-  let thisCycle;
+  const goalTreasuryAmount = Number(auction.rootState.description.goalTreasuryAmount) / LAMPORTS
+  const numberOfCycles = Number(auction.rootState.auctionConfig.numberOfCycles)
+  const currentCycle = Number(auction.rootState.status.currentAuctionCycle)
+  let thisCycle
   if (n) {
-    thisCycle = n;
+    thisCycle = n
   } else {
-    thisCycle = currentCycle;
+    thisCycle = currentCycle
+  }
+
+  let bids = auction.cycleState.bidHistory
+    .map((bid) => ({ bidderPubkey: bid.bidderPubkey, amount: bid.bidAmount.toNumber() / LAMPORTS }))
+    .reverse()
+
+  let availableTreasuryAmount
+  try {
+    availableTreasuryAmount = await getAvailableFunds(auction_id, bids[0])
+  } catch (error) {
+    console.log("wasm error: ", error)
   }
 
   return {
-    id: id,
+    id: auction_id,
     name: parseAuctionId(Uint8Array.from(auction.rootState.auctionName)),
     description: auction.rootState.description.description,
     socials: auction.rootState.description.socials,
     goalTreasuryAmount,
+    availableTreasuryAmount,
     currentTreasuryAmount: auction.rootState.currentTreasury.toNumber() / LAMPORTS,
     ownerPubkey: auction.rootState.auctionOwner,
     asset: asset,
-    bids: auction.cycleState.bidHistory
-      .map((bid) => ({ bidderPubkey: bid.bidderPubkey, amount: bid.bidAmount.toNumber() / LAMPORTS }))
-      .reverse(),
+    bids,
     cyclePeriod: auction.rootState.auctionConfig.cyclePeriod.toNumber(),
     thisCycle,
     currentCycle,

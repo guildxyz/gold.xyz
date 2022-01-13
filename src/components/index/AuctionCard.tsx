@@ -1,7 +1,7 @@
 import { SimpleGrid, Text, useColorMode } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import Link from "components/common/Link"
-import { AuctionBase } from "contract-logic/queries/getAuctions"
+import { AuctionBase } from "contract-logic/queries/types"
 
 type Props = {
   auction: AuctionBase

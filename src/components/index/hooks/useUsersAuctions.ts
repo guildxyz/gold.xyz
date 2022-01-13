@@ -1,5 +1,5 @@
 import { useWallet } from "@solana/wallet-adapter-react"
-import { AuctionBase } from "contract-logic/queries/getAuctions"
+import { AuctionBase } from "contract-logic/queries/types"
 import useSWR from "swr"
 import useAuctions from "./useAuctions"
 
