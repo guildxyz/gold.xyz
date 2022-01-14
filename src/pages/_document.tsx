@@ -21,8 +21,8 @@ class MyDocument extends Document {
             <script
               async
               defer
-              data-website-id="2cb2b1b0-2dcb-4852-b524-de7b79e9985e"
-              src="https://stats.gold.xyz/umami.js"
+              data-domain="alpha.gold.xyz"
+              src="https://stat.zgen.hu/js/plausible.js"
             ></script>
           )}
         </Head>
