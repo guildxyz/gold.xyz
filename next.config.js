@@ -44,10 +44,12 @@ module.exports = withTM({
       {
         source: "/js/script.js",
         destination: "https://stat.zgen.hu/js/plausible.js",
+        permanent: true,
       },
       {
         source: "/api/event",
         destination: "https://stat.zgen.hu/api/event",
+        permanent: true,
       },
     ]
   },
