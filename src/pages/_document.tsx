@@ -22,7 +22,7 @@ class MyDocument extends Document {
               async
               defer
               data-domain="alpha.gold.xyz"
-              src="https://stat.zgen.hu/js/plausible.js"
+              src="/js/script.js"
             ></script>
           )}
         </Head>
