@@ -22,7 +22,7 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
   const { initializeAuctionWasm } = await import("../wasm-factory")
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
-    encorePeriod: 300,
+    encorePeriod: frontendAuctionConfig.encorePeriod,
     numberOfCycles: frontendAuctionConfig.numberOfCycles,
     minimumBidAmount: frontendAuctionConfig.minBid * LAMPORTS,
   })
@@ -41,7 +41,6 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
         uri: frontendAuctionConfig.asset.uri,
         // TODO: set this from parameter maybe?
         sellerFeeBasisPoints: 100,
-        // TODO: put the auctionOwnerPubkey here?
         creators: null,
       }),
       isMutable: true,

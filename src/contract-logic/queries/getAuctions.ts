@@ -23,24 +23,25 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
     const [auctionId, auctionRootStatePubkey] = currentEntry.value
     const auctionRootStateAccountInfo = await connection.getAccountInfo(auctionRootStatePubkey)
     const auctionRootStateData: Buffer = auctionRootStateAccountInfo!.data
-    const auctionRootStateDeserialized = deserializeUnchecked(
+    const auctionRootState = deserializeUnchecked(
       SCHEMA,
       AuctionRootState,
       auctionRootStateData
     )
 
     let goalTreasuryAmount = null
-    if (auctionRootStateDeserialized.description.goalTreasuryAmount != null) {
+    if (auctionRootState.description.goalTreasuryAmount != null) {
       goalTreasuryAmount =
-        auctionRootStateDeserialized.description.goalTreasuryAmount.toNumber() / LAMPORTS
+        auctionRootState.description.goalTreasuryAmount.toNumber() / LAMPORTS
     }
 
     auctionBaseArray.push({
       id: parseAuctionId(auctionId),
-      name: parseAuctionId(Uint8Array.from(auctionRootStateDeserialized.auctionName)),
-      ownerPubkey: auctionRootStateDeserialized.auctionOwner,
+      name: parseAuctionId(Uint8Array.from(auctionRootState.auctionName)),
+      ownerPubkey: auctionRootState.auctionOwner,
       goalTreasuryAmount,
-      currentTreasuryAmount: auctionRootStateDeserialized.currentTreasury.toNumber() / LAMPORTS,
+      allTimeTreasuryAmount: auctionRootState.allTimeTreasury.toNumber() / LAMPORTS,
+      isVerified: auctionRootState.isVerified,
     })
 
     currentEntry = poolIterator.next()
@@ -89,15 +90,18 @@ export async function getAuction(auction_id: string): Promise<Auction> {
     goalTreasuryAmount,
     ownerPubkey: auction.rootState.auctionOwner,
     // AuctionBase
-    currentTreasuryAmount: auction.rootState.currentTreasury.toNumber() / LAMPORTS,
+    allTimeTreasuryAmount: auction.rootState.allTimeTreasury.toNumber() / LAMPORTS,
+    isVerified: auction.rootState.isVerified,
     // AuctionConfig
     description: auction.rootState.description.description,
     socials: auction.rootState.description.socials,
     asset: asset,
+    encorePeriod: auction.rootState.auctionConfig.encorePeriod.toNumber(),
     cyclePeriod: auction.rootState.auctionConfig.cyclePeriod.toNumber(),
     numberOfCycles,
     minBid: auction.rootState.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
     // Auction
+    startTime: auction.rootState.startTime.toNumber() * 1000,
     availableTreasuryAmount: auction.availableFunds.toNumber() / LAMPORTS,
     currentCycle,
     isActive: auction.rootState.status.isActive,

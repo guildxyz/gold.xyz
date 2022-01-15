@@ -60,7 +60,7 @@ const Page = (): JSX.Element => {
     description,
     goalTreasuryAmount,
     availableTreasuryAmount,
-    currentTreasuryAmount,
+    allTimeTreasuryAmount,
     bids,
     thisCycle,
     currentCycle,
@@ -87,7 +87,7 @@ const Page = (): JSX.Element => {
                 as="span"
                 fontWeight="bold"
                 mx="1"
-              >{`${currentTreasuryAmount} SOL`}</Text>
+              >{`${allTimeTreasuryAmount} SOL`}</Text>
               <Text as="span" colorScheme="gray" mr="2" ml="1">
                 /
               </Text>
