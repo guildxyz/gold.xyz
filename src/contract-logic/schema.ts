@@ -31,7 +31,6 @@ export class FrontendAuction extends Struct {
 };
 
 export class ClaimFundsArgs extends Struct {
-    contractAdminPubkey: PublicKey;
     auctionOwnerPubkey: PublicKey;
     auctionId: [32];
     cycleNumber: BN;
@@ -63,30 +62,12 @@ export class FreezeAuctionArgs extends Struct {
     cycleNumber: BN;
 };
 
-export class InitializeContractArgs extends Struct {
-    contractAdminPubkey: PublicKey;
-};
-
-export class VerifyAuctionArgs extends Struct {
-    contractAdminPubkey: PublicKey;
-    auctionId: [32];
-};
-
 export class DeleteAuctionArgs extends Struct {
     contractAdminPubkey: PublicKey;
     auctionOwnerPubkey: PublicKey;
     auctionId: [32];
     currentAuctionCycle: BN;
     numOfCyclesToDelete: BN;
-};
-
-export class CloseAuctionCycleArgs extends Struct {
-    payerPubkey: PublicKey;
-    auctionOwnerPubkey: PublicKey;
-    topBidderPubkey: PublicKey | null;
-    auctionId: [32];
-    nextCycleNum: BN;
-    tokenType: TokenType;
 };
 
 export class AuctionDescription extends Struct {
@@ -126,17 +107,6 @@ export class CreateTokenArgsNft extends Struct {
 export class CreateTokenArgsToken extends Struct {
     decimals: number;
     perCycleAmount: BN;
-};
-
-export class TokenType extends Enum {
-    tokenTypeNft: TokenTypeNft;
-    tokenTypeToken: TokenTypeToken;
-};
-
-export class TokenTypeNft extends Struct {
-};
-
-export class TokenTypeToken extends Struct {
 };
 
 export class NftData extends Struct {
@@ -181,11 +151,8 @@ export class AuctionCycleState extends Struct {
 };
 
 export class AuctionPool extends Struct {
-    pool: Map<[32], PublicKey>;
-};
-
-export class ContractBankState extends Struct {
-    contractAdminPubkey: PublicKey;
+    maxLen: number;
+    pool: [32][];
 };
 
 export class Data extends Struct {
@@ -252,7 +219,6 @@ export const SCHEMA = new Map<any, any>([
             ClaimFundsArgs,
             {
                 kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
 			['auctionOwnerPubkey', 'publicKey'],
 			['auctionId', [32]],
 			['cycleNumber', 'u64'],
@@ -298,23 +264,6 @@ export const SCHEMA = new Map<any, any>([
             },
     ],
     [
-            InitializeContractArgs,
-            {
-                kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
-                ],
-            },
-    ],
-    [
-            VerifyAuctionArgs,
-            {
-                kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
-			['auctionId', [32]],
-                ],
-            },
-    ],
-    [
             DeleteAuctionArgs,
             {
                 kind: 'struct', fields: [
@@ -323,19 +272,6 @@ export const SCHEMA = new Map<any, any>([
 			['auctionId', [32]],
 			['currentAuctionCycle', 'u64'],
 			['numOfCyclesToDelete', 'u64'],
-                ],
-            },
-    ],
-    [
-            CloseAuctionCycleArgs,
-            {
-                kind: 'struct', fields: [
-			['payerPubkey', 'publicKey'],
-			['auctionOwnerPubkey', 'publicKey'],
-			['topBidderPubkey', { kind: 'option', type: 'publicKey' }],
-			['auctionId', [32]],
-			['nextCycleNum', 'u64'],
-			['tokenType', TokenType],
                 ],
             },
     ],
@@ -403,29 +339,6 @@ export const SCHEMA = new Map<any, any>([
                 kind: 'struct', fields: [
 			['decimals', 'u8'],
 			['perCycleAmount', 'u64'],
-                ],
-            },
-    ],
-    [
-            TokenType,
-            {
-                kind: 'enum', field: 'enum', values: [
-			['tokenTypeNft', TokenTypeNft],
-			['tokenTypeToken', TokenTypeToken],
-                ],
-            },
-    ],
-    [
-            TokenTypeNft,
-            {
-                kind: 'struct', fields: [
-                ],
-            },
-    ],
-    [
-            TokenTypeToken,
-            {
-                kind: 'struct', fields: [
                 ],
             },
     ],
@@ -502,15 +415,8 @@ export const SCHEMA = new Map<any, any>([
             AuctionPool,
             {
                 kind: 'struct', fields: [
-			['pool', { kind: 'map', key: [32], value: 'publicKey' }],
-                ],
-            },
-    ],
-    [
-            ContractBankState,
-            {
-                kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
+			['maxLen', 'u32'],
+			['pool', [[32]]],
                 ],
             },
     ],

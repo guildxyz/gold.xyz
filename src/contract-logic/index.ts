@@ -3,6 +3,10 @@ import fetch from "node-fetch"
 import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
 import { getAuction, getAuctions, getAuctionCycle } from "./queries/getAuctions"
 import { AuctionConfig, NFTData, TokenData } from "./queries/types"
+import { claimFunds } from "./transactions/claimFunds"
+import { freezeAuction } from "./transactions/freezeAuction"
+import { placeBid } from "./transactions/placeBid"
+import { startAuction } from "./transactions/startAuction"
 import { SECRET2, SECRET3 } from "./test"
 // @ts-ignore
 global.fetch = fetch

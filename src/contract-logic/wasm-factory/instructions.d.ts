@@ -21,21 +21,16 @@ export function placeBidWasm(serialized_input: Uint8Array): string;
 */
 export function claimFundsWasm(serialized_input: Uint8Array): string;
 /**
-* @param {Uint8Array} serialized_input
-* @returns {string}
-*/
-export function deleteAuctionWasm(serialized_input: Uint8Array): string;
-/**
-* @param {Uint8Array} serialized_input
-* @returns {string}
-*/
-export function initializeContractWasm(serialized_input: Uint8Array): string;
-/**
 * @param {string} auction_id
-* @param {BigInt | undefined} cycle
 * @returns {Promise<Uint8Array>}
 */
-export function getAuctionWasm(auction_id: string, cycle?: BigInt): Promise<Uint8Array>;
+export function getAuctionWasm(auction_id: string): Promise<Uint8Array>;
+/**
+* @param {Pubkey} root_state_pubkey
+* @param {BigInt} cycle_num
+* @returns {Promise<Uint8Array>}
+*/
+export function getAuctionCycleStateWasm(root_state_pubkey: Pubkey, cycle_num: BigInt): Promise<Uint8Array>;
 /**
 * @param {string} auction_id
 * @returns {Promise<Pubkey>}
@@ -45,16 +40,16 @@ export function getTopBidderWasm(auction_id: string): Promise<Pubkey>;
 * @param {string} auction_id
 * @returns {Promise<BigInt>}
 */
-export function getTreasuryWasm(auction_id: string): Promise<BigInt>;
-/**
-* @param {string} auction_id
-* @returns {Promise<BigInt>}
-*/
 export function getCurrentCycleWasm(auction_id: string): Promise<BigInt>;
 /**
-* @returns {Uint8Array}
+* @returns {Pubkey}
 */
-export function getAuctionPoolPubkeyWasm(): Uint8Array;
+export function getAuctionPoolPubkeyWasm(): Pubkey;
+/**
+* @param {Uint8Array} auction_id
+* @returns {Pubkey}
+*/
+export function getAuctionRootStatePubkeyWasm(auction_id: Uint8Array): Pubkey;
 /**
 * Initialize Javascript logging and panic handler
 */

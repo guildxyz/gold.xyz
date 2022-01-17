@@ -14,13 +14,13 @@ async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
 }
 
 export async function getAuctions(connection: Connection): Promise<Array<AuctionBase>> {
+  const { getAuctionRootStatePubkeyWasm } = await import("../wasm-factory")
   const auctionPool = await getAuctionPool(connection)
-  let auctionBaseArray = []
 
-  let poolIterator = auctionPool.pool.entries()
-  let currentEntry = poolIterator.next()
-  while (!currentEntry.done) {
-    const [auctionId, auctionRootStatePubkey] = currentEntry.value
+  let auctionBaseArray = []
+  for (let index = 0; index < auctionPool.pool.length; index++) {
+    const auctionId = Uint8Array.from(auctionPool.pool[index]);
+    const auctionRootStatePubkey = new PublicKey(getAuctionRootStatePubkeyWasm(auctionId));
     const auctionRootStateAccountInfo = await connection.getAccountInfo(auctionRootStatePubkey)
     const auctionRootStateData: Buffer = auctionRootStateAccountInfo!.data
     const auctionRootState = deserializeUnchecked(
@@ -43,8 +43,6 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
       allTimeTreasuryAmount: auctionRootState.allTimeTreasury.toNumber() / LAMPORTS,
       isVerified: auctionRootState.isVerified,
     })
-
-    currentEntry = poolIterator.next()
   }
 
   return auctionBaseArray
