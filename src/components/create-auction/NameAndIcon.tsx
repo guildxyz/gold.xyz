@@ -32,7 +32,7 @@ const NameAndIcon = () => {
               input?.trim() !== "404" || 'Name "404" is not allowed.',
             onBlur: ({ target: { value } }) => {
               if (!dirtyFields?.asset?.name) {
-                setValue("asset.name", value)
+                setValue("asset.name", value, { shouldValidate: true })
               }
             },
           })}
