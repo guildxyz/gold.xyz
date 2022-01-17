@@ -1,5 +1,5 @@
 import { FormControl, FormErrorMessage, HStack, Input } from "@chakra-ui/react"
-import { getAuction } from "contract-logic/queries/getAuctions"
+import auctionExists from "contract-logic/queries/auctionExists"
 import { useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import slugify from "utils/slugify"
@@ -37,15 +37,12 @@ const NameAndIcon = () => {
                 setValue("asset.name", value, { shouldValidate: true })
               }
 
-              getAuction(slugify(value))
-                .then(() =>
-                  setError("name", { message: "This auction already exists." })
-                )
-                .catch(() =>
-                  console.info(
-                    "The error above is expected while validating some fields."
-                  )
-                )
+              auctionExists(slugify(value))
+                .then((exists) => {
+                  if (exists)
+                    setError("name", { message: "This auction already exists." })
+                })
+                .catch((error) => console.error(error))
             },
           })}
         />
