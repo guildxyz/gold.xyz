@@ -102,7 +102,7 @@ export async function getAuction(auction_id: string): Promise<Auction> {
     startTime: auction.rootState.startTime.toNumber() * 1000,
     availableTreasuryAmount: auction.availableFunds.toNumber() / LAMPORTS,
     currentCycle,
-    isActive: auction.rootState.status.isActive,
+    isFinished: auction.rootState.status.isFinished,
     isFrozen: auction.rootState.status.isFrozen,
     rootStatePubkey: new PublicKey(auction.rootStatePubkey.toBytes()),
   }

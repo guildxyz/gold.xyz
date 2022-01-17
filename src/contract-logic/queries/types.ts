@@ -48,7 +48,7 @@ export type Auction = AuctionConfig &
     startTime: number
     availableTreasuryAmount: number
     currentCycle: number
-    isActive: boolean
+    isFinished: boolean
     isFrozen: boolean
     rootStatePubkey: PublicKey
   }

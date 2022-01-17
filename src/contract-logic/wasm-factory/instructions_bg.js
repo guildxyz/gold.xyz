@@ -1566,7 +1566,7 @@ export function __wbindgen_memory() {
     return addHeapObject(ret);
 };
 
-export function __wbindgen_closure_wrapper3001() { return logError(function (arg0, arg1, arg2) {
+export function __wbindgen_closure_wrapper3002() { return logError(function (arg0, arg1, arg2) {
     var ret = makeMutClosure(arg0, arg1, 289, __wbg_adapter_32);
     return addHeapObject(ret);
 }, arguments) };

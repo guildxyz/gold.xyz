@@ -65,13 +65,13 @@ const Page = (): JSX.Element => {
     thisCycle,
     currentCycle,
     endTimestamp,
-    isActive,
+    isFinished,
     isFrozen,
     ownerPubkey,
     numberOfCycles,
   } = auction ?? {}
 
-  const isCycleActive = isActive && thisCycle === currentCycle
+  const isCycleActive = !!isFinished && thisCycle === currentCycle
 
   return (
     <Layout
@@ -103,7 +103,7 @@ const Page = (): JSX.Element => {
           {publicKey &&
             ownerPubkey &&
             publicKey?.toString() === ownerPubkey?.toString() &&
-            !!isActive && <SettingsMenu />}
+            isFinished && <SettingsMenu />}
         </>
       }
     >
