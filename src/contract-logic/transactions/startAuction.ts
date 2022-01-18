@@ -1,6 +1,6 @@
 import { Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
+import { LAMPORTS } from "../consts"
 import { AuctionConfig as AuctionConfigType } from "../queries/types"
 import {
   AuctionConfig,
@@ -61,14 +61,13 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
   }
 
   const initAuctionArgs = new InitializeAuctionArgs({
-    contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
     auctionOwnerPubkey: frontendAuctionConfig.ownerPubkey,
     auctionId: padTo32Bytes(frontendAuctionConfig.id),
     auctionName: padTo32Bytes(frontendAuctionConfig.id),
     auctionConfig: auctionConfig,
     auctionDescription: auctionDescription,
     createTokenArgs: createTokenArgs,
-    auctionStartTimestamp: frontendAuctionConfig.startTimestamp,
+    auctionStartTimestamp: frontendAuctionConfig.startTime,
   })
 
   let initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)
