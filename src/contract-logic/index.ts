@@ -47,15 +47,16 @@ global.Response = fetch.Response
     encorePeriod: 0,
     cyclePeriod: 60,
     numberOfCycles: 20,
+    startTime: null,
     minBid: 0.01,
   }
 
   // Create Auction
-  const startAuctionTransaction = await startAuction(auction_config);
-  await sendTransaction(startAuctionTransaction, auctionOwner);
-  console.log("Auction created successfully.");
+  //const startAuctionTransaction = await startAuction(auction_config);
+  //await sendTransaction(startAuctionTransaction, auctionOwner);
+  //console.log("Auction created successfully.");
   // Query auction
-  //console.log(await getAuctions(CONNECTION))
+  console.log(await getAuctions(CONNECTION))
   const auction = await getAuction(auction_config.id);
   console.log(auction);
   console.log(await getAuctionCycle(auction.rootStatePubkey, 1))

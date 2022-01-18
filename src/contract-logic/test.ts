@@ -1,6 +1,6 @@
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
+import { CONNECTION } from "./consts"
 import { parseInstruction } from "./utils/parseInstruction"
 
 export async function sleep(ms: number) {

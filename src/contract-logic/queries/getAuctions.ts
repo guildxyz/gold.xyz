@@ -7,7 +7,7 @@ import { Auction, AuctionBase, NFTData, TokenData, Cycle} from "./types"
 
 async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
   const { getAuctionPoolPubkeyWasm } = await import("../wasm-factory")
-  const auctionPoolPubkey = new PublicKey(await getAuctionPoolPubkeyWasm())
+  const auctionPoolPubkey = new PublicKey(await getAuctionPoolPubkeyWasm().toBytes())
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   return deserializeUnchecked(SCHEMA, AuctionPool, auctionPoolData)
@@ -20,7 +20,7 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
   let auctionBaseArray = []
   for (let index = 0; index < auctionPool.pool.length; index++) {
     const auctionId = Uint8Array.from(auctionPool.pool[index]);
-    const auctionRootStatePubkey = new PublicKey(getAuctionRootStatePubkeyWasm(auctionId));
+    const auctionRootStatePubkey = new PublicKey(getAuctionRootStatePubkeyWasm(auctionId).toBytes());
     const auctionRootStateAccountInfo = await connection.getAccountInfo(auctionRootStatePubkey)
     const auctionRootStateData: Buffer = auctionRootStateAccountInfo!.data
     const auctionRootState = deserializeUnchecked(
@@ -97,10 +97,10 @@ export async function getAuction(auction_id: string): Promise<Auction> {
     encorePeriod: auction.rootState.auctionConfig.encorePeriod.toNumber(),
     cyclePeriod: auction.rootState.auctionConfig.cyclePeriod.toNumber(),
     numberOfCycles,
+    startTime: auction.rootState.startTime.toNumber() * 1000,
     minBid: auction.rootState.auctionConfig.minimumBidAmount.toNumber() / LAMPORTS,
     // Auction
-    startTime: auction.rootState.startTime.toNumber() * 1000,
-    availableTreasuryAmount: auction.availableFunds.toNumber() / LAMPORTS,
+    availableTreasuryAmount: auction.rootState.availableFunds.toNumber() / LAMPORTS,
     currentCycle,
     isFinished: auction.rootState.status.isFinished,
     isFrozen: auction.rootState.status.isFrozen,

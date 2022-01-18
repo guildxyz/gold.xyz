@@ -30,6 +30,51 @@ export class FrontendAuction extends Struct {
     tokenConfig: FrontendTokenConfig;
 };
 
+export class ClaimFundsArgs extends Struct {
+    auctionOwnerPubkey: PublicKey;
+    auctionId: [32];
+    cycleNumber: BN;
+    amount: BN;
+};
+
+export class PlaceBidArgs extends Struct {
+    userMainPubkey: PublicKey;
+    auctionId: [32];
+    cycleNumber: BN;
+    topBidderPubkey: PublicKey | null;
+    amount: BN;
+};
+
+export class InitializeAuctionArgs extends Struct {
+    auctionOwnerPubkey: PublicKey;
+    auctionId: [32];
+    auctionName: [32];
+    auctionConfig: AuctionConfig;
+    auctionDescription: AuctionDescription;
+    createTokenArgs: CreateTokenArgs;
+    auctionStartTimestamp: BN | null;
+};
+
+export class FreezeAuctionArgs extends Struct {
+    auctionOwnerPubkey: PublicKey;
+    auctionId: [32];
+    topBidderPubkey: PublicKey | null;
+    cycleNumber: BN;
+};
+
+export class DeleteAuctionArgs extends Struct {
+    contractAdminPubkey: PublicKey;
+    auctionOwnerPubkey: PublicKey;
+    auctionId: [32];
+    currentAuctionCycle: BN;
+    numOfCyclesToDelete: BN;
+};
+
+export class ThawAuctionArgs extends Struct {
+    contractAdminPubkey: PublicKey;
+    auctionId: [32];
+};
+
 export class AuctionDescription extends Struct {
     description: string;
     socials: string[];
@@ -116,46 +161,6 @@ export class AuctionPool extends Struct {
     pool: [32][];
 };
 
-export class DeleteAuctionArgs extends Struct {
-    contractAdminPubkey: PublicKey;
-    auctionOwnerPubkey: PublicKey;
-    auctionId: [32];
-    currentAuctionCycle: BN;
-    numOfCyclesToDelete: BN;
-};
-
-export class FreezeAuctionArgs extends Struct {
-    auctionOwnerPubkey: PublicKey;
-    auctionId: [32];
-    topBidderPubkey: PublicKey | null;
-    cycleNumber: BN;
-};
-
-export class PlaceBidArgs extends Struct {
-    userMainPubkey: PublicKey;
-    auctionId: [32];
-    cycleNumber: BN;
-    topBidderPubkey: PublicKey | null;
-    amount: BN;
-};
-
-export class InitializeAuctionArgs extends Struct {
-    auctionOwnerPubkey: PublicKey;
-    auctionId: [32];
-    auctionName: [32];
-    auctionConfig: AuctionConfig;
-    auctionDescription: AuctionDescription;
-    createTokenArgs: CreateTokenArgs;
-    auctionStartTimestamp: BN | null;
-};
-
-export class ClaimFundsArgs extends Struct {
-    auctionOwnerPubkey: PublicKey;
-    auctionId: [32];
-    cycleNumber: BN;
-    amount: BN;
-};
-
 export class Data extends Struct {
     name: string;
     symbol: string;
@@ -213,6 +218,75 @@ export const SCHEMA = new Map<any, any>([
 			['rootStatePubkey', 'publicKey'],
 			['rootState', AuctionRootState],
 			['tokenConfig', FrontendTokenConfig],
+                ],
+            },
+    ],
+    [
+            ClaimFundsArgs,
+            {
+                kind: 'struct', fields: [
+			['auctionOwnerPubkey', 'publicKey'],
+			['auctionId', [32]],
+			['cycleNumber', 'u64'],
+			['amount', 'u64'],
+                ],
+            },
+    ],
+    [
+            PlaceBidArgs,
+            {
+                kind: 'struct', fields: [
+			['userMainPubkey', 'publicKey'],
+			['auctionId', [32]],
+			['cycleNumber', 'u64'],
+			['topBidderPubkey', { kind: 'option', type: 'publicKey' }],
+			['amount', 'u64'],
+                ],
+            },
+    ],
+    [
+            InitializeAuctionArgs,
+            {
+                kind: 'struct', fields: [
+			['auctionOwnerPubkey', 'publicKey'],
+			['auctionId', [32]],
+			['auctionName', [32]],
+			['auctionConfig', AuctionConfig],
+			['auctionDescription', AuctionDescription],
+			['createTokenArgs', CreateTokenArgs],
+			['auctionStartTimestamp', { kind: 'option', type: 'u64' }],
+                ],
+            },
+    ],
+    [
+            FreezeAuctionArgs,
+            {
+                kind: 'struct', fields: [
+			['auctionOwnerPubkey', 'publicKey'],
+			['auctionId', [32]],
+			['topBidderPubkey', { kind: 'option', type: 'publicKey' }],
+			['cycleNumber', 'u64'],
+                ],
+            },
+    ],
+    [
+            DeleteAuctionArgs,
+            {
+                kind: 'struct', fields: [
+			['contractAdminPubkey', 'publicKey'],
+			['auctionOwnerPubkey', 'publicKey'],
+			['auctionId', [32]],
+			['currentAuctionCycle', 'u64'],
+			['numOfCyclesToDelete', 'u64'],
+                ],
+            },
+    ],
+    [
+            ThawAuctionArgs,
+            {
+                kind: 'struct', fields: [
+			['contractAdminPubkey', 'publicKey'],
+			['auctionId', [32]],
                 ],
             },
     ],
@@ -359,66 +433,6 @@ export const SCHEMA = new Map<any, any>([
                 kind: 'struct', fields: [
 			['maxLen', 'u32'],
 			['pool', [[32]]],
-                ],
-            },
-    ],
-    [
-            DeleteAuctionArgs,
-            {
-                kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
-			['auctionOwnerPubkey', 'publicKey'],
-			['auctionId', [32]],
-			['currentAuctionCycle', 'u64'],
-			['numOfCyclesToDelete', 'u64'],
-                ],
-            },
-    ],
-    [
-            FreezeAuctionArgs,
-            {
-                kind: 'struct', fields: [
-			['auctionOwnerPubkey', 'publicKey'],
-			['auctionId', [32]],
-			['topBidderPubkey', { kind: 'option', type: 'publicKey' }],
-			['cycleNumber', 'u64'],
-                ],
-            },
-    ],
-    [
-            PlaceBidArgs,
-            {
-                kind: 'struct', fields: [
-			['userMainPubkey', 'publicKey'],
-			['auctionId', [32]],
-			['cycleNumber', 'u64'],
-			['topBidderPubkey', { kind: 'option', type: 'publicKey' }],
-			['amount', 'u64'],
-                ],
-            },
-    ],
-    [
-            InitializeAuctionArgs,
-            {
-                kind: 'struct', fields: [
-			['auctionOwnerPubkey', 'publicKey'],
-			['auctionId', [32]],
-			['auctionName', [32]],
-			['auctionConfig', AuctionConfig],
-			['auctionDescription', AuctionDescription],
-			['createTokenArgs', CreateTokenArgs],
-			['auctionStartTimestamp', { kind: 'option', type: 'u64' }],
-                ],
-            },
-    ],
-    [
-            ClaimFundsArgs,
-            {
-                kind: 'struct', fields: [
-			['auctionOwnerPubkey', 'publicKey'],
-			['auctionId', [32]],
-			['cycleNumber', 'u64'],
-			['amount', 'u64'],
                 ],
             },
     ],
