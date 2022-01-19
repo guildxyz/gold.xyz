@@ -34,15 +34,11 @@ import SettingsMenu from "components/[auction]/SettingsMenu"
 import useWindowSize from "hooks/useWindowSize"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useEffect, useState } from "react"
-import Confetti from "react-confetti"
 import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { width, height } = useWindowSize()
-  const [coinImg, setCoinImg] = useState<CanvasImageSource>(null)
-  const [runConfetti, setRunConfetti] = useState(false)
 
   const { auction, error } = useAuction()
   const { publicKey } = useWallet()
@@ -50,23 +46,6 @@ const Page = (): JSX.Element => {
   const { data: nftData } = useSWRImmutable(
     auction?.asset?.type === "NFT" ? auction.asset.uri : null
   )
-
-  // Set up confetti image
-  useEffect(() => {
-    if (coinImg) return
-    const coin = new Image()
-    coin.src = "/img/coin.png"
-    setCoinImg(coin)
-  }, [])
-
-  // Show "confetti" on successful claim
-  useEffect(() => {
-    if (!runConfetti) return
-
-    setTimeout(() => {
-      setRunConfetti(false)
-    }, 3000)
-  }, [runConfetti])
 
   if (error)
     return (
@@ -209,7 +188,9 @@ const Page = (): JSX.Element => {
               (isCycleActive ? (
                 <>
                   <Bid />
-                  <Button onClick={() => setRunConfetti(true)}>Confetti! 🎉</Button>
+                  <Button onClick={() => console.log("Run confetti!")}>
+                    Confetti! 🎉
+                  </Button>
                 </>
               ) : (
                 <Box>
@@ -238,17 +219,6 @@ const Page = (): JSX.Element => {
           </VStack>
         </SimpleGrid>
       </Layout>
-
-      <Confetti
-        width={width}
-        height={height}
-        gravity={0.4}
-        numberOfPieces={runConfetti ? 100 : 0}
-        recycle={true}
-        drawShape={(ctx) => {
-          if (coinImg) ctx.drawImage(coinImg, -12.5, -12.5, 25, 25)
-        }}
-      />
     </>
   )
 }
