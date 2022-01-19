@@ -26,16 +26,16 @@ module.exports = withTM({
       type: "webassembly/sync",
     })
 
-    // if (!process.env.IS_VERCEL) {
-    //   config.plugins.push(
-    //     new WasmPackPlugin({
-    //       crateDirectory: resolve("./rust/client"),
-    //       args: "--log-level warn",
-    //       outDir: "../../src/contract-logic/wasm-factory",
-    //       outName: "instructions",
-    //     })
-    //   )
-    // }
+    if (!process.env.IS_VERCEL) {
+      config.plugins.push(
+        new WasmPackPlugin({
+          crateDirectory: resolve("./rust/client"),
+          args: "--log-level warn",
+          outDir: "../../src/contract-logic/wasm-factory",
+          outName: "instructions",
+        })
+      )
+    }
 
     return config
   },
