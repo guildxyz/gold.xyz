@@ -39,18 +39,18 @@ global.Response = fetch.Response
   //}
 
   const auction_config: AuctionConfig = {
-    id: "hehehehehehe",
-    name: "hehehehehehe",
+    id: "hehehehehehi",
+    name: "hehehehehehi",
     description: "xd",
     socials: ["aaa.aaa"],
     goalTreasuryAmount: null,
     ownerPubkey: auctionOwner.publicKey,
     asset: nftAsset,
     encorePeriod: 0,
-    cyclePeriod: 60,
+    cyclePeriod: 86400,
     numberOfCycles: 20,
     startTime: null,
-    minBid: 0.01,
+    minBid: 0.07,
   }
 
   // CREATE AUCTION
@@ -58,10 +58,10 @@ global.Response = fetch.Response
   //await sendTransaction(startAuctionTransaction, auctionOwner);
   //console.log("Auction created successfully.");
   // Query auction
-  //console.log(await getAuctions(CONNECTION))
-  //const auction = await getAuction(auction_config.id);
-  //console.log(auction);
-  //console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
+  console.log(await getAuctions(CONNECTION))
+  const auction = await getAuction(auction_config.id);
+  console.log(auction);
+  console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
   // CLAIM FUNDS
   //let ownerBalanceBefore = await CONNECTION.getBalance(auctionOwner.publicKey);
   //const claimAmount = 0.3;
@@ -76,7 +76,7 @@ global.Response = fetch.Response
   //await sendTransaction(bidTransaction, bidder);
   //console.log("Bid placed successfully.");
   // FREEZE_AUCTION
-  const freezeAuctionTransaction = await freezeAuction(auction_config.id, auctionOwner.publicKey)
-  await sendTransaction(freezeAuctionTransaction, auctionOwner)
-  console.log("Auction frozen successfully.")
+  //const freezeAuctionTransaction = await freezeAuction(auction_config.id, auctionOwner.publicKey)
+  //await sendTransaction(freezeAuctionTransaction, auctionOwner)
+  //console.log("Auction frozen successfully.")
 })()
