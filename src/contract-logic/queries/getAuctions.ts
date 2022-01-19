@@ -35,13 +35,15 @@ export async function getAuctions(connection: Connection): Promise<Array<Auction
         auctionRootState.description.goalTreasuryAmount.toNumber() / LAMPORTS
     }
 
+    if (auctionRootState.status.isFiltered) continue;
+
     auctionBaseArray.push({
       id: parseAuctionId(auctionId),
       name: parseAuctionId(Uint8Array.from(auctionRootState.auctionName)),
       ownerPubkey: auctionRootState.auctionOwner,
       goalTreasuryAmount,
       allTimeTreasuryAmount: auctionRootState.allTimeTreasury.toNumber() / LAMPORTS,
-      isVerified: auctionRootState.isVerified,
+      isVerified: auctionRootState.status.isVerified,
     })
   }
 
@@ -89,7 +91,7 @@ export async function getAuction(auction_id: string): Promise<Auction> {
     ownerPubkey: auction.rootState.auctionOwner,
     // AuctionBase
     allTimeTreasuryAmount: auction.rootState.allTimeTreasury.toNumber() / LAMPORTS,
-    isVerified: auction.rootState.isVerified,
+    isVerified: auction.rootState.status.isVerified,
     // AuctionConfig
     description: auction.rootState.description.description,
     socials: auction.rootState.description.socials,
@@ -104,6 +106,7 @@ export async function getAuction(auction_id: string): Promise<Auction> {
     currentCycle,
     isFinished: auction.rootState.status.isFinished,
     isFrozen: auction.rootState.status.isFrozen,
+    isFiltered: auction.rootState.status.isFiltered,
     rootStatePubkey: new PublicKey(auction.rootStatePubkey.toBytes()),
   }
 }

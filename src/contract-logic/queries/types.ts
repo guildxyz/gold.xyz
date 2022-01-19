@@ -41,7 +41,7 @@ export type AuctionConfig = AuctionBaseConfig & {
 
 export type AuctionBase = AuctionBaseConfig & {
   allTimeTreasuryAmount: number
-  isVerified: bool,
+  isVerified: boolean,
 }
 
 export type Auction = AuctionConfig &
@@ -50,6 +50,7 @@ export type Auction = AuctionConfig &
     currentCycle: number
     isFinished: boolean
     isFrozen: boolean
+    isFiltered: boolean,
     rootStatePubkey: PublicKey
   }
 
