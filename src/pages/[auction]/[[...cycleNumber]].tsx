@@ -22,6 +22,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
+import Coinfetti from "components/common/Coinfetti"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
@@ -31,21 +32,27 @@ import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import SettingsMenu from "components/[auction]/SettingsMenu"
-import useWindowSize from "hooks/useWindowSize"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
+import { useEffect, useState } from "react"
 import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
-  const { width, height } = useWindowSize()
-
   const { auction, error } = useAuction()
   const { publicKey } = useWallet()
   const router = useRouter()
   const { data: nftData } = useSWRImmutable(
     auction?.asset?.type === "NFT" ? auction.asset.uri : null
   )
+
+  const [showCoinfetti, setShowCoinfetti] = useState(false)
+
+  useEffect(() => {
+    if (!showCoinfetti) return
+
+    setTimeout(() => setShowCoinfetti(false), 4000)
+  }, [showCoinfetti])
 
   if (error)
     return (
@@ -188,7 +195,7 @@ const Page = (): JSX.Element => {
               (isCycleActive ? (
                 <>
                   <Bid />
-                  <Button onClick={() => console.log("Run confetti!")}>
+                  <Button onClick={() => setShowCoinfetti(true)}>
                     Confetti! 🎉
                   </Button>
                 </>
@@ -219,6 +226,15 @@ const Page = (): JSX.Element => {
           </VStack>
         </SimpleGrid>
       </Layout>
+
+      <Coinfetti
+        animate={showCoinfetti}
+        imageWidth={47}
+        imageHeight={35.5}
+        imageCount={40}
+        speed={0.5}
+        gravity={2}
+      />
     </>
   )
 }
