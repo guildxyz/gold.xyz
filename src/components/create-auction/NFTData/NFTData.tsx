@@ -5,33 +5,15 @@ import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
 import { useCallback, useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
-import { v4 as uuidv4 } from "uuid"
 import NFTCard from "./components/NFTCard"
 import useDropzone from "./hooks/useDropzone"
+import useUploadFiles from "./hooks/useUploadFiles"
 
-const uploadImages = async (
-  files: File[],
-  clientId: string,
-  ids: string[]
-): Promise<Record<string, string>> => {
-  const formData = new FormData()
-  files.forEach((file, index) => formData.append(ids[index], file))
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-file/${clientId}`,
-    {
-      method: "POST",
-      body: formData,
-    }
-  )
-
-  const body = await response.json()
-
-  if (response.ok) return body
-  else throw Error(body.message ?? "Failed to upload images")
+type Props = {
+  setIsUploadLoading: (isLoading: boolean) => void
 }
 
-const NFTData = () => {
+const NFTData = ({ setIsUploadLoading }) => {
   const [progresses, setProgresses] = useState<Record<string, number>>({})
   const [hashes, setHashes] = useState<Record<string, string>>({})
   const { fields, append, remove } = useFieldArray({ name: "nfts" })
@@ -69,38 +51,19 @@ const NFTData = () => {
     onDrop,
   })
 
-  const setupEventSource = useCallback((clientId: string) => {
-    const source = new EventSource(
-      `${process.env.NEXT_PUBLIC_UPLOADER_API}/${clientId}`
-    )
+  const { isLoading, onSubmit } = useUploadFiles({
+    setHashes,
+    setProgresses,
+    fields,
+    acceptedFiles,
+  })
 
-    source.addEventListener("progress", (event: Event) => {
-      try {
-        const progressReport = JSON.parse((event as Event & { data: string }).data)
-        setProgresses((prev) => ({ ...prev, ...progressReport }))
-      } catch (error) {
-        console.error(`Failed to parse SSE "progress" event message`, error)
-      }
-    })
+  useEffect(() => setIsUploadLoading(isLoading), [isLoading, setIsUploadLoading])
 
-    return source
-  }, [])
-
+  // Not triggering upload on acceptedFiles change (or onDrop), since we need the generated field ids
   useEffect(() => {
-    if (acceptedFiles.length > 0) {
-      const uploadProgressId = uuidv4()
-      const progressEventSource = setupEventSource(uploadProgressId)
-
-      uploadImages(
-        acceptedFiles,
-        uploadProgressId,
-        fields.slice(fields.length - acceptedFiles.length).map((field) => field.id)
-      )
-        .then((hashReport) => setHashes((prev) => ({ ...prev, ...hashReport })))
-        .catch(console.error)
-        .finally(() => progressEventSource.close())
-    }
-  }, [setupEventSource, fields]) // Intentionally leaving out acceptedFiles
+    onSubmit()
+  }, [fields])
 
   return (
     <>

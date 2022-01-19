@@ -1,12 +1,13 @@
 import CtaButton from "components/common/CtaButton"
-import useToast from "hooks/useToast"
-import { useFormContext, useWatch } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import useStartAuction from "./hooks/useStartAuction"
 
-const SubmitButton = () => {
+type Props = {
+  isUploadLoading: boolean
+}
+
+const SubmitButton = ({ isUploadLoading }: Props) => {
   const { onSubmit, isLoading, response } = useStartAuction()
-  const nfts = useWatch({ name: "nfts" })
-  const toast = useToast()
 
   const { handleSubmit } = useFormContext()
 
@@ -15,24 +16,9 @@ const SubmitButton = () => {
       // disabled={isLoading || isImageLoading || isSigning || response}
       flexShrink={0}
       size="lg"
-      isLoading={isLoading}
-      loadingText="Loading"
-      onClick={(event) => {
-        if (
-          Object.values(nfts).some(
-            (nft) => (nft as { hash?: string }).hash?.length <= 0
-          )
-        ) {
-          // Using handleSubmit just to trigger validations
-          handleSubmit(() =>
-            toast({
-              status: "info",
-              title: "Please wait",
-              description: "Some images aren't uploaded yet.",
-            })
-          )(event)
-        } else handleSubmit(onSubmit)(event)
-      }}
+      isLoading={isLoading || isUploadLoading}
+      loadingText={isUploadLoading ? "Uploading images" : "Loading"}
+      onClick={handleSubmit(onSubmit)}
     >
       {response ? "Success" : "Summon"}
     </CtaButton>
