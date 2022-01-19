@@ -3,17 +3,41 @@ import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
+import useToast from "hooks/useToast"
 import { useCallback, useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
 import NFTCard from "./components/NFTCard"
 import useDropzone from "./hooks/useDropzone"
-import useUploadFiles from "./hooks/useUploadFiles"
 
 type Props = {
-  setIsUploadLoading: (isLoading: boolean) => void
+  setUploadPromise: (uploadPromise: Promise<Record<string, string>>) => void
 }
 
-const NFTData = ({ setIsUploadLoading }) => {
+const uploadImages = async (
+  files: File[],
+  clientId: string,
+  ids: string[]
+): Promise<Record<string, string>> => {
+  const formData = new FormData()
+  files.forEach((file, index) => formData.append(ids[index], file))
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-file/${clientId}`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  )
+
+  const body = await response.json()
+
+  if (response.ok) return body
+  else throw Error(body.message ?? "Failed to upload images")
+}
+
+const NFTData = ({ setUploadPromise }: Props) => {
+  const toast = useToast()
   const [progresses, setProgresses] = useState<Record<string, number>>({})
   const [hashes, setHashes] = useState<Record<string, string>>({})
   const { fields, append, remove } = useFieldArray({ name: "nfts" })
@@ -34,35 +58,72 @@ const NFTData = ({ setIsUploadLoading }) => {
     else setValue("asset.isRepeated", false)
   }, [nfts])
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      append(
-        acceptedFiles.map((file) => ({
-          file,
-          traits: [],
-          preview: URL.createObjectURL(file),
-        }))
-      )
-    },
-    [append]
-  )
+  const onDrop = (acceptedFiles: File[]) => {
+    append(
+      acceptedFiles.map((file) => ({
+        file,
+        traits: [],
+        preview: URL.createObjectURL(file),
+      }))
+    )
+  }
 
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     onDrop,
   })
 
-  const { isLoading, onSubmit } = useUploadFiles({
-    setHashes,
-    setProgresses,
-    fields,
-    acceptedFiles,
-  })
+  const setupEventSource = useCallback(
+    (clientId: string) => {
+      const source = new EventSource(
+        `${process.env.NEXT_PUBLIC_UPLOADER_API}/${clientId}`
+      )
 
-  useEffect(() => setIsUploadLoading(isLoading), [isLoading, setIsUploadLoading])
+      source.addEventListener("progress", (event: Event) => {
+        try {
+          const progressReport: Record<string, number> = JSON.parse(
+            (event as Event & { data: string }).data
+          )
+          setProgresses((prev: Record<string, number>) => ({
+            ...prev,
+            ...progressReport,
+          }))
+        } catch (error) {
+          console.error(`Failed to parse SSE "progress" event message`, error)
+        }
+      })
 
-  // Not triggering upload on acceptedFiles change (or onDrop), since we need the generated field ids
+      return source
+    },
+    [setProgresses]
+  )
+
+  // Not triggering upload on acceptedFiles change, since we need the generated field ids
   useEffect(() => {
-    onSubmit()
+    if (acceptedFiles.length > 0) {
+      const uploadProgressId = uuidv4()
+      const progressEventSource = setupEventSource(uploadProgressId)
+
+      setUploadPromise(
+        uploadImages(
+          acceptedFiles,
+          uploadProgressId,
+          fields.slice(fields.length - acceptedFiles.length).map((field) => field.id)
+        )
+          .then((hashReport) => {
+            setHashes((prev) => ({ ...prev, ...hashReport }))
+            return hashReport
+          })
+          .catch((e) => {
+            toast({
+              status: "error",
+              title: "Upload failed",
+              description: e?.message ?? "Failed to upload images",
+            })
+            return {}
+          })
+          .finally(() => progressEventSource.close())
+      )
+    }
   }, [fields])
 
   return (

@@ -1,13 +1,20 @@
 import CtaButton from "components/common/CtaButton"
+import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
-import useStartAuction from "./hooks/useStartAuction"
+import useStartAuction, { StartAuctionData } from "./hooks/useStartAuction"
 
 type Props = {
-  isUploadLoading: boolean
+  uploadPromise: Promise<Record<string, string>>
 }
 
-const SubmitButton = ({ isUploadLoading }: Props) => {
+const SubmitButton = ({ uploadPromise }: Props) => {
   const { onSubmit, isLoading, response } = useStartAuction()
+  const [isUploading, setIsUploading] = useState<boolean>()
+
+  useEffect(() => {
+    setIsUploading(true)
+    uploadPromise?.finally(() => setIsUploading(false))
+  }, [uploadPromise, setIsUploading])
 
   const { handleSubmit } = useFormContext()
 
@@ -16,9 +23,11 @@ const SubmitButton = ({ isUploadLoading }: Props) => {
       // disabled={isLoading || isImageLoading || isSigning || response}
       flexShrink={0}
       size="lg"
-      isLoading={isLoading || isUploadLoading}
-      loadingText={isUploadLoading ? "Uploading images" : "Loading"}
-      onClick={handleSubmit(onSubmit)}
+      isLoading={isLoading}
+      loadingText={isUploading ? "Uploading images" : "Loading"}
+      onClick={handleSubmit((data: Omit<StartAuctionData, "uploadPromise">) => {
+        onSubmit({ ...data, uploadPromise })
+      })}
     >
       {response ? "Success" : "Summon"}
     </CtaButton>

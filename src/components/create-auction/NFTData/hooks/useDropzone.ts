@@ -17,6 +17,7 @@ const useDropzone = ({
     accept: dropzoneOptions.accept ?? "image/*",
     noClick: dropzoneOptions.noClick ?? true,
     maxSize: dropzoneOptions.maxSize ?? maxSizeMb * 1024 * 1024,
+    multiple: true,
   })
 
 export default useDropzone

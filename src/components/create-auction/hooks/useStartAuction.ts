@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { AuctionConfig } from "contract-logic/queries/types"
+import { AuctionConfig, NFTData } from "contract-logic/queries/types"
 import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
@@ -9,6 +9,26 @@ import { useSWRConfig } from "swr"
 
 const DAY_IN_SECONDS = 86400
 
+export type StartAuctionData = {
+  uploadPromise: Promise<Record<string, string>>
+  id: string
+  name: string
+  description: string
+  socials: string[]
+  asset: NFTData
+  cyclePeriod: "1" | "7" | "30" | "CUSTOM"
+  customCyclePeriod: number
+  numberOfCycles: number
+  minBid: number
+  startTimestamp?: number
+  nfts: {
+    traits: { key: string; value: string }[]
+    hash: string
+    file: File
+    preview: string
+  }[]
+}
+
 const useStartAuction = () => {
   const [data, setData] = useState<AuctionConfig>()
   const toast = useToast()
@@ -17,7 +37,12 @@ const useStartAuction = () => {
   const router = useRouter()
   const { sendTransaction, publicKey } = useWallet()
 
-  const handleStartAuction = async (data_: AuctionConfig) => {
+  const handleStartAuction = async ({
+    uploadPromise,
+    ...data_
+  }: AuctionConfig & { uploadPromise: Promise<Record<string, number>> }) => {
+    await uploadPromise
+
     console.log(data_)
     const tx = await startAuction(data_)
     console.log(tx)
@@ -53,7 +78,7 @@ const useStartAuction = () => {
   )
 
   return {
-    onSubmit: async (_data) => {
+    onSubmit: async (_data: StartAuctionData) => {
       // Filtering out invalid traits
       _data.nfts.forEach((nft) => {
         nft.traits = nft.traits.filter(
@@ -65,7 +90,7 @@ const useStartAuction = () => {
         cyclePeriod:
           (_data.cyclePeriod === "CUSTOM"
             ? _data.customCyclePeriod
-            : _data.cyclePeriod) * DAY_IN_SECONDS,
+            : +_data.cyclePeriod) * DAY_IN_SECONDS,
         ownerPubkey: publicKey,
       }
 

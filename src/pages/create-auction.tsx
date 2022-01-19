@@ -36,7 +36,8 @@ const CreateGuildPage = (): JSX.Element => {
     methods.formState?.isDirty && !methods.formState.isSubmitted
   )
 
-  const [isUploadLoading, setIsUploadLoading] = useState<boolean>(false)
+  const [uploadPromise, setUploadPromise] =
+    useState<Promise<Record<string, string>>>(null)
 
   return (
     <FormProvider {...methods}>
@@ -67,7 +68,7 @@ const CreateGuildPage = (): JSX.Element => {
                 <AssetSelector />
               </Section>
 
-              <NFTData setIsUploadLoading={setIsUploadLoading} />
+              <NFTData setUploadPromise={setUploadPromise} />
 
               {/* <Section
                 title={
@@ -92,7 +93,7 @@ const CreateGuildPage = (): JSX.Element => {
             </VStack>
 
             <Flex justifyContent="right" mt="14">
-              <SubmitButton isUploadLoading={isUploadLoading} />
+              <SubmitButton uploadPromise={uploadPromise} />
             </Flex>
           </>
         ) : (
