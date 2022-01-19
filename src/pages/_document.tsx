@@ -26,7 +26,7 @@ class MyDocument extends Document {
             ></script>
           )}
         </Head>
-        <body>
+        <body style={{ overflow: "hidden" }}>
           <Main />
           <NextScript />
         </body>

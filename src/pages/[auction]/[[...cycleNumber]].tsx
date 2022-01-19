@@ -3,13 +3,14 @@ import {
   AlertIcon,
   AlertTitle,
   Box,
+  Button,
   Center,
   Divider,
   Flex,
   Heading,
   HStack,
   Icon,
-  Image,
+  Image as ChakraImage,
   SimpleGrid,
   Skeleton,
   Spacer,
@@ -30,18 +31,42 @@ import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import SettingsMenu from "components/[auction]/SettingsMenu"
+import useWindowSize from "hooks/useWindowSize"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
+import { useEffect, useState } from "react"
+import Confetti from "react-confetti"
 import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
+  const { width, height } = useWindowSize()
+  const [coinImg, setCoinImg] = useState<CanvasImageSource>(null)
+  const [runConfetti, setRunConfetti] = useState(false)
+
   const { auction, error } = useAuction()
   const { publicKey } = useWallet()
   const router = useRouter()
   const { data: nftData } = useSWRImmutable(
     auction?.asset?.type === "NFT" ? auction.asset.uri : null
   )
+
+  // Set up confetti image
+  useEffect(() => {
+    if (coinImg) return
+    const coin = new Image()
+    coin.src = "/img/coin.png"
+    setCoinImg(coin)
+  }, [])
+
+  // Show "confetti" on successful claim
+  useEffect(() => {
+    if (!runConfetti) return
+
+    setTimeout(() => {
+      setRunConfetti(false)
+    }, 3000)
+  }, [runConfetti])
 
   if (error)
     return (
@@ -74,139 +99,157 @@ const Page = (): JSX.Element => {
   const isCycleActive = isActive && thisCycle === currentCycle
 
   return (
-    <Layout
-      title={name}
-      description={description}
-      showLayoutDescription
-      action={
-        <>
-          {!!goalTreasuryAmount && (
-            <Tag size="lg" mb="-8px !important">
-              Current:
-              <Text
-                as="span"
-                fontWeight="bold"
-                mx="1"
-              >{`${currentTreasuryAmount} SOL`}</Text>
-              <Text as="span" colorScheme="gray" mr="2" ml="1">
-                /
-              </Text>
-              Goal:
-              <Text
-                as="span"
-                fontWeight="bold"
-                mx="1"
-              >{`${goalTreasuryAmount} SOL`}</Text>
-            </Tag>
-          )}
-          <Spacer />
-          {publicKey &&
-            ownerPubkey &&
-            publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
-        </>
-      }
-    >
-      <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
-        <Center>
-          <Image
-            src={nftData?.image}
-            alt="NFT"
-            borderRadius="xl"
-            maxH="calc(100vh - 400px)"
-            shadow="xl"
-            fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
-          />
-        </Center>
-        <VStack alignItems="stretch" spacing="8">
-          <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
-            {thisCycle > 1 && (
-              <Link
-                fontSize="sm"
-                opacity="0.6"
-                href={`/${router.query.auction}/${thisCycle - 1}`}
-              >
-                <Icon as={CaretLeft} mr="2" />
-                Prev cycle
-              </Link>
+    <>
+      <Layout
+        title={name}
+        description={description}
+        showLayoutDescription
+        action={
+          <>
+            {!!goalTreasuryAmount && (
+              <Tag size="lg" mb="-8px !important">
+                Current:
+                <Text
+                  as="span"
+                  fontWeight="bold"
+                  mx="1"
+                >{`${currentTreasuryAmount} SOL`}</Text>
+                <Text as="span" colorScheme="gray" mr="2" ml="1">
+                  /
+                </Text>
+                Goal:
+                <Text
+                  as="span"
+                  fontWeight="bold"
+                  mx="1"
+                >{`${goalTreasuryAmount} SOL`}</Text>
+              </Tag>
             )}
-            {thisCycle < currentCycle && (
-              <Link
-                fontSize="sm"
-                opacity="0.6"
-                href={`/${router.query.auction}/${thisCycle + 1}`}
-                ml="auto"
-              >
-                Next cycle
-                <Icon as={CaretRight} ml="2" />
-              </Link>
-            )}
-          </HStack>
-          <Skeleton isLoaded={!!nftData} w="fit-content">
-            <Heading as="h3" fontSize="4xl" fontFamily="display" d="inline-block">
-              {nftData?.name}
-            </Heading>
-          </Skeleton>
-          <HStack
-            divider={<Divider orientation="vertical" />}
-            spacing="8"
-            alignItems="flex-start"
-          >
-            <Stat size="lg">
-              <StatLabel>{isCycleActive ? "Current bid" : "Winning bid"}</StatLabel>
-              <Skeleton isLoaded={!!bids}>
-                <HighestBid amount={bids?.[0]?.amount} />
-              </Skeleton>
-            </Stat>
-            <Stat size="lg">
-              {isCycleActive ? (
+            <Spacer />
+            {publicKey &&
+              ownerPubkey &&
+              publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
+          </>
+        }
+      >
+        <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
+          <Center>
+            <ChakraImage
+              src={nftData?.image}
+              alt="NFT"
+              borderRadius="xl"
+              maxH="calc(100vh - 400px)"
+              shadow="xl"
+              fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
+            />
+          </Center>
+          <VStack alignItems="stretch" spacing="8">
+            <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
+              {thisCycle > 1 && (
+                <Link
+                  fontSize="sm"
+                  opacity="0.6"
+                  href={`/${router.query.auction}/${thisCycle - 1}`}
+                >
+                  <Icon as={CaretLeft} mr="2" />
+                  Prev cycle
+                </Link>
+              )}
+              {thisCycle < currentCycle && (
+                <Link
+                  fontSize="sm"
+                  opacity="0.6"
+                  href={`/${router.query.auction}/${thisCycle + 1}`}
+                  ml="auto"
+                >
+                  Next cycle
+                  <Icon as={CaretRight} ml="2" />
+                </Link>
+              )}
+            </HStack>
+            <Skeleton isLoaded={!!nftData} w="fit-content">
+              <Heading as="h3" fontSize="4xl" fontFamily="display" d="inline-block">
+                {nftData?.name}
+              </Heading>
+            </Skeleton>
+            <HStack
+              divider={<Divider orientation="vertical" />}
+              spacing="8"
+              alignItems="flex-start"
+            >
+              <Stat size="lg">
+                <StatLabel>
+                  {isCycleActive ? "Current bid" : "Winning bid"}
+                </StatLabel>
+                <Skeleton isLoaded={!!bids}>
+                  <HighestBid amount={bids?.[0]?.amount} />
+                </Skeleton>
+              </Stat>
+              <Stat size="lg">
+                {isCycleActive ? (
+                  <>
+                    <StatLabel>Ends in</StatLabel>
+                    <Skeleton isLoaded={!!endTimestamp}>
+                      <Countdown expiryTimestamp={endTimestamp} />
+                    </Skeleton>
+                  </>
+                ) : (
+                  <>
+                    <StatLabel>Winner</StatLabel>
+                    <StatNumber>
+                      {bids?.[0]?.bidderPubkey
+                        ? shortenHex(bids?.[0]?.bidderPubkey.toString())
+                        : "-"}
+                    </StatNumber>
+                  </>
+                )}
+              </Stat>
+            </HStack>
+            {isCycleActive !== undefined &&
+              (isCycleActive ? (
                 <>
-                  <StatLabel>Ends in</StatLabel>
-                  <Skeleton isLoaded={!!endTimestamp}>
-                    <Countdown expiryTimestamp={endTimestamp} />
-                  </Skeleton>
+                  <Bid />
+                  <Button onClick={() => setRunConfetti(true)}>Confetti! 🎉</Button>
                 </>
               ) : (
-                <>
-                  <StatLabel>Winner</StatLabel>
-                  <StatNumber>
-                    {bids?.[0]?.bidderPubkey
-                      ? shortenHex(bids?.[0]?.bidderPubkey.toString())
-                      : "-"}
-                  </StatNumber>
-                </>
-              )}
-            </Stat>
-          </HStack>
-          {isCycleActive !== undefined &&
-            (isCycleActive ? (
-              <Bid />
-            ) : (
-              <Box>
-                <Tag size="lg">Auction ended</Tag>
-              </Box>
-            ))}
-          <VStack>
-            {bids?.slice(0, 2).map((bid) => (
-              <Flex
-                key={bid.amount.toString()}
-                bg="blackAlpha.300"
-                px="4"
-                py="3"
-                borderRadius="xl"
-                w="full"
-              >
-                <Identicon address={bid.bidderPubkey.toString()} size={20} />
-                <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
-                <Text ml="auto" fontWeight="semibold">
-                  {bid.amount} SOL
-                </Text>
-              </Flex>
-            ))}
-            <BidHistory />
+                <Box>
+                  <Tag size="lg">Auction ended</Tag>
+                </Box>
+              ))}
+            <VStack>
+              {bids?.slice(0, 2).map((bid) => (
+                <Flex
+                  key={bid.amount.toString()}
+                  bg="blackAlpha.300"
+                  px="4"
+                  py="3"
+                  borderRadius="xl"
+                  w="full"
+                >
+                  <Identicon address={bid.bidderPubkey.toString()} size={20} />
+                  <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
+                  <Text ml="auto" fontWeight="semibold">
+                    {bid.amount} SOL
+                  </Text>
+                </Flex>
+              ))}
+              <BidHistory />
+            </VStack>
           </VStack>
-        </VStack>
-      </SimpleGrid>
-    </Layout>
+        </SimpleGrid>
+      </Layout>
+
+      <Confetti
+        width={width}
+        height={height}
+        gravity={0.4}
+        numberOfPieces={runConfetti ? 100 : 0}
+        recycle={true}
+        drawShape={(ctx) => {
+          if (coinImg) ctx.drawImage(coinImg, -12.5, -12.5, 25, 25)
+        }}
+      />
+    </>
   )
 }
 
