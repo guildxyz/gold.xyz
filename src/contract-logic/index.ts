@@ -59,9 +59,9 @@ global.Response = fetch.Response
   //console.log("Auction created successfully.");
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  const auction = await getAuction(auction_config.id);
+  const auction = await getAuction("johnnytest2");
   console.log(auction);
-  console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
+  //console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
   // CLAIM FUNDS
   //let ownerBalanceBefore = await CONNECTION.getBalance(auctionOwner.publicKey);
   //const claimAmount = 0.3;
