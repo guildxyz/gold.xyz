@@ -10,7 +10,6 @@ import { useSWRConfig } from "swr"
 const DAY_IN_SECONDS = 86400
 
 export type StartAuctionData = {
-  uploadPromise: Promise<Record<string, string>>
   id: string
   name: string
   description: string
@@ -37,12 +36,7 @@ const useStartAuction = () => {
   const router = useRouter()
   const { sendTransaction, publicKey } = useWallet()
 
-  const handleStartAuction = async ({
-    uploadPromise,
-    ...data_
-  }: AuctionConfig & { uploadPromise: Promise<Record<string, number>> }) => {
-    await uploadPromise
-
+  const handleStartAuction = async (data_: AuctionConfig) => {
     console.log(data_)
     const tx = await startAuction(data_)
     console.log(tx)

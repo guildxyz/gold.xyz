@@ -73,27 +73,32 @@ const NFTData = ({ setUploadPromise }: Props) => {
   })
 
   const setupEventSource = useCallback(
-    (clientId: string) => {
-      const source = new EventSource(
-        `${process.env.NEXT_PUBLIC_UPLOADER_API}/${clientId}`
-      )
+    (clientId: string) =>
+      new Promise<EventSource>((resolve, reject) => {
+        const source = new EventSource(
+          `${process.env.NEXT_PUBLIC_UPLOADER_API}/${clientId}`
+        )
 
-      source.addEventListener("progress", (event: Event) => {
-        try {
-          const progressReport: Record<string, number> = JSON.parse(
-            (event as Event & { data: string }).data
-          )
-          setProgresses((prev: Record<string, number>) => ({
-            ...prev,
-            ...progressReport,
-          }))
-        } catch (error) {
-          console.error(`Failed to parse SSE "progress" event message`, error)
-        }
-      })
+        source.addEventListener("progress", (event: Event) => {
+          try {
+            const progressReport: Record<string, number> = JSON.parse(
+              (event as Event & { data: string }).data
+            )
+            setProgresses((prev: Record<string, number>) => ({
+              ...prev,
+              ...progressReport,
+            }))
+          } catch (error) {
+            console.error(`Failed to parse SSE "progress" event message`, error)
+          }
+        })
 
-      return source
-    },
+        source.addEventListener("open", () => resolve(source))
+
+        source.addEventListener("error", () =>
+          reject(Error("Failed to open SSE connection"))
+        )
+      }),
     [setProgresses]
   )
 
@@ -101,28 +106,39 @@ const NFTData = ({ setUploadPromise }: Props) => {
   useEffect(() => {
     if (acceptedFiles.length > 0) {
       const uploadProgressId = uuidv4()
-      const progressEventSource = setupEventSource(uploadProgressId)
-
-      setUploadPromise(
-        uploadImages(
-          acceptedFiles,
-          uploadProgressId,
-          fields.slice(fields.length - acceptedFiles.length).map((field) => field.id)
+      setupEventSource(uploadProgressId)
+        .then((progressEventSource) =>
+          setUploadPromise(
+            uploadImages(
+              acceptedFiles,
+              uploadProgressId,
+              fields
+                .slice(fields.length - acceptedFiles.length)
+                .map((field) => field.id)
+            )
+              .then((hashReport) => {
+                setHashes((prev) => ({ ...prev, ...hashReport }))
+                return hashReport
+              })
+              .catch((e) => {
+                toast({
+                  status: "error",
+                  title: "Upload failed",
+                  description: e?.message ?? "Failed to upload images",
+                })
+                return {}
+              })
+              .finally(() => progressEventSource.close())
+          )
         )
-          .then((hashReport) => {
-            setHashes((prev) => ({ ...prev, ...hashReport }))
-            return hashReport
+        .catch((e) => {
+          console.error("Failed to open SSE connection", e)
+          toast({
+            status: "error",
+            title: "Upload failed",
+            description: e?.message ?? "Failed to upload images",
           })
-          .catch((e) => {
-            toast({
-              status: "error",
-              title: "Upload failed",
-              description: e?.message ?? "Failed to upload images",
-            })
-            return {}
-          })
-          .finally(() => progressEventSource.close())
-      )
+        })
     }
   }, [fields])
 
