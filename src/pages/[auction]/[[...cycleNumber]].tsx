@@ -84,6 +84,18 @@ const Page = (): JSX.Element => {
 
   const isCycleActive = isActive && thisCycle === currentCycle
 
+  const celebrate = () => {
+    const highestBidder = bids?.[0]?.bidderPubkey
+      ? shortenHex(bids?.[0]?.bidderPubkey.toString())
+      : "-"
+    const currentUser = publicKey?.toString()
+
+    console.log("highestBidder:", highestBidder, "currentUser", currentUser)
+
+    if (highestBidder !== currentUser) return
+    setShowCoinfetti(true)
+  }
+
   return (
     <>
       <Layout
@@ -176,7 +188,7 @@ const Page = (): JSX.Element => {
                   <>
                     <StatLabel>Ends in</StatLabel>
                     <Skeleton isLoaded={!!endTimestamp}>
-                      <Countdown expiryTimestamp={endTimestamp} />
+                      <Countdown expiryTimestamp={endTimestamp} onEnd={celebrate} />
                     </Skeleton>
                   </>
                 ) : (
