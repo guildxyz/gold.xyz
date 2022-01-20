@@ -13,7 +13,7 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js"
 
 // testnet
 export const PROGRAM_ID = new PublicKey("go1dcKcvafq8SDwmBKo6t2NVzyhvTEZJkMwnnfae99U")
-export const CONNECTION = new Connection("https://api.testnet.solana.com", "singleGossip")
 export const LAMPORTS = 1_000_000_000
 export const NUM_OF_CYCLES_TO_DELETE = 30
-//export const CONNECTION = new Connection("https://api.devnet.solana.com", "singleGossip")
+export const CONNECTION = new Connection("https://api.devnet.solana.com", "singleGossip")
+//export const CONNECTION = new Connection("https://api.testnet.solana.com", "singleGossip")
