@@ -4,8 +4,10 @@
   "files": [
     "instructions_bg.wasm",
     "instructions.js",
+    "instructions_bg.js",
     "instructions.d.ts"
   ],
-  "main": "instructions.js",
-  "types": "instructions.d.ts"
+  "module": "instructions.js",
+  "types": "instructions.d.ts",
+  "sideEffects": false
 }
