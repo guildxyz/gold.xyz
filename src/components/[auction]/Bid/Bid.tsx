@@ -13,16 +13,16 @@ import useToast from "hooks/useToast"
 import { useMemo, useRef } from "react"
 import { useController, useForm } from "react-hook-form"
 import useAuction from "../hooks/useAuction"
+import useCycle from "../hooks/useCycle"
 import usePlaceBid from "./hook/usePlaceBid"
 
 const Bid = () => {
   const { auction } = useAuction()
+  const { cycle } = useCycle()
   const { publicKey } = useWallet()
   const minBid = useMemo(
     () =>
-      auction?.bids?.[0]?.amount
-        ? auction?.bids?.[0]?.amount + 0.01
-        : auction?.minBid,
+      cycle?.bids?.[0]?.amount ? cycle?.bids?.[0]?.amount + 0.01 : auction?.minBid,
     [auction]
   )
   const toast = useToast()

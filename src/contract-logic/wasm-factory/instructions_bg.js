@@ -246,7 +246,7 @@ function logError(f, args) {
 function __wbg_adapter_32(arg0, arg1, arg2) {
     _assertNum(arg0);
     _assertNum(arg1);
-    wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__he60b8fedff92d278(arg0, arg1, addHeapObject(arg2));
+    wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h2da01f653f47e4c0(arg0, arg1, addHeapObject(arg2));
 }
 
 function passArray8ToWasm0(arg, malloc) {
@@ -332,58 +332,42 @@ export function claimFundsWasm(serialized_input) {
 }
 
 /**
-* @param {Uint8Array} serialized_input
-* @returns {string}
+* @param {string} auction_id
+* @returns {Promise<Uint8Array>}
 */
-export function deleteAuctionWasm(serialized_input) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        var ptr0 = passArray8ToWasm0(serialized_input, wasm.__wbindgen_malloc);
-        var len0 = WASM_VECTOR_LEN;
-        wasm.deleteAuctionWasm(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        return getStringFromWasm0(r0, r1);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-        wasm.__wbindgen_free(r0, r1);
-    }
+export function getAuctionWasm(auction_id) {
+    var ptr0 = passStringToWasm0(auction_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    var len0 = WASM_VECTOR_LEN;
+    var ret = wasm.getAuctionWasm(ptr0, len0);
+    return takeObject(ret);
 }
 
-/**
-* @param {Uint8Array} serialized_input
-* @returns {string}
-*/
-export function initializeContractWasm(serialized_input) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        var ptr0 = passArray8ToWasm0(serialized_input, wasm.__wbindgen_malloc);
-        var len0 = WASM_VECTOR_LEN;
-        wasm.initializeContractWasm(retptr, ptr0, len0);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        return getStringFromWasm0(r0, r1);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-        wasm.__wbindgen_free(r0, r1);
+function _assertClass(instance, klass) {
+    if (!(instance instanceof klass)) {
+        throw new Error(`expected instance of ${klass.name}`);
     }
+    return instance.ptr;
 }
 
 const u32CvtShim = new Uint32Array(2);
 
 const uint64CvtShim = new BigUint64Array(u32CvtShim.buffer);
 /**
-* @param {string} auction_id
-* @param {BigInt | undefined} cycle
+* @param {Pubkey} root_state_pubkey
+* @param {BigInt} cycle_num
 * @returns {Promise<Uint8Array>}
 */
-export function getAuctionWasm(auction_id, cycle) {
-    var ptr0 = passStringToWasm0(auction_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    var len0 = WASM_VECTOR_LEN;
-    uint64CvtShim[0] = isLikeNone(cycle) ? BigInt(0) : cycle;
+export function getAuctionCycleStateWasm(root_state_pubkey, cycle_num) {
+    _assertClass(root_state_pubkey, Pubkey);
+    if (root_state_pubkey.ptr === 0) {
+        throw new Error('Attempt to use a moved value');
+    }
+    var ptr0 = root_state_pubkey.ptr;
+    root_state_pubkey.ptr = 0;
+    uint64CvtShim[0] = cycle_num;
     const low1 = u32CvtShim[0];
     const high1 = u32CvtShim[1];
-    var ret = wasm.getAuctionWasm(ptr0, len0, !isLikeNone(cycle), low1, high1);
+    var ret = wasm.getAuctionCycleStateWasm(ptr0, low1, high1);
     return takeObject(ret);
 }
 
@@ -402,17 +386,6 @@ export function getTopBidderWasm(auction_id) {
 * @param {string} auction_id
 * @returns {Promise<BigInt>}
 */
-export function getTreasuryWasm(auction_id) {
-    var ptr0 = passStringToWasm0(auction_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    var len0 = WASM_VECTOR_LEN;
-    var ret = wasm.getTreasuryWasm(ptr0, len0);
-    return takeObject(ret);
-}
-
-/**
-* @param {string} auction_id
-* @returns {Promise<BigInt>}
-*/
 export function getCurrentCycleWasm(auction_id) {
     var ptr0 = passStringToWasm0(auction_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     var len0 = WASM_VECTOR_LEN;
@@ -420,31 +393,27 @@ export function getCurrentCycleWasm(auction_id) {
     return takeObject(ret);
 }
 
-function getArrayU8FromWasm0(ptr, len) {
-    return getUint8Memory0().subarray(ptr / 1, ptr / 1 + len);
-}
 /**
-* @returns {Uint8Array}
+* @returns {Pubkey}
 */
 export function getAuctionPoolPubkeyWasm() {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        wasm.getAuctionPoolPubkeyWasm(retptr);
-        var r0 = getInt32Memory0()[retptr / 4 + 0];
-        var r1 = getInt32Memory0()[retptr / 4 + 1];
-        var v0 = getArrayU8FromWasm0(r0, r1).slice();
-        wasm.__wbindgen_free(r0, r1 * 1);
-        return v0;
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
-    }
+    var ret = wasm.getAuctionPoolPubkeyWasm();
+    return Pubkey.__wrap(ret);
 }
 
-function _assertClass(instance, klass) {
-    if (!(instance instanceof klass)) {
-        throw new Error(`expected instance of ${klass.name}`);
-    }
-    return instance.ptr;
+/**
+* @param {Uint8Array} auction_id
+* @returns {Pubkey}
+*/
+export function getAuctionRootStatePubkeyWasm(auction_id) {
+    var ptr0 = passArray8ToWasm0(auction_id, wasm.__wbindgen_malloc);
+    var len0 = WASM_VECTOR_LEN;
+    var ret = wasm.getAuctionRootStatePubkeyWasm(ptr0, len0);
+    return Pubkey.__wrap(ret);
+}
+
+function getArrayU8FromWasm0(ptr, len) {
+    return getUint8Memory0().subarray(ptr / 1, ptr / 1 + len);
 }
 
 let cachegetUint32Memory0 = null;
@@ -478,10 +447,10 @@ function handleError(f, args) {
         wasm.__wbindgen_exn_store(addHeapObject(e));
     }
 }
-function __wbg_adapter_143(arg0, arg1, arg2, arg3) {
+function __wbg_adapter_142(arg0, arg1, arg2, arg3) {
     _assertNum(arg0);
     _assertNum(arg1);
-    wasm.wasm_bindgen__convert__closures__invoke2_mut__heb4d580f28735b04(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
+    wasm.wasm_bindgen__convert__closures__invoke2_mut__hb3f15742028586c9(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
 }
 
 /**
@@ -1463,7 +1432,7 @@ export function __wbg_new_b1d61b5687f5e73a() { return logError(function (arg0, a
             const a = state0.a;
             state0.a = 0;
             try {
-                return __wbg_adapter_143(a, state0.b, arg0, arg1);
+                return __wbg_adapter_142(a, state0.b, arg0, arg1);
             } finally {
                 state0.a = a;
             }
@@ -1597,8 +1566,8 @@ export function __wbindgen_memory() {
     return addHeapObject(ret);
 };
 
-export function __wbindgen_closure_wrapper2804() { return logError(function (arg0, arg1, arg2) {
-    var ret = makeMutClosure(arg0, arg1, 272, __wbg_adapter_32);
+export function __wbindgen_closure_wrapper2790() { return logError(function (arg0, arg1, arg2) {
+    var ret = makeMutClosure(arg0, arg1, 281, __wbg_adapter_32);
     return addHeapObject(ret);
 }, arguments) };
 

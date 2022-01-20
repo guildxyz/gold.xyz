@@ -25,8 +25,8 @@ export class FrontendTokenConfigToken extends Struct {
 };
 
 export class FrontendAuction extends Struct {
+    rootStatePubkey: PublicKey;
     rootState: AuctionRootState;
-    cycleState: AuctionCycleState;
     tokenConfig: FrontendTokenConfig;
 };
 
@@ -45,8 +45,11 @@ export class AuctionConfig extends Struct {
 
 export class AuctionStatus extends Struct {
     currentAuctionCycle: BN;
+    currentIdleCycleStreak: number;
     isFrozen: boolean;
-    isActive: boolean;
+    isFinished: boolean;
+    isFiltered: boolean;
+    isVerified: boolean;
 };
 
 export class BidData extends Struct {
@@ -67,17 +70,6 @@ export class CreateTokenArgsNft extends Struct {
 export class CreateTokenArgsToken extends Struct {
     decimals: number;
     perCycleAmount: BN;
-};
-
-export class TokenType extends Enum {
-    tokenTypeNft: TokenTypeNft;
-    tokenTypeToken: TokenTypeToken;
-};
-
-export class TokenTypeNft extends Struct {
-};
-
-export class TokenTypeToken extends Struct {
 };
 
 export class NftData extends Struct {
@@ -110,38 +102,19 @@ export class AuctionRootState extends Struct {
     auctionConfig: AuctionConfig;
     tokenConfig: TokenConfig;
     status: AuctionStatus;
-    currentTreasury: BN;
+    allTimeTreasury: BN;
+    availableFunds: BN;
+    startTime: BN;
 };
 
 export class AuctionCycleState extends Struct {
-    startTime: BN;
     endTime: BN;
     bidHistory: BidData[];
 };
 
 export class AuctionPool extends Struct {
-    pool: Map<[32], PublicKey>;
-};
-
-export class ContractBankState extends Struct {
-    contractAdminPubkey: PublicKey;
-};
-
-export class CloseAuctionCycleArgs extends Struct {
-    payerPubkey: PublicKey;
-    auctionOwnerPubkey: PublicKey;
-    topBidderPubkey: PublicKey | null;
-    auctionId: [32];
-    nextCycleNum: BN;
-    tokenType: TokenType;
-};
-
-export class DeleteAuctionArgs extends Struct {
-    contractAdminPubkey: PublicKey;
-    auctionOwnerPubkey: PublicKey;
-    auctionId: [32];
-    currentAuctionCycle: BN;
-    numOfCyclesToDelete: BN;
+    maxLen: number;
+    pool: [32][];
 };
 
 export class FreezeAuctionArgs extends Struct {
@@ -159,10 +132,6 @@ export class PlaceBidArgs extends Struct {
     amount: BN;
 };
 
-export class InitializeContractArgs extends Struct {
-    contractAdminPubkey: PublicKey;
-};
-
 export class InitializeAuctionArgs extends Struct {
     auctionOwnerPubkey: PublicKey;
     auctionId: [32];
@@ -174,7 +143,6 @@ export class InitializeAuctionArgs extends Struct {
 };
 
 export class ClaimFundsArgs extends Struct {
-    contractAdminPubkey: PublicKey;
     auctionOwnerPubkey: PublicKey;
     auctionId: [32];
     cycleNumber: BN;
@@ -235,8 +203,8 @@ export const SCHEMA = new Map<any, any>([
             FrontendAuction,
             {
                 kind: 'struct', fields: [
+			['rootStatePubkey', 'publicKey'],
 			['rootState', AuctionRootState],
-			['cycleState', AuctionCycleState],
 			['tokenConfig', FrontendTokenConfig],
                 ],
             },
@@ -267,8 +235,11 @@ export const SCHEMA = new Map<any, any>([
             {
                 kind: 'struct', fields: [
 			['currentAuctionCycle', 'u64'],
+			['currentIdleCycleStreak', 'u32'],
 			['isFrozen', 'u8'],
-			['isActive', 'u8'],
+			['isFinished', 'u8'],
+			['isFiltered', 'u8'],
+			['isVerified', 'u8'],
                 ],
             },
     ],
@@ -305,29 +276,6 @@ export const SCHEMA = new Map<any, any>([
                 kind: 'struct', fields: [
 			['decimals', 'u8'],
 			['perCycleAmount', 'u64'],
-                ],
-            },
-    ],
-    [
-            TokenType,
-            {
-                kind: 'enum', field: 'enum', values: [
-			['tokenTypeNft', TokenTypeNft],
-			['tokenTypeToken', TokenTypeToken],
-                ],
-            },
-    ],
-    [
-            TokenTypeNft,
-            {
-                kind: 'struct', fields: [
-                ],
-            },
-    ],
-    [
-            TokenTypeToken,
-            {
-                kind: 'struct', fields: [
                 ],
             },
     ],
@@ -384,7 +332,9 @@ export const SCHEMA = new Map<any, any>([
 			['auctionConfig', AuctionConfig],
 			['tokenConfig', TokenConfig],
 			['status', AuctionStatus],
-			['currentTreasury', 'u64'],
+			['allTimeTreasury', 'u64'],
+			['availableFunds', 'u64'],
+			['startTime', 'u64'],
                 ],
             },
     ],
@@ -392,7 +342,6 @@ export const SCHEMA = new Map<any, any>([
             AuctionCycleState,
             {
                 kind: 'struct', fields: [
-			['startTime', 'u64'],
 			['endTime', 'u64'],
 			['bidHistory', [BidData]],
                 ],
@@ -402,40 +351,8 @@ export const SCHEMA = new Map<any, any>([
             AuctionPool,
             {
                 kind: 'struct', fields: [
-			['pool', { kind: 'map', key: [32], value: 'publicKey' }],
-                ],
-            },
-    ],
-    [
-            ContractBankState,
-            {
-                kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
-                ],
-            },
-    ],
-    [
-            CloseAuctionCycleArgs,
-            {
-                kind: 'struct', fields: [
-			['payerPubkey', 'publicKey'],
-			['auctionOwnerPubkey', 'publicKey'],
-			['topBidderPubkey', { kind: 'option', type: 'publicKey' }],
-			['auctionId', [32]],
-			['nextCycleNum', 'u64'],
-			['tokenType', TokenType],
-                ],
-            },
-    ],
-    [
-            DeleteAuctionArgs,
-            {
-                kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
-			['auctionOwnerPubkey', 'publicKey'],
-			['auctionId', [32]],
-			['currentAuctionCycle', 'u64'],
-			['numOfCyclesToDelete', 'u64'],
+			['maxLen', 'u32'],
+			['pool', [[32]]],
                 ],
             },
     ],
@@ -463,14 +380,6 @@ export const SCHEMA = new Map<any, any>([
             },
     ],
     [
-            InitializeContractArgs,
-            {
-                kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
-                ],
-            },
-    ],
-    [
             InitializeAuctionArgs,
             {
                 kind: 'struct', fields: [
@@ -488,7 +397,6 @@ export const SCHEMA = new Map<any, any>([
             ClaimFundsArgs,
             {
                 kind: 'struct', fields: [
-			['contractAdminPubkey', 'publicKey'],
 			['auctionOwnerPubkey', 'publicKey'],
 			['auctionId', [32]],
 			['cycleNumber', 'u64'],

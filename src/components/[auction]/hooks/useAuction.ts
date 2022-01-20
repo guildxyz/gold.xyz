@@ -1,19 +1,15 @@
-import { useConnection } from "@solana/wallet-adapter-react"
 import { getAuction } from "contract-logic/queries/getAuctions"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 import useSWR from "swr"
 
+const handleGetAuction = (_, id: string) => getAuction(id)
+
 const useAuction = () => {
   const router = useRouter()
 
-  const handleGetAuction = async (_, id: string, cycleNumber: string) => {
-    if (!cycleNumber) return getAuction(id)
-    return getAuction(id, parseInt(cycleNumber))
-  }
-
   const { data, isValidating, error, mutate } = useSWR(
-    ["auction", router.query.auction, router.query.cycleNumber?.[0]],
+    ["auction", router.query.auction],
     handleGetAuction,
     {
       revalidateOnFocus: false,
