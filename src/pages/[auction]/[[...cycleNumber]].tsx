@@ -85,7 +85,7 @@ const Page = (): JSX.Element => {
       showLayoutDescription
       action={
         <>
-          {goalTreasuryAmount && (
+          {!!goalTreasuryAmount && (
             <Tag size="lg" mb="-8px !important">
               Current:
               <Text
@@ -107,8 +107,7 @@ const Page = (): JSX.Element => {
           <Spacer />
           {publicKey &&
             ownerPubkey &&
-            publicKey?.toString() === ownerPubkey?.toString() &&
-            !!isActive && <SettingsMenu />}
+            publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
         </>
       }
     >

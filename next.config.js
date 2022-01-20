@@ -39,4 +39,16 @@ module.exports = withTM({
 
     return config
   },
+  async rewrites() {
+    return [
+      {
+        source: "/js/script.js",
+        destination: "https://stat.zgen.hu/js/plausible.js",
+      },
+      {
+        source: "/api/event",
+        destination: "https://stat.zgen.hu/api/event",
+      },
+    ]
+  },
 })
