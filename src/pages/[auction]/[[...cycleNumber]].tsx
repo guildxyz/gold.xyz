@@ -3,7 +3,6 @@ import {
   AlertIcon,
   AlertTitle,
   Box,
-  Button,
   Center,
   Divider,
   Flex,
@@ -72,13 +71,10 @@ const Page = (): JSX.Element => {
     name = router.query.auction as string,
     description,
     goalTreasuryAmount,
-    availableTreasuryAmount,
     allTimeTreasuryAmount,
     currentCycle,
     isFinished,
-    isFrozen,
     ownerPubkey,
-    numberOfCycles,
   } = auction ?? {}
 
   const { cycleNumber, bids, endTimestamp } = cycle ?? {}
@@ -86,14 +82,11 @@ const Page = (): JSX.Element => {
   const isCycleActive = !isFinished && cycleNumber === currentCycle
 
   const celebrate = () => {
-    const highestBidder = bids?.[0]?.bidderPubkey
-      ? shortenHex(bids?.[0]?.bidderPubkey.toString())
-      : "-"
-    const currentUser = publicKey?.toString()
-
-    console.log("highestBidder:", highestBidder, "currentUser", currentUser)
-
-    if (highestBidder !== currentUser) return
+    if (
+      bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString() ||
+      !isCycleActive
+    )
+      return
     setShowCoinfetti(true)
   }
 
@@ -206,12 +199,7 @@ const Page = (): JSX.Element => {
             </HStack>
             {isCycleActive !== undefined &&
               (isCycleActive ? (
-                <>
-                  <Bid />
-                  <Button onClick={() => setShowCoinfetti(true)}>
-                    Confetti! 🎉
-                  </Button>
-                </>
+                <Bid />
               ) : (
                 <Box>
                   <Tag size="lg">Auction ended</Tag>

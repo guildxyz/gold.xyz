@@ -48,6 +48,9 @@ const Coinfetti = ({
     startTime = Date.now()
 
     const canvas = canvasRef?.current
+
+    if (!canvas) return
+
     const ctx = canvas.getContext("2d")
 
     // Initial random positions on the X axis
