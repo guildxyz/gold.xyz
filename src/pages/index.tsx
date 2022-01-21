@@ -12,7 +12,7 @@ const Page = (): JSX.Element => (
     <Box minHeight="100vh">
       <Flex alignItems="center" justifyContent="center" h="80vh">
         <VStack spacing={8}>
-          <Img boxSize={28} src="/logo.svg" />
+          <Img boxSize={28} src="/logo-animated.gif" />
           <Heading fontFamily="display">Coming soon!</Heading>
           <Button
             as="a"
