@@ -18,7 +18,7 @@ const Coinfetti = ({
   speed,
   gravity,
 }: Props): JSX.Element => {
-  const startYPosition = -35.5
+  const startYPosition = -imageHeight
   let startTime = 0
   const positions = Array(imageCount)
 
@@ -98,10 +98,10 @@ const Coinfetti = ({
 
     ctx.restore()
 
-    const newY =
+    const newY = Math.floor(
       (time - startTime) / (1 / speed + positions[index].speedRandomness) +
-      positions[index].startY +
-      (positions[index].y * (1 + gravity)) / 10
+        positions[index].startY
+    )
     positions[index].y = newY
 
     if (newY > canvas.offsetHeight + imageWidth)

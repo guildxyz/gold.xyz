@@ -9,7 +9,7 @@ import {
   Heading,
   HStack,
   Icon,
-  Image as ChakraImage,
+  Image,
   SimpleGrid,
   Skeleton,
   Spacer,
@@ -126,7 +126,7 @@ const Page = (): JSX.Element => {
       >
         <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
           <Center>
-            <ChakraImage
+            <Image
               src={nftData?.image}
               alt="NFT"
               borderRadius="xl"
@@ -233,7 +233,7 @@ const Page = (): JSX.Element => {
         imageWidth={47}
         imageHeight={35.5}
         imageCount={40}
-        speed={0.5}
+        speed={1.5}
         gravity={2}
       />
     </>
