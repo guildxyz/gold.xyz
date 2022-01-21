@@ -80,10 +80,13 @@ const Page = (): JSX.Element => {
     <Layout
       title={name}
       action={
-        publicKey &&
-        ownerPubkey &&
-        publicKey?.toString() === ownerPubkey?.toString() &&
-        !!isCycleActive && <SettingsMenu />
+        <>
+          <ProgressBar />
+          {publicKey &&
+            ownerPubkey &&
+            publicKey?.toString() === ownerPubkey?.toString() &&
+            !!isCycleActive && <SettingsMenu />}
+        </>
       }
     >
       <Card mb={12}>
@@ -191,26 +194,11 @@ const Page = (): JSX.Element => {
         </SimpleGrid>
       </Card>
 
-      <SimpleGrid
-        templateColumns={{ base: "1fr", lg: "5fr 4fr" }}
-        gap={{ base: 12, lg: 0 }}
-      >
-        <VStack order={{ base: 2, lg: 1 }} spacing={12} pr={{ base: 0, lg: 12 }}>
-          <Section title="Description">
-            <Text>{description}</Text>
-          </Section>
-        </VStack>
-
-        <VStack order={{ base: 1, lg: 2 }} spacing={12}>
-          <Section title="Progress">
-            <ProgressBar />
-          </Section>
-
-          <Section title="Links">
-            <Text>Todo...</Text>
-          </Section>
-        </VStack>
-      </SimpleGrid>
+      {description && (
+        <Section title="Description">
+          <Text>{description}</Text>
+        </Section>
+      )}
     </Layout>
   )
 }
