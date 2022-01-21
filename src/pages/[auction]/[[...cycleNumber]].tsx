@@ -79,6 +79,7 @@ const Page = (): JSX.Element => {
   return (
     <Layout
       title={name}
+      description={description}
       action={
         <>
           <ProgressBar />
