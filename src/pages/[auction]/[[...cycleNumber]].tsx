@@ -86,7 +86,7 @@ const Page = (): JSX.Element => {
         !!isCycleActive && <SettingsMenu />
       }
     >
-      <Card>
+      <Card mb={12}>
         <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }}>
           <Center bg="gray.900" p={12}>
             <Image
