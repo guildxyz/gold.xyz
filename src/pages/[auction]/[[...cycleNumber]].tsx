@@ -81,13 +81,13 @@ const Page = (): JSX.Element => {
       title={name}
       description={description}
       action={
-        <>
+        <HStack w="full" spacing={4}>
           <ProgressBar />
           {publicKey &&
             ownerPubkey &&
             publicKey?.toString() === ownerPubkey?.toString() &&
             !!isCycleActive && <SettingsMenu />}
-        </>
+        </HStack>
       }
     >
       <Card mb={12}>

@@ -19,7 +19,7 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
   return (
     <>
       {goalTreasuryAmount && (
-        <VStack spacing={2} {...rest}>
+        <VStack width="full" spacing={2} {...rest}>
           <HStack justifyContent="space-between" width="full">
             <Text as="span" fontWeight="bold">
               {allTimeTreasuryAmount}
