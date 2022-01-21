@@ -19,10 +19,7 @@ const useCycle = () => {
 
   const { data, isValidating, error, mutate } = useSWR(
     shouldFetch ? ["auction", auction.rootStatePubkey, cycleNumber] : null,
-    handleGetCycle,
-    {
-      revalidateOnFocus: false,
-    }
+    handleGetCycle
   )
 
   useEffect(() => {

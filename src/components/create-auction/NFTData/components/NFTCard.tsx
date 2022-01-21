@@ -40,7 +40,7 @@ const NFTCard = ({ index, removeNft }: Props) => {
         <VStack p="5" pt="3" spacing="3">
           <HStack width="full" justifyContent="space-between">
             <Text fontWeight="bold">{`${name} #${
-              isRepeated ? "[0, 1, ...]" : index + 1
+              isRepeated ? "[1, 2, ...]" : index + 1
             }`}</Text>
             <Tooltip label="Remove NFT">
               <IconButton

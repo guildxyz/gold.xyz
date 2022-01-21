@@ -30,20 +30,18 @@ import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import useCycle from "components/[auction]/hooks/useCycle"
+import useNftData from "components/[auction]/hooks/useNftData"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error: auctionError } = useAuction()
   const { cycle, error: cycleError } = useCycle()
+  const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
-  const { data: nftData } = useSWRImmutable(
-    auction?.asset?.type === "NFT" ? auction.asset.uri : null
-  )
 
   if (auctionError || cycleError)
     return (

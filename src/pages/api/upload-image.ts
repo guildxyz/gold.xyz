@@ -53,8 +53,8 @@ handler.post(
           uploadImage(
             `${folder}/${fieldname}.json`,
             JSON.stringify({
-              // if one image is repeated, index is 0, otherwise it starts from 1
-              name: `${name} #${req.files.length === 1 ? index : index + 1}`,
+              // if one image is repeated, there's no #index in the end yet. Todo we'll have to upload a json for every cycle then with the incremented index in the name
+              name: `${name} ${req.files.length > 1 ? `#${index + 1}` : ""}`,
               symbol,
               description,
               image: uploadedPublicUrl,
