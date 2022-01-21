@@ -8,10 +8,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { CurrencyDollarSimple, Gear, Snowflake } from "phosphor-react"
+import useAuction from "../hooks/useAuction"
 import ClaimDialog from "./components/ClaimDialog"
 import FreezeDialog from "./components/FreezeDialog"
 
 const SettingsMenu = () => {
+  const { auction } = useAuction()
   const {
     isOpen: isOpenClaim,
     onOpen: onOpenClaim,
@@ -41,14 +43,16 @@ const SettingsMenu = () => {
           >
             Claim funds
           </MenuItem>
-          <MenuItem
-            py="2"
-            icon={<Snowflake />}
-            onClick={onOpenFreeze}
-            color="red.300"
-          >
-            Freeze auction
-          </MenuItem>
+          {!auction.isFrozen && (
+            <MenuItem
+              py="2"
+              icon={<Snowflake />}
+              onClick={onOpenFreeze}
+              color="red.300"
+            >
+              Freeze auction
+            </MenuItem>
+          )}
         </MenuList>
       </Menu>
       <ClaimDialog isOpen={isOpenClaim} onClose={onCloseClaim} />

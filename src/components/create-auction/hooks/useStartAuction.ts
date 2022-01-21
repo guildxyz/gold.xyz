@@ -78,6 +78,7 @@ const useStartAuction = () => {
       })
       const finalData = {
         ..._data,
+        minBid: 0.05,
         cyclePeriod:
           (_data.cyclePeriod === "CUSTOM"
             ? _data.customCyclePeriod

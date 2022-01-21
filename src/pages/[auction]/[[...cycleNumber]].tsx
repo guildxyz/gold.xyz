@@ -30,6 +30,7 @@ import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
+import useCycle from "components/[auction]/hooks/useCycle"
 import ProgressBar from "components/[auction]/ProgressBar"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
@@ -38,14 +39,15 @@ import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
-  const { auction, error } = useAuction()
+  const { auction, error: auctionError } = useAuction()
+  const { cycle, error: cycleError } = useCycle()
   const { publicKey } = useWallet()
   const router = useRouter()
   const { data: nftData } = useSWRImmutable(
     auction?.asset?.type === "NFT" ? auction.asset.uri : null
   )
 
-  if (error)
+  if (auctionError || cycleError)
     return (
       <Layout title="">
         <Alert status="error" pb="5">
@@ -62,18 +64,17 @@ const Page = (): JSX.Element => {
     description,
     goalTreasuryAmount,
     availableTreasuryAmount,
-    currentTreasuryAmount,
-    bids,
-    thisCycle,
+    allTimeTreasuryAmount,
     currentCycle,
-    endTimestamp,
-    isActive,
+    isFinished,
     isFrozen,
     ownerPubkey,
     numberOfCycles,
   } = auction ?? {}
 
-  const isCycleActive = isActive && thisCycle === currentCycle
+  const { cycleNumber, bids, endTimestamp } = cycle ?? {}
+
+  const isCycleActive = !isFinished && cycleNumber === currentCycle
 
   return (
     <Layout
@@ -82,36 +83,38 @@ const Page = (): JSX.Element => {
         publicKey &&
         ownerPubkey &&
         publicKey?.toString() === ownerPubkey?.toString() &&
-        !!isActive && <SettingsMenu />
+        !!isCycleActive && <SettingsMenu />
       }
     >
-      <Card mb={8}>
+      <Card>
         <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }}>
           <Center bg="gray.900" p={12}>
             <Image
               src={nftData?.image}
               alt="NFT"
+              borderRadius="xl"
               maxH="calc(100vh - 400px)"
+              shadow="xl"
               fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
             />
           </Center>
           <VStack p={12} alignItems="stretch" spacing="8">
             <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
-              {thisCycle > 1 && (
+              {cycleNumber > 1 && (
                 <Link
                   fontSize="sm"
                   opacity="0.6"
-                  href={`/${router.query.auction}/${thisCycle - 1}`}
+                  href={`/${router.query.auction}/${cycleNumber - 1}`}
                 >
                   <Icon as={CaretLeft} mr="2" />
                   Prev cycle
                 </Link>
               )}
-              {thisCycle < currentCycle && (
+              {cycleNumber < currentCycle && (
                 <Link
                   fontSize="sm"
                   opacity="0.6"
-                  href={`/${router.query.auction}/${thisCycle + 1}`}
+                  href={`/${router.query.auction}/${cycleNumber + 1}`}
                   ml="auto"
                 >
                   Next cycle

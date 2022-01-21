@@ -3,15 +3,17 @@ import { useMemo } from "react"
 import { Rest } from "types"
 import Countdown from "./Countdown"
 import useAuction from "./hooks/useAuction"
+import useCycle from "./hooks/useCycle"
 
 const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
   const { auction } = useAuction()
-  const { goalTreasuryAmount, currentTreasuryAmount, bids, endTimestamp } =
-    auction || {}
+  const { goalTreasuryAmount, allTimeTreasuryAmount } = auction || {}
+  const { cycle } = useCycle()
+  const { bids, endTimestamp } = cycle ?? {}
 
   const percentage = useMemo(
-    () => (currentTreasuryAmount * 100) / goalTreasuryAmount,
-    [goalTreasuryAmount, currentTreasuryAmount]
+    () => (allTimeTreasuryAmount * 100) / goalTreasuryAmount,
+    [goalTreasuryAmount, allTimeTreasuryAmount]
   )
 
   return (
@@ -20,7 +22,7 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
         <VStack spacing={2} {...rest}>
           <HStack justifyContent="space-between" width="full">
             <Text as="span" fontWeight="bold">
-              {currentTreasuryAmount}
+              {allTimeTreasuryAmount}
               <Text as="span" fontSize="xs">
                 {" SOL"}
               </Text>

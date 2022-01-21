@@ -1,7 +1,6 @@
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONNECTION, CONTRACT_ADMIN_KEYPAIR } from "./consts"
-import { InitializeContractArgs, SCHEMA } from "./schema"
+import { CONNECTION } from "./consts"
 import { parseInstruction } from "./utils/parseInstruction"
 
 export async function sleep(ms: number) {
@@ -34,31 +33,4 @@ export async function sendTransaction(transaction: Transaction, signer: Keypair)
       preflightCommitment: "singleGossip",
     })
   )
-}
-
-export async function initializeContract(auctionOwnerPubkey: PublicKey) {
-  const { initializeContractWasm } = await import("../../wasm-factory")
-  await CONNECTION.confirmTransaction(
-    await CONNECTION.requestAirdrop(CONTRACT_ADMIN_KEYPAIR.publicKey, 100000000)
-  )
-
-  try {
-    const initContractArgs = new InitializeContractArgs({
-      contractAdminPubkey: CONTRACT_ADMIN_KEYPAIR.publicKey,
-    })
-    const instruction = parseInstruction(
-      await initializeContractWasm(serialize(SCHEMA, initContractArgs))
-    )
-    const transaction = new Transaction().add(instruction)
-    await sendTransaction(transaction, CONTRACT_ADMIN_KEYPAIR)
-    console.log("successfully initialized contract")
-  } catch (e) {
-    console.log(e)
-    console.log("contract already initialized")
-  }
-
-  //var waitTill = new Date(new Date().getTime() + 10 * 1000)
-  //while (waitTill > new Date()) {}
-  //await CONNECTION.confirmTransaction(await CONNECTION.requestAirdrop(auctionOwnerPubkey, 100000000))
-  //console.log("successfully initialized payers")
 }

@@ -1,6 +1,6 @@
 import { Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { CONTRACT_ADMIN_PUBKEY, LAMPORTS } from "../consts"
+import { LAMPORTS } from "../consts"
 import { AuctionConfig as AuctionConfigType } from "../queries/types"
 import {
   AuctionConfig,
@@ -19,10 +19,10 @@ import { parseInstruction } from "../utils/parseInstruction"
 // TODO: separate error in contract if the metadata account is existing
 //  (auction with same parameters as a deleted one results in PDA with same seeds)
 export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
-  const { initializeAuctionWasm } = await import("../../../wasm-factory")
+  const { initializeAuctionWasm } = await import("../wasm-factory")
   const auctionConfig = new AuctionConfig({
     cyclePeriod: frontendAuctionConfig.cyclePeriod,
-    encorePeriod: 300,
+    encorePeriod: frontendAuctionConfig.encorePeriod,
     numberOfCycles: frontendAuctionConfig.numberOfCycles,
     minimumBidAmount: frontendAuctionConfig.minBid * LAMPORTS,
   })
@@ -41,7 +41,6 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
         uri: frontendAuctionConfig.asset.uri,
         // TODO: set this from parameter maybe?
         sellerFeeBasisPoints: 100,
-        // TODO: put the auctionOwnerPubkey here?
         creators: null,
       }),
       isMutable: true,
@@ -62,14 +61,13 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
   }
 
   const initAuctionArgs = new InitializeAuctionArgs({
-    contractAdminPubkey: CONTRACT_ADMIN_PUBKEY,
     auctionOwnerPubkey: frontendAuctionConfig.ownerPubkey,
     auctionId: padTo32Bytes(frontendAuctionConfig.id),
     auctionName: padTo32Bytes(frontendAuctionConfig.id),
     auctionConfig: auctionConfig,
     auctionDescription: auctionDescription,
     createTokenArgs: createTokenArgs,
-    auctionStartTimestamp: frontendAuctionConfig.startTimestamp,
+    auctionStartTimestamp: frontendAuctionConfig.startTime,
   })
 
   let initAuctionArgsSerialized = serialize(SCHEMA, initAuctionArgs)

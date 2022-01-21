@@ -29,9 +29,9 @@ module.exports = withTM({
     if (!process.env.IS_VERCEL) {
       config.plugins.push(
         new WasmPackPlugin({
-          crateDirectory: resolve("./zgen-solana/zgsol-gold-client"),
+          crateDirectory: resolve("./rust/client"),
           args: "--log-level warn",
-          outDir: "../../wasm-factory",
+          outDir: "../../src/contract-logic/wasm-factory",
           outName: "instructions",
         })
       )
@@ -45,6 +45,18 @@ module.exports = withTM({
     }
 
     return config
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/js/script.js",
+        destination: "https://stat.zgen.hu/js/plausible.js",
+      },
+      {
+        source: "/api/event",
+        destination: "https://stat.zgen.hu/api/event",
+      },
+    ]
   },
 })
 

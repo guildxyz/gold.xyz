@@ -1,5 +1,6 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import useAuction from "components/[auction]/hooks/useAuction"
+import useCycle from "components/[auction]/hooks/useCycle"
 import { placeBid } from "contract-logic/transactions/placeBid"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
@@ -16,7 +17,8 @@ const usePlaceBid = (setValue) => {
   const router = useRouter()
   const { connection } = useConnection()
   const { sendTransaction, publicKey } = useWallet()
-  const { auction, mutate } = useAuction()
+  const { auction } = useAuction()
+  const { mutate } = useCycle()
   const [amount, setAmount] = useState<number>()
 
   const handlePlaceBid = async ({ amount: inputAmount }: Data) => {
