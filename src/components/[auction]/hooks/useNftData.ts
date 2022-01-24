@@ -9,12 +9,16 @@ const useNftData = (asset: NFTData) => {
 
   const shouldFetch = asset && cycleNumber
 
+  const gatewayUri = asset
+    ? `https://ipfs.fleek.co/ipfs/${asset.uri.split("ipfs://")[1]}`
+    : ""
+
   const uri = useMemo(
     () =>
       asset?.isRepeated
-        ? asset?.uri
-        : asset?.uri.replace("0.json", `${cycleNumber - 1}.json`),
-    [asset, cycleNumber]
+        ? gatewayUri
+        : gatewayUri.replace("0.json", `${cycleNumber - 1}.json`),
+    [asset, gatewayUri, cycleNumber]
   )
 
   const { data } = useSWRImmutable(shouldFetch ? uri : null)
