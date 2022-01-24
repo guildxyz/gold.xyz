@@ -49,6 +49,7 @@ const NFTCard = ({ index, imageHash, progress, removeNft }: Props) => {
         <Progress
           width="full"
           value={progress * 100}
+          isIndeterminate={!progress}
           colorScheme="primary"
           size="xs"
           backgroundColor="transparent"
