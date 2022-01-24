@@ -9,17 +9,14 @@ import { useSWRConfig } from "swr"
 
 const DAY_IN_SECONDS = 86400
 
-export type StartAuctionData = {
+export type FormData = {
   id: string
   name: string
-  description: string
-  socials: string[]
+  description?: string
   asset: NFTData
   cyclePeriod: "1" | "7" | "30" | "CUSTOM"
-  customCyclePeriod: number
+  customCyclePeriod?: number
   numberOfCycles: number
-  minBid: number
-  startTimestamp?: number
   nfts: {
     traits: { key: string; value: string }[]
     hash: string
@@ -72,7 +69,7 @@ const useStartAuction = () => {
   )
 
   return {
-    onSubmit: async (_data: StartAuctionData) => {
+    onSubmit: async (_data: FormData) => {
       // Filtering out invalid traits
       _data.nfts.forEach((nft) => {
         nft.traits = nft.traits.filter(
@@ -81,6 +78,7 @@ const useStartAuction = () => {
       })
       const finalData = {
         ..._data,
+        minBid: 0.05,
         cyclePeriod:
           (_data.cyclePeriod === "CUSTOM"
             ? _data.customCyclePeriod
@@ -92,9 +90,9 @@ const useStartAuction = () => {
 
       const metaDatas = _data.nfts.map((nft, index) =>
         JSON.stringify({
-          // if one image is repeated, index is 0, otherwise it starts from 1
-          name: `${_data.asset.name} #${
-            _data.nfts.length === 1 ? index : index + 1
+          // if one image is repeated, there's no #index in the end yet. Todo we'll have to upload a json for every cycle then with the incremented index in the name
+          name: `${_data.asset.name} ${
+            _data.nfts.length > 1 ? `#${index + 1}` : ""
           }`,
           symbol: _data.asset.symbol,
           description: _data.description,

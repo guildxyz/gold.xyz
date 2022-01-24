@@ -26,29 +26,35 @@ export type AuctionBaseConfig = {
   goalTreasuryAmount?: number
   ownerPubkey: PublicKey
 }
-
-// TODO: customizable encore period? (The amount of time the highest bidder must be uncontested to win the cycle)
+// NOTE encore_period: if bid occurs within this period before the auction
+// ends, same amount of extra time is added to the auction end
 export type AuctionConfig = AuctionBaseConfig & {
-  description: string
-  socials: string[]
+  description?: string
+  socials?: string[]
   asset: NFTData | TokenData
+  encorePeriod?: number
   cyclePeriod: number
   numberOfCycles: number
-  minBid: number
-  startTimestamp?: number
+  startTime?: number
+  minBid?: number
 }
 
 export type AuctionBase = AuctionBaseConfig & {
-  currentTreasuryAmount: number
+  allTimeTreasuryAmount: number
+  isVerified: boolean
 }
 
 export type Auction = AuctionConfig &
   AuctionBase & {
-    availableTreasuryAmount: number,
-    bids: Bid[]
-    thisCycle: number
+    availableTreasuryAmount: number
     currentCycle: number
-    endTimestamp: number
-    isActive: boolean
+    isFinished: boolean
     isFrozen: boolean
+    isFiltered: boolean
+    rootStatePubkey: PublicKey
   }
+
+export type Cycle = {
+  bids: Bid[]
+  endTimestamp: number
+}

@@ -29,23 +29,21 @@ import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
+import useCycle from "components/[auction]/hooks/useCycle"
+import useNftData from "components/[auction]/hooks/useNftData"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
-  const { auction, error } = useAuction()
+  const { auction, error: auctionError } = useAuction()
+  const { cycle, error: cycleError } = useCycle()
+  const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
-  const { data: nftData } = useSWRImmutable(
-    auction?.asset?.type === "NFT"
-      ? `https://ipfs.fleek.co/ipfs/${auction.asset.uri.split("ipfs://")[1]}`
-      : null
-  )
 
-  if (error)
+  if (auctionError || cycleError)
     return (
       <Layout title="">
         <Alert status="error" pb="5">
@@ -62,18 +60,17 @@ const Page = (): JSX.Element => {
     description,
     goalTreasuryAmount,
     availableTreasuryAmount,
-    currentTreasuryAmount,
-    bids,
-    thisCycle,
+    allTimeTreasuryAmount,
     currentCycle,
-    endTimestamp,
-    isActive,
+    isFinished,
     isFrozen,
     ownerPubkey,
     numberOfCycles,
   } = auction ?? {}
 
-  const isCycleActive = isActive && thisCycle === currentCycle
+  const { cycleNumber, bids, endTimestamp } = cycle ?? {}
+
+  const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
 
   return (
     <Layout
@@ -89,7 +86,7 @@ const Page = (): JSX.Element => {
                 as="span"
                 fontWeight="bold"
                 mx="1"
-              >{`${currentTreasuryAmount} SOL`}</Text>
+              >{`${allTimeTreasuryAmount} SOL`}</Text>
               <Text as="span" colorScheme="gray" mr="2" ml="1">
                 /
               </Text>
@@ -121,21 +118,21 @@ const Page = (): JSX.Element => {
         </Center>
         <VStack alignItems="stretch" spacing="8">
           <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
-            {thisCycle > 1 && (
+            {cycleNumber > 1 && (
               <Link
                 fontSize="sm"
                 opacity="0.6"
-                href={`/${router.query.auction}/${thisCycle - 1}`}
+                href={`/${router.query.auction}/${cycleNumber - 1}`}
               >
                 <Icon as={CaretLeft} mr="2" />
                 Prev cycle
               </Link>
             )}
-            {thisCycle < currentCycle && (
+            {cycleNumber < currentCycle && (
               <Link
                 fontSize="sm"
                 opacity="0.6"
-                href={`/${router.query.auction}/${thisCycle + 1}`}
+                href={`/${router.query.auction}/${cycleNumber + 1}`}
                 ml="auto"
               >
                 Next cycle
