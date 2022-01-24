@@ -2,7 +2,7 @@ import CtaButton from "components/common/CtaButton"
 import useToast from "hooks/useToast"
 import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
-import useStartAuction, { StartAuctionData } from "./hooks/useStartAuction"
+import useStartAuction, { FormData } from "./hooks/useStartAuction"
 
 type Props = {
   uploadPromise: Promise<Record<string, string>>
@@ -42,12 +42,12 @@ const SubmitButton = ({ uploadPromise }: Props) => {
                 setLoading(false)
               })
               .then(() =>
-                handleSubmit((data: StartAuctionData) => {
+                handleSubmit((data: FormData) => {
                   onSubmit(data).finally(() => setLoading(false))
                 })(event)
               )
           } else {
-            handleSubmit((data: StartAuctionData) => {
+            handleSubmit((data: FormData) => {
               onSubmit(data).finally(() => setLoading(false))
             })(event)
           }

@@ -9,17 +9,14 @@ import { useSWRConfig } from "swr"
 
 const DAY_IN_SECONDS = 86400
 
-export type StartAuctionData = {
+export type FormData = {
   id: string
   name: string
-  description: string
-  socials: string[]
+  description?: string
   asset: NFTData
   cyclePeriod: "1" | "7" | "30" | "CUSTOM"
-  customCyclePeriod: number
+  customCyclePeriod?: number
   numberOfCycles: number
-  minBid: number
-  startTimestamp?: number
   nfts: {
     traits: { key: string; value: string }[]
     hash: string
@@ -72,7 +69,7 @@ const useStartAuction = () => {
   )
 
   return {
-    onSubmit: async (_data: StartAuctionData) => {
+    onSubmit: async (_data: FormData) => {
       // Filtering out invalid traits
       _data.nfts.forEach((nft) => {
         nft.traits = nft.traits.filter(
