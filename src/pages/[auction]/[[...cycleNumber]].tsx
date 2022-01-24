@@ -70,7 +70,7 @@ const Page = (): JSX.Element => {
 
   const { cycleNumber, bids, endTimestamp } = cycle ?? {}
 
-  const isCycleActive = !isFinished && cycleNumber === currentCycle
+  const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
 
   return (
     <Layout
