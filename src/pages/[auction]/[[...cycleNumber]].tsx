@@ -32,7 +32,6 @@ import useAuction from "components/[auction]/hooks/useAuction"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useEffect } from "react"
 import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
@@ -45,8 +44,6 @@ const Page = (): JSX.Element => {
       ? `https://ipfs.fleek.co/ipfs/${auction.asset.uri.split("ipfs://")[1]}`
       : null
   )
-
-  useEffect(() => console.log(nftData), [nftData])
 
   if (error)
     return (
