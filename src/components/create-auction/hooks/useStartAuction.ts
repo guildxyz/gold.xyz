@@ -7,14 +7,14 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
 
-const DAY_IN_SECONDS = 86400
+const HOUR_IN_SECONDS = 3600
 
 export type FormData = {
   id: string
   name: string
   description?: string
   asset: NFTData
-  cyclePeriod: "1" | "7" | "30" | "CUSTOM"
+  cyclePeriod: "1" | "24" | "168" | "CUSTOM"
   customCyclePeriod?: number
   numberOfCycles: number
   nfts: {
@@ -82,7 +82,7 @@ const useStartAuction = () => {
         cyclePeriod:
           (_data.cyclePeriod === "CUSTOM"
             ? _data.customCyclePeriod
-            : +_data.cyclePeriod) * DAY_IN_SECONDS,
+            : +_data.cyclePeriod) * HOUR_IN_SECONDS,
         ownerPubkey: publicKey,
       }
 
