@@ -88,6 +88,15 @@ const useStartAuction = () => {
 
       if (_data.asset.type !== "NFT") return onSubmit(finalData)
 
+      // would be better with react-hook-form's validation but it's tricky with useFieldArray so just doing this for now
+      if (!_data.nfts.length)
+        return toast({
+          title: "No images uploaded",
+          description:
+            "You have to upload at least one image that'll be minted as an NFT and auctioned",
+          status: "error",
+        })
+
       const metaDatas = _data.nfts.map((nft, index) =>
         JSON.stringify({
           // if one image is repeated, there's no #index in the end yet. Todo we'll have to upload a json for every cycle then with the incremented index in the name
