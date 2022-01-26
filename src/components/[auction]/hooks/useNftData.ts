@@ -14,10 +14,7 @@ const useNftData = (asset: NFTData) => {
     : ""
 
   const uri = useMemo(
-    () =>
-      asset?.isRepeated
-        ? gatewayUri
-        : gatewayUri.replace("0.json", `${cycleNumber - 1}.json`),
+    () => `${gatewayUri}/${asset?.isRepeated ? "0" : cycleNumber - 1}.json`,
     [asset, gatewayUri, cycleNumber]
   )
 
