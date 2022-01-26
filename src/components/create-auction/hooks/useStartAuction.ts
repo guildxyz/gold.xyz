@@ -137,7 +137,7 @@ const useStartAuction = () => {
 
       return onSubmit({
         ...finalData,
-        asset: { ...finalData.asset, uri: `ipfs://${cid}/0.json` },
+        asset: { ...finalData.asset, uri: `ipfs://${cid}` },
       })
     },
     error,
