@@ -19,7 +19,10 @@ const useCycle = () => {
 
   const { data, isValidating, error, mutate } = useSWR(
     shouldFetch ? ["auction", auction.rootStatePubkey, cycleNumber] : null,
-    handleGetCycle
+    handleGetCycle,
+    {
+      refreshInterval: 5000,
+    }
   )
 
   useEffect(() => {
