@@ -13,6 +13,7 @@ import NumberOfCycles from "components/create-auction/NumberOfCycles"
 import RoundSelector from "components/create-auction/RoundSelector"
 import SubmitButton from "components/create-auction/SubmitButton"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
+import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const CreateGuildPage = (): JSX.Element => {
@@ -34,6 +35,9 @@ const CreateGuildPage = (): JSX.Element => {
   useWarnIfUnsavedChanges(
     methods.formState?.isDirty && !methods.formState.isSubmitted
   )
+
+  const [uploadPromise, setUploadPromise] =
+    useState<Promise<Record<string, string>>>(null)
 
   return (
     <FormProvider {...methods}>
@@ -64,7 +68,7 @@ const CreateGuildPage = (): JSX.Element => {
                 <AssetSelector />
               </Section>
 
-              <NFTData />
+              <NFTData setUploadPromise={setUploadPromise} />
 
               {/* <Section
                 title={
@@ -89,7 +93,7 @@ const CreateGuildPage = (): JSX.Element => {
             </VStack>
 
             <Flex justifyContent="right" mt="14">
-              <SubmitButton />
+              <SubmitButton uploadPromise={uploadPromise} />
             </Flex>
           </>
         ) : (

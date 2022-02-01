@@ -3,12 +3,27 @@ import { AuctionConfig, NFTData } from "contract-logic/queries/types"
 import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
-import useUploadImage from "hooks/useUploadImage"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useSWRConfig } from "swr"
 
-const DAY_IN_SECONDS = 86400
+const HOUR_IN_SECONDS = 3600
+
+export type FormData = {
+  id: string
+  name: string
+  description?: string
+  asset: NFTData
+  cyclePeriod: "1" | "24" | "168" | "CUSTOM"
+  customCyclePeriod?: number
+  numberOfCycles: number
+  nfts: {
+    traits: { key: string; value: string }[]
+    hash: string
+    file: File
+    preview: string
+  }[]
+}
 
 const useStartAuction = () => {
   const [data, setData] = useState<AuctionConfig>()
@@ -53,23 +68,8 @@ const useStartAuction = () => {
     }
   )
 
-  const {
-    onSubmit: onSubmitImage,
-    response: imageResponse,
-    error: imageError,
-    isLoading: isImageLoading,
-  } = useUploadImage()
-
-  useEffect(() => {
-    if (imageResponse?.publicUrl)
-      onSubmit({
-        ...data,
-        asset: { ...data.asset, uri: imageResponse.publicUrl } as NFTData,
-      })
-  }, [imageResponse])
-
   return {
-    onSubmit: (_data) => {
+    onSubmit: async (_data: FormData) => {
       // Filtering out invalid traits
       _data.nfts.forEach((nft) => {
         nft.traits = nft.traits.filter(
@@ -82,22 +82,65 @@ const useStartAuction = () => {
         cyclePeriod:
           (_data.cyclePeriod === "CUSTOM"
             ? _data.customCyclePeriod
-            : _data.cyclePeriod) * DAY_IN_SECONDS,
+            : +_data.cyclePeriod) * HOUR_IN_SECONDS,
         ownerPubkey: publicKey,
       }
-      if (_data.asset.type === "NFT") {
-        setData(finalData)
-        onSubmitImage({
-          folder: _data.id,
-          name: _data.asset.name,
-          symbol: _data.asset.symbol,
-          description: "",
-          nfts: _data.nfts,
+
+      if (_data.asset.type !== "NFT") return onSubmit(finalData)
+
+      // would be better with react-hook-form's validation but it's tricky with useFieldArray so just doing this for now
+      if (!_data.nfts.length)
+        return toast({
+          title: "No images uploaded",
+          description:
+            "You have to upload at least one image that'll be minted as an NFT and auctioned",
+          status: "error",
         })
-      } else onSubmit(finalData)
+
+      const metaDatas = _data.nfts.map((nft, index) =>
+        JSON.stringify({
+          // if one image is repeated, there's no #index in the end yet. Todo we'll have to upload a json for every cycle then with the incremented index in the name
+          name: `${_data.asset.name} ${
+            _data.nfts.length > 1 ? `#${index + 1}` : ""
+          }`,
+          symbol: _data.asset.symbol,
+          description: _data.description,
+          image: `ipfs://${nft.hash}`,
+          attributes: nft.traits.map(({ key, value }) => ({
+            trait_type: key,
+            value,
+          })),
+          properties: {
+            category: "image",
+            files: [
+              {
+                uri: `ipfs://${nft.hash}`,
+                type: nft.file.type,
+              },
+            ],
+          },
+        })
+      )
+
+      const cid = await fetch(
+        `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-metadata`,
+        {
+          method: "POST",
+          body: JSON.stringify({ data: metaDatas }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      ).then((res) => res.json())
+
+      setData(finalData)
+
+      return onSubmit({
+        ...finalData,
+        asset: { ...finalData.asset, uri: `ipfs://${cid}` },
+      })
     },
-    error: error || imageError,
-    isImageLoading,
+    error,
     isLoading,
     response,
   }

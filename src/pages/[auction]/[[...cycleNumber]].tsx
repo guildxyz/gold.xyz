@@ -31,21 +31,19 @@ import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import useCycle from "components/[auction]/hooks/useCycle"
+import useNftData from "components/[auction]/hooks/useNftData"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
 import { useEffect, useState } from "react"
-import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error: auctionError } = useAuction()
   const { cycle, error: cycleError } = useCycle()
+  const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
-  const { data: nftData } = useSWRImmutable(
-    auction?.asset?.type === "NFT" ? auction.asset.uri : null
-  )
 
   const [showCoinfetti, setShowCoinfetti] = useState(false)
 
@@ -71,15 +69,17 @@ const Page = (): JSX.Element => {
     name = router.query.auction as string,
     description,
     goalTreasuryAmount,
+    availableTreasuryAmount,
     allTimeTreasuryAmount,
     currentCycle,
     isFinished,
+    isFrozen,
     ownerPubkey,
   } = auction ?? {}
 
   const { cycleNumber, bids, endTimestamp } = cycle ?? {}
 
-  const isCycleActive = !isFinished && cycleNumber === currentCycle
+  const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
 
   const celebrate = () => {
     if (
@@ -127,7 +127,9 @@ const Page = (): JSX.Element => {
         <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} spacing="16">
           <Center>
             <Image
-              src={nftData?.image}
+              src={`https://ipfs.fleek.co/ipfs/${
+                nftData?.image?.split("ipfs://")[1]
+              }`}
               alt="NFT"
               borderRadius="xl"
               maxH="calc(100vh - 400px)"

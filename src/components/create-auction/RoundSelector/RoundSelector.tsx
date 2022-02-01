@@ -10,15 +10,15 @@ import RoundOption from "./components/RoundOption"
 const options = [
   {
     value: "1",
+    title: "Hourly",
+  },
+  {
+    value: "24",
     title: "Daily",
   },
   {
-    value: "7",
+    value: "168",
     title: "Weekly",
-  },
-  {
-    value: "30",
-    title: "Monthly",
   },
   {
     value: "CUSTOM",

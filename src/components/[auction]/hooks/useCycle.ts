@@ -21,7 +21,7 @@ const useCycle = () => {
     shouldFetch ? ["auction", auction.rootStatePubkey, cycleNumber] : null,
     handleGetCycle,
     {
-      revalidateOnFocus: false,
+      refreshInterval: 5000,
     }
   )
 
