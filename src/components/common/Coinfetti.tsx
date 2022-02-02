@@ -70,6 +70,9 @@ const Coinfetti = ({
 
   const draw = () => {
     const canvas = canvasRef?.current
+
+    if (!canvas) return
+
     const ctx = canvas.getContext("2d")
     const time = Date.now()
 
@@ -83,6 +86,9 @@ const Coinfetti = ({
 
   const drawAtRandomPosition = (time, index) => {
     const canvas = canvasRef?.current
+
+    if (!canvas) return
+
     const ctx = canvas.getContext("2d")
     const { x, y } = positions[index]
 
