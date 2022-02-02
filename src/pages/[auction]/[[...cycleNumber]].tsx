@@ -21,7 +21,6 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
-import Coinfetti from "components/common/Coinfetti"
 import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
@@ -35,23 +34,29 @@ import useNftData from "components/[auction]/hooks/useNftData"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useEffect, useState } from "react"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error: auctionError } = useAuction()
-  const { cycle, error: cycleError } = useCycle()
+  const { cycle, error: cycleError, mutate: mutateUseCycle } = useCycle()
   const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
 
-  const [showCoinfetti, setShowCoinfetti] = useState(false)
+  const {
+    name = router.query.auction as string,
+    description,
+    goalTreasuryAmount,
+    allTimeTreasuryAmount,
+    currentCycle,
+    isFinished,
+    isFrozen,
+    ownerPubkey,
+  } = auction ?? {}
 
-  useEffect(() => {
-    if (!showCoinfetti) return
+  const { cycleNumber, bids, endTimestamp } = cycle ?? {}
 
-    setTimeout(() => setShowCoinfetti(false), 4000)
-  }, [showCoinfetti])
+  const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
 
   if (auctionError || cycleError)
     return (
@@ -64,31 +69,6 @@ const Page = (): JSX.Element => {
         </Alert>
       </Layout>
     )
-
-  const {
-    name = router.query.auction as string,
-    description,
-    goalTreasuryAmount,
-    availableTreasuryAmount,
-    allTimeTreasuryAmount,
-    currentCycle,
-    isFinished,
-    isFrozen,
-    ownerPubkey,
-  } = auction ?? {}
-
-  const { cycleNumber, bids, endTimestamp } = cycle ?? {}
-
-  const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
-
-  const celebrate = () => {
-    if (
-      bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString() ||
-      !isCycleActive
-    )
-      return
-    setShowCoinfetti(true)
-  }
 
   return (
     <>
@@ -184,7 +164,7 @@ const Page = (): JSX.Element => {
                   <>
                     <StatLabel>Ends in</StatLabel>
                     <Skeleton isLoaded={!!endTimestamp}>
-                      <Countdown expiryTimestamp={endTimestamp} onEnd={celebrate} />
+                      <Countdown expiryTimestamp={endTimestamp} />
                     </Skeleton>
                   </>
                 ) : (
@@ -229,15 +209,6 @@ const Page = (): JSX.Element => {
           </VStack>
         </SimpleGrid>
       </Layout>
-
-      <Coinfetti
-        animate={showCoinfetti}
-        imageWidth={47}
-        imageHeight={35.5}
-        imageCount={40}
-        speed={1.5}
-        gravity={2}
-      />
     </>
   )
 }

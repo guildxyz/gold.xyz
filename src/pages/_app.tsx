@@ -1,3 +1,4 @@
+import { CoinfettiProvider } from "components/[auction]/CoinfettiContext"
 import Chakra from "components/_app/Chakra"
 import "focus-visible/dist/focus-visible"
 import type { AppProps } from "next/app"
@@ -31,7 +32,9 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
           }}
         >
           <WalletConnectionProvider>
-            <Component {...pageProps} />
+            <CoinfettiProvider>
+              <Component {...pageProps} />
+            </CoinfettiProvider>
           </WalletConnectionProvider>
         </IconContext.Provider>
       </SWRConfig>
