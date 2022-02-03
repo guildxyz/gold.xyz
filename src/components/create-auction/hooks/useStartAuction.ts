@@ -105,7 +105,8 @@ const useStartAuction = () => {
           }`,
           symbol: _data.asset.symbol,
           description: _data.description,
-          image: `ipfs://${nft.hash}`,
+          // saving gateway uri, because neither Phantom or Solana explorer supports the native ipfs:// uri yet
+          image: `https://ipfs.io/ipfs/${nft.hash}`,
           attributes: nft.traits.map(({ key, value }) => ({
             trait_type: key,
             value,
@@ -114,7 +115,7 @@ const useStartAuction = () => {
             category: "image",
             files: [
               {
-                uri: `ipfs://${nft.hash}`,
+                uri: `https://ipfs.io/ipfs/${nft.hash}`,
                 type: nft.file.type,
               },
             ],
@@ -137,7 +138,7 @@ const useStartAuction = () => {
 
       return onSubmit({
         ...finalData,
-        asset: { ...finalData.asset, uri: `ipfs://${cid}` },
+        asset: { ...finalData.asset, uri: `https://ipfs.io/ipfs/${cid}` },
       })
     },
     error,

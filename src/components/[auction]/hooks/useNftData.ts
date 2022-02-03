@@ -9,9 +9,11 @@ const useNftData = (asset: NFTData) => {
 
   const shouldFetch = asset && cycleNumber
 
-  const gatewayUri = asset
-    ? `https://ipfs.fleek.co/ipfs/${asset.uri.split("ipfs://")[1]}`
-    : ""
+  /**
+   * Currently we save assets with the gateway uri, but we used to with the native
+   * one and plan to in the future too, thus this replace is left here
+   */
+  const gatewayUri = asset?.uri?.replace?.("ipfs://", "https://ipfs.io/ipfs/")
 
   const uri = useMemo(
     () => `${gatewayUri}/${asset?.isRepeated ? "0" : cycleNumber - 1}.json`,
@@ -24,6 +26,7 @@ const useNftData = (asset: NFTData) => {
   if (!asset.isRepeated) return data
   return {
     ...data,
+    image: data.image?.replace?.("ipfs://", "https://ipfs.io/ipfs/"),
     name: `${data.name} #${cycleNumber}`,
   }
 }
