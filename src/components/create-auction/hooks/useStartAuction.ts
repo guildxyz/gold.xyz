@@ -123,6 +123,15 @@ const useStartAuction = () => {
         })
       )
 
+      if (_data.nfts.length > 1)
+        metaDatas.unshift(
+          JSON.stringify({
+            name: `${_data.asset.name} #0`,
+            symbol: _data.asset.symbol,
+            description: _data.description,
+          })
+        )
+
       const cid = await fetch(
         `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-metadata`,
         {
