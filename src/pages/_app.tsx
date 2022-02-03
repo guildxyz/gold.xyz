@@ -1,4 +1,5 @@
 import Chakra from "components/_app/Chakra"
+import { CoinfettiProvider } from "components/_app/Coinfetti"
 import "focus-visible/dist/focus-visible"
 import type { AppProps } from "next/app"
 import dynamic from "next/dynamic"
@@ -31,7 +32,14 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
           }}
         >
           <WalletConnectionProvider>
-            <Component {...pageProps} />
+            <CoinfettiProvider
+              imageWidth={47}
+              imageHeight={35.5}
+              imageCount={40}
+              speed={1.5}
+            >
+              <Component {...pageProps} />
+            </CoinfettiProvider>
           </WalletConnectionProvider>
         </IconContext.Provider>
       </SWRConfig>

@@ -1,13 +1,9 @@
-import { Keypair, PublicKey } from "@solana/web3.js"
+import { Keypair } from "@solana/web3.js"
 import fetch from "node-fetch"
-import { CONNECTION, LAMPORTS } from "./consts"
-import { getAuction, getAuctions, getAuctionCycle } from "./queries/getAuctions"
-import { AuctionConfig, NFTData, TokenData } from "./queries/types"
-import { claimFunds } from "./transactions/claimFunds"
-import { freezeAuction } from "./transactions/freezeAuction"
-import { placeBid } from "./transactions/placeBid"
-import { startAuction } from "./transactions/startAuction"
-import { SECRET2, SECRET3, sendTransaction } from "./test"
+import { CONNECTION } from "./consts"
+import { getAuction, getAuctionCycle, getAuctions } from "./queries/getAuctions"
+import { AuctionConfig, NFTData } from "./queries/types"
+import { SECRET2, SECRET3 } from "./test"
 
 var assert = require("assert")
 // @ts-ignore
@@ -18,7 +14,6 @@ global.Headers = fetch.Headers
 global.Request = fetch.Request
 // @ts-ignore
 global.Response = fetch.Response
-
 ;(async () => {
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
@@ -59,8 +54,8 @@ global.Response = fetch.Response
   //console.log("Auction created successfully.");
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  const auction = await getAuction(auction_config.id);
-  console.log(auction);
+  const auction = await getAuction(auction_config.id)
+  console.log(auction)
   console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
   // CLAIM FUNDS
   //let ownerBalanceBefore = await CONNECTION.getBalance(auctionOwner.publicKey);
