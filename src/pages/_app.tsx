@@ -1,5 +1,5 @@
-import { CoinfettiProvider } from "components/[auction]/CoinfettiContext"
 import Chakra from "components/_app/Chakra"
+import { CoinfettiProvider } from "components/_app/Coinfetti"
 import "focus-visible/dist/focus-visible"
 import type { AppProps } from "next/app"
 import dynamic from "next/dynamic"

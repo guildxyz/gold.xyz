@@ -8,7 +8,7 @@ import {
   useState,
 } from "react"
 
-const CoinfettiContext = createContext<{ showCoinfetti: () => void }>(null)
+const CoinfettiContext = createContext<() => void>(null)
 
 type Props = {
   imageWidth: number
@@ -121,11 +121,7 @@ const CoinfettiProvider = ({
   }
 
   return (
-    <CoinfettiContext.Provider
-      value={{
-        showCoinfetti: start,
-      }}
-    >
+    <CoinfettiContext.Provider value={start}>
       {children}
       <canvas
         ref={canvasRef}
@@ -141,6 +137,6 @@ const CoinfettiProvider = ({
   )
 }
 
-const useCoinfettiContext = () => useContext(CoinfettiContext)
+const useCoinfetti = () => useContext(CoinfettiContext)
 
-export { useCoinfettiContext, CoinfettiProvider }
+export { useCoinfetti, CoinfettiProvider }
