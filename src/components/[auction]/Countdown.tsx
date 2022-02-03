@@ -1,27 +1,16 @@
 import { StatGroup } from "@chakra-ui/react"
 import { Stat, StatHelpText, StatNumber } from "@chakra-ui/stat"
-import { useWallet } from "@solana/wallet-adapter-react"
 import { useTimer } from "react-timer-hook"
-import { useCoinfettiContext } from "./CoinfettiContext"
-import useCycle from "./hooks/useCycle"
 
 type Props = {
   expiryTimestamp: number
+  onExpire?: () => void
 }
 
-const Countdown = ({ expiryTimestamp }: Props): JSX.Element => {
-  const { cycle, mutate: mutateUseCycle } = useCycle()
-  const { bids } = cycle ?? {}
-  const { publicKey } = useWallet()
-  const { triggerCoinfetti } = useCoinfettiContext()
-
+const Countdown = ({ expiryTimestamp, onExpire }: Props): JSX.Element => {
   const { seconds, minutes, hours, days } = useTimer({
     expiryTimestamp: new Date(expiryTimestamp),
-    onExpire: async () => {
-      await mutateUseCycle()
-      if (bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
-      triggerCoinfetti()
-    },
+    onExpire,
   })
 
   return (

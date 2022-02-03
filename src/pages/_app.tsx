@@ -32,7 +32,12 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
           }}
         >
           <WalletConnectionProvider>
-            <CoinfettiProvider>
+            <CoinfettiProvider
+              imageWidth={47}
+              imageHeight={35.5}
+              imageCount={40}
+              speed={1.5}
+            >
               <Component {...pageProps} />
             </CoinfettiProvider>
           </WalletConnectionProvider>

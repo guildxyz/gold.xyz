@@ -26,6 +26,7 @@ import Layout from "components/common/Layout"
 import Link from "components/common/Link"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
+import { useCoinfettiContext } from "components/[auction]/CoinfettiContext"
 import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
@@ -57,6 +58,14 @@ const Page = (): JSX.Element => {
   const { cycleNumber, bids, endTimestamp } = cycle ?? {}
 
   const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
+
+  const { showCoinfetti } = useCoinfettiContext()
+  const celebrate = async () => {
+    if (!isCycleActive) return
+    await mutateUseCycle()
+    if (bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
+    showCoinfetti()
+  }
 
   if (auctionError || cycleError)
     return (
@@ -164,7 +173,10 @@ const Page = (): JSX.Element => {
                   <>
                     <StatLabel>Ends in</StatLabel>
                     <Skeleton isLoaded={!!endTimestamp}>
-                      <Countdown expiryTimestamp={endTimestamp} />
+                      <Countdown
+                        expiryTimestamp={endTimestamp}
+                        onExpire={celebrate}
+                      />
                     </Skeleton>
                   </>
                 ) : (
