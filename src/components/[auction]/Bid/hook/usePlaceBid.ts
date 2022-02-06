@@ -28,7 +28,7 @@ const usePlaceBid = (setValue) => {
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
-      preflightCommitment: "singleGossip",
+      preflightCommitment: "processed",
     })
     console.log("info", "Transaction sent:", signature)
 

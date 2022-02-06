@@ -9,11 +9,11 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js"
 // gyozo localnet
 //export const PROGRAM_ID = new PublicKey("go1dcKcvafq8SDwmBKo6t2NVzyhvTEZJkMwnnfae99U")
 //export const METADATA_PROGRAM_ID = new PublicKey("4AokZ7xLLA4FJu5SciX9tAMjCdusFmiQXbJ5tpeF65qo")
-//export const CONNECTION = new Connection("http://localhost:8899", "singleGossip")
+//export const CONNECTION = new Connection("http://localhost:8899", "confirmed")
 
 // testnet
 export const PROGRAM_ID = new PublicKey("go1dcKcvafq8SDwmBKo6t2NVzyhvTEZJkMwnnfae99U")
 export const LAMPORTS = 1_000_000_000
 export const NUM_OF_CYCLES_TO_DELETE = 30
-export const CONNECTION = new Connection("https://api.devnet.solana.com", "singleGossip")
-//export const CONNECTION = new Connection("https://api.testnet.solana.com", "singleGossip")
+export const CONNECTION = new Connection("https://api.devnet.solana.com", "confirmed")
+//export const CONNECTION = new Connection("https://api.testnet.solana.com", "confirmed")

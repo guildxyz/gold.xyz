@@ -30,7 +30,7 @@ const ClaimDialog = ({ isOpen, onClose }) => {
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
-      preflightCommitment: "singleGossip",
+      preflightCommitment: "confirmed",
     })
     console.log("info", "Transaction sent:", signature)
 
