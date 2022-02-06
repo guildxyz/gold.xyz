@@ -34,7 +34,7 @@ const NameAndIcon = () => {
               input?.trim() !== "404" || 'Name "404" is not allowed.',
             pattern: {
               value: /^[\x00-\xFF]*$/,
-              message: "Only ASCII characters are allowed (do not use emojis)",
+              message: "Only ASCII characters are allowed (please don't use emojis)",
             },
             onBlur: ({ target: { value } }) => {
               if (!dirtyFields?.asset?.name) {
