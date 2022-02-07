@@ -138,7 +138,7 @@ const Page = (): JSX.Element => {
                 </Link>
               )}
             </HStack>
-            <Skeleton isLoaded={!!nftData} w="fit-content">
+            <Skeleton isLoaded={!!nftData} w="fit-content" minW="180px" minH="2em">
               <Heading as="h3" fontSize="3xl" fontFamily="display" d="inline-block">
                 {nftData?.name}
               </Heading>
