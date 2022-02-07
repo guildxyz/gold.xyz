@@ -18,6 +18,7 @@ import {
   StatNumber,
   Tag,
   Text,
+  useBreakpointValue,
   VStack,
 } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
@@ -47,6 +48,7 @@ const Page = (): JSX.Element => {
   const { publicKey } = useWallet()
   const router = useRouter()
   const showCoinfetti = useCoinfetti()
+  const statSize = useBreakpointValue({ base: "md", md: "lg" })
 
   if (auctionError || cycleError)
     return (
@@ -98,7 +100,7 @@ const Page = (): JSX.Element => {
     >
       <Card mb={12}>
         <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} minH="510px">
-          <Center bg="gray.900" pos={"relative"}>
+          <Center bg="gray.900" pos={"relative"} minH="300px">
             <Image
               pos={"absolute"}
               src={nftData?.image}
@@ -114,7 +116,7 @@ const Page = (): JSX.Element => {
               objectFit="contain"
             />
           </Center>
-          <VStack p={12} alignItems="stretch" spacing="8">
+          <VStack p={{ base: 6, md: 12 }} alignItems="stretch" spacing="8">
             <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
               {cycleNumber > 1 && (
                 <Link
@@ -139,7 +141,12 @@ const Page = (): JSX.Element => {
               )}
             </HStack>
             <Skeleton isLoaded={!!nftData} w="fit-content" minW="180px" minH="2em">
-              <Heading as="h3" fontSize="3xl" fontFamily="display" d="inline-block">
+              <Heading
+                as="h3"
+                fontSize={{ base: "2xl", md: "3xl" }}
+                fontFamily="display"
+                d="inline-block"
+              >
                 {nftData?.name}
               </Heading>
             </Skeleton>
@@ -148,7 +155,7 @@ const Page = (): JSX.Element => {
               spacing="8"
               alignItems="flex-start"
             >
-              <Stat size="lg">
+              <Stat size={statSize}>
                 <StatLabel>
                   {isCycleActive ? "Current bid" : "Winning bid"}
                 </StatLabel>
@@ -156,7 +163,7 @@ const Page = (): JSX.Element => {
                   <HighestBid amount={bids?.[0]?.amount} />
                 </Skeleton>
               </Stat>
-              <Stat size="lg">
+              <Stat size={statSize}>
                 {isCycleActive ? (
                   <>
                     <StatLabel>Ends in</StatLabel>

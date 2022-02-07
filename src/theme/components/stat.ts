@@ -12,10 +12,15 @@ const baseStyle: PartsStyleObject<typeof parts> = {
 }
 
 const sizes: Record<string, PartsStyleObject<typeof parts>> = {
+  sm: {
+    label: { fontSize: "xs" },
+    helpText: { fontSize: "xs" },
+    number: { fontSize: "lg" },
+  },
   md: {
     label: { fontSize: "sm" },
     helpText: { fontSize: "sm" },
-    number: { fontSize: "2xl" },
+    number: { fontSize: "xl" },
   },
   lg: {
     label: { fontSize: "md" },
