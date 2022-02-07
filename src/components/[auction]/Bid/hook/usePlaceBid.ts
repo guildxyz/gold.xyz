@@ -32,7 +32,7 @@ const usePlaceBid = (setValue) => {
     })
     console.log("info", "Transaction sent:", signature)
 
-    await connection.confirmTransaction(signature, "finalized")
+    await connection.confirmTransaction(signature, "confirmed")
     console.log("success", "Transaction successful!", signature)
   }
 
@@ -51,13 +51,7 @@ const usePlaceBid = (setValue) => {
         amount,
         bidderPubkey: publicKey,
       }
-      mutate(
-        async (prevData) => ({
-          ...prevData,
-          bids: [newBid, ...(prevData?.bids || [])],
-        }),
-        false
-      )
+      mutate()
       setValue("amount", "")
     },
   })
