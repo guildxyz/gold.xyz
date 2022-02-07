@@ -12,6 +12,7 @@ import {
   Image,
   SimpleGrid,
   Skeleton,
+  Spinner,
   Stat,
   StatLabel,
   StatNumber,
@@ -96,15 +97,21 @@ const Page = (): JSX.Element => {
       }
     >
       <Card mb={12}>
-        <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }}>
-          <Center bg="gray.900" p={12}>
+        <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} minH="510px">
+          <Center bg="gray.900" pos={"relative"}>
             <Image
+              pos={"absolute"}
               src={nftData?.image}
               alt="NFT"
-              borderRadius="xl"
-              maxH="calc(100vh - 400px)"
-              shadow="xl"
-              fallback={<Skeleton w="350px" h="350px" borderRadius="xl" />}
+              fallback={
+                <VStack spacing={3}>
+                  <Spinner />
+                  <Text fontSize={"sm"}>Loading image</Text>
+                </VStack>
+              }
+              maxH="full"
+              maxW="full"
+              objectFit="contain"
             />
           </Center>
           <VStack p={12} alignItems="stretch" spacing="8">
@@ -132,7 +139,7 @@ const Page = (): JSX.Element => {
               )}
             </HStack>
             <Skeleton isLoaded={!!nftData} w="fit-content">
-              <Heading as="h3" fontSize="4xl" fontFamily="display" d="inline-block">
+              <Heading as="h3" fontSize="3xl" fontFamily="display" d="inline-block">
                 {nftData?.name}
               </Heading>
             </Skeleton>
@@ -187,20 +194,20 @@ const Page = (): JSX.Element => {
                 </Text>
               ) : (
                 bids?.slice(0, 2).map((bid) => (
-                <Flex
-                  key={bid.amount.toString()}
-                  bg="blackAlpha.300"
-                  px="4"
-                  py="3"
-                  borderRadius="xl"
-                  w="full"
-                >
-                  <Identicon address={bid.bidderPubkey.toString()} size={20} />
-                  <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
-                  <Text ml="auto" fontWeight="semibold">
-                    {bid.amount} SOL
-                  </Text>
-                </Flex>
+                  <Flex
+                    key={bid.amount.toString()}
+                    bg="blackAlpha.300"
+                    px="4"
+                    py="3"
+                    borderRadius="xl"
+                    w="full"
+                  >
+                    <Identicon address={bid.bidderPubkey.toString()} size={20} />
+                    <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
+                    <Text ml="auto" fontWeight="semibold">
+                      {bid.amount} SOL
+                    </Text>
+                  </Flex>
                 ))
               )}
               <BidHistory />
