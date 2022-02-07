@@ -159,6 +159,32 @@ export class Instructions {
   push(instruction: Instruction): void;
 }
 /**
+* A vanilla Ed25519 key pair
+*/
+export class Keypair {
+  free(): void;
+/**
+* Create a new `Keypair `
+*/
+  constructor();
+/**
+* Convert a `Keypair` to a `Uint8Array`
+* @returns {Uint8Array}
+*/
+  toBytes(): Uint8Array;
+/**
+* Recover a `Keypair` from a `Uint8Array`
+* @param {Uint8Array} bytes
+* @returns {Keypair}
+*/
+  static fromBytes(bytes: Uint8Array): Keypair;
+/**
+* Return the `Pubkey` for this `Keypair`
+* @returns {Pubkey}
+*/
+  pubkey(): Pubkey;
+}
+/**
 */
 export class Message {
   free(): void;
@@ -322,4 +348,48 @@ export class SystemInstruction {
 * @returns {Instruction}
 */
   static authorizeNonceAccount(nonce_pubkey: Pubkey, authorized_pubkey: Pubkey, new_authority: Pubkey): Instruction;
+}
+/**
+* An atomic transaction
+*/
+export class Transaction {
+  free(): void;
+/**
+* Create a new `Transaction`
+* @param {Instructions} instructions
+* @param {Pubkey | undefined} payer
+*/
+  constructor(instructions: Instructions, payer?: Pubkey);
+/**
+* Return a message containing all data that should be signed.
+* @returns {Message}
+*/
+  message(): Message;
+/**
+* Return the serialized message data to sign.
+* @returns {Uint8Array}
+*/
+  messageData(): Uint8Array;
+/**
+* Verify the transaction
+*/
+  verify(): void;
+/**
+* @param {Keypair} keypair
+* @param {Hash} recent_blockhash
+*/
+  partialSign(keypair: Keypair, recent_blockhash: Hash): void;
+/**
+* @returns {boolean}
+*/
+  isSigned(): boolean;
+/**
+* @returns {Uint8Array}
+*/
+  toBytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {Transaction}
+*/
+  static fromBytes(bytes: Uint8Array): Transaction;
 }

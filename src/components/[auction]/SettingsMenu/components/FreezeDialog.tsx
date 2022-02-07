@@ -26,11 +26,11 @@ export default function FreezeDialog({ isOpen, onClose }) {
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
-      preflightCommitment: "singleGossip",
+      preflightCommitment: "confirmed",
     })
     console.log("info", "Transaction sent:", signature)
 
-    await connection.confirmTransaction(signature, "finalized")
+    await connection.confirmTransaction(signature, "confirmed")
     console.log("success", "Transaction successful!", signature)
   }
 

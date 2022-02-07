@@ -30,7 +30,7 @@ export async function sendTransaction(transaction: Transaction, signer: Keypair)
   await CONNECTION.confirmTransaction(
     await CONNECTION.sendTransaction(transaction, [signer], {
       skipPreflight: false,
-      preflightCommitment: "singleGossip",
+      preflightCommitment: "confirmed",
     })
   )
 }
