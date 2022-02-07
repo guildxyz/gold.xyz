@@ -69,6 +69,7 @@ const Page = (): JSX.Element => {
     isFinished,
     isFrozen,
     ownerPubkey,
+    numberOfCycles,
   } = auction ?? {}
 
   const { cycleNumber, bids, endTimestamp } = cycle ?? {}
@@ -198,7 +199,8 @@ const Page = (): JSX.Element => {
               </Box>
             ))}
           <VStack>
-            {timerExpired ? (
+            {timerExpired &&
+            (bids?.length === 0 || currentCycle !== numberOfCycles) ? (
               <CycleEndAlert
                 nextCycleStartTimestamp={endTimestamp + 30_000}
                 setTimerExpired={setTimerExpired}
