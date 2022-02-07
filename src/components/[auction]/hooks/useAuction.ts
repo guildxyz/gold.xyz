@@ -1,6 +1,5 @@
 import { getAuction } from "contract-logic/queries/getAuctions"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
 import useSWR from "swr"
 
 const handleGetAuction = (_, id: string) => getAuction(id)
@@ -13,12 +12,9 @@ const useAuction = () => {
     handleGetAuction,
     {
       revalidateOnFocus: false,
+      onSuccess: (auction) => console.log("data", auction),
     }
   )
-
-  useEffect(() => {
-    console.log("data", data)
-  }, [data])
 
   return {
     auction: data,

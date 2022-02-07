@@ -1,16 +1,31 @@
 import { StatGroup } from "@chakra-ui/react"
 import { Stat, StatHelpText, StatNumber } from "@chakra-ui/stat"
 import { useTimer } from "react-timer-hook"
+import useAuction from "./hooks/useAuction"
 
 type Props = {
   expiryTimestamp: number
   onExpire?: () => void
+  setTimerExpired: (value: boolean) => void
+  timerExpired: boolean
 }
 
-const Countdown = ({ expiryTimestamp, onExpire }: Props): JSX.Element => {
+const Countdown = ({
+  expiryTimestamp,
+  onExpire,
+  setTimerExpired,
+  timerExpired,
+}: Props): JSX.Element => {
   const { seconds, minutes, hours, days } = useTimer({
     expiryTimestamp: new Date(expiryTimestamp),
     onExpire,
+  })
+
+  const { mutate: mutateAuction } = useAuction()
+
+  const nextCycleStart = useTimer({
+    expiryTimestamp: new Date(expiryTimestamp + 15_000),
+    onExpire: () => mutateAuction().finally(() => setTimerExpired(false)),
   })
 
   return (
@@ -31,7 +46,7 @@ const Countdown = ({ expiryTimestamp, onExpire }: Props): JSX.Element => {
       </Stat>
       {!days && (
         <Stat>
-          <StatNumber>{seconds}</StatNumber>
+          <StatNumber>{timerExpired ? nextCycleStart.seconds : seconds}</StatNumber>
           <StatHelpText mb="0">Seconds</StatHelpText>
         </Stat>
       )}

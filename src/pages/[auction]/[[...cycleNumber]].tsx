@@ -1,5 +1,6 @@
 import {
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
   Box,
@@ -35,11 +36,13 @@ import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
+import { useState } from "react"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
+  const [timerExpired, setTimerExpired] = useState<boolean>(false)
   const { auction, error: auctionError } = useAuction()
-  const { cycle, error: cycleError, mutate: mutateCycle } = useCycle()
+  const { cycle, error: cycleError } = useCycle()
   const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
@@ -73,8 +76,8 @@ const Page = (): JSX.Element => {
   const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
 
   const celebrate = async () => {
+    setTimerExpired(true)
     if (!isCycleActive) return
-    await mutateCycle()
     if (bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
     showCoinfetti()
   }
@@ -152,6 +155,17 @@ const Page = (): JSX.Element => {
               {nftData?.name}
             </Heading>
           </Skeleton>
+          {timerExpired && bids && (
+            <Alert status="info">
+              <AlertIcon />
+              <AlertTitle fontSize="lg">Auction cycle ended</AlertTitle>
+              <AlertDescription maxWidth="sm">
+                {bids.length === 0
+                  ? "The cycle is about to restart"
+                  : "The next cycle is about to start"}
+              </AlertDescription>
+            </Alert>
+          )}
           <HStack
             divider={<Divider orientation="vertical" />}
             spacing="8"
@@ -166,9 +180,20 @@ const Page = (): JSX.Element => {
             <Stat size="lg">
               {isCycleActive ? (
                 <>
-                  <StatLabel>Ends in</StatLabel>
+                  <StatLabel>
+                    {timerExpired
+                      ? bids?.length === 0
+                        ? "Cycle restarts in"
+                        : "Next cycle starts in"
+                      : "Ends in"}
+                  </StatLabel>
                   <Skeleton isLoaded={!!endTimestamp}>
-                    <Countdown expiryTimestamp={endTimestamp} onExpire={celebrate} />
+                    <Countdown
+                      expiryTimestamp={endTimestamp}
+                      onExpire={celebrate}
+                      setTimerExpired={setTimerExpired}
+                      timerExpired={timerExpired}
+                    />
                   </Skeleton>
                 </>
               ) : (
