@@ -1,6 +1,5 @@
 import {
   Alert,
-  AlertDescription,
   AlertIcon,
   AlertTitle,
   Box,
@@ -28,6 +27,7 @@ import Link from "components/common/Link"
 import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
+import CycleEndAlert from "components/[auction]/CycleEndAlert"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import useCycle from "components/[auction]/hooks/useCycle"
@@ -42,7 +42,7 @@ import shortenHex from "utils/shortenHex"
 const Page = (): JSX.Element => {
   const [timerExpired, setTimerExpired] = useState<boolean>(false)
   const { auction, error: auctionError } = useAuction()
-  const { cycle, error: cycleError } = useCycle()
+  const { cycle, error: cycleError, mutate: mutateCycle } = useCycle()
   const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
@@ -78,6 +78,7 @@ const Page = (): JSX.Element => {
   const celebrate = async () => {
     setTimerExpired(true)
     if (!isCycleActive) return
+    await mutateCycle()
     if (bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
     showCoinfetti()
   }
@@ -155,45 +156,25 @@ const Page = (): JSX.Element => {
               {nftData?.name}
             </Heading>
           </Skeleton>
-          {timerExpired && bids && (
-            <Alert status="info">
-              <AlertIcon />
-              <AlertTitle fontSize="lg">Auction cycle ended</AlertTitle>
-              <AlertDescription maxWidth="sm">
-                {bids.length === 0
-                  ? "The cycle is about to restart"
-                  : "The next cycle is about to start"}
-              </AlertDescription>
-            </Alert>
-          )}
           <HStack
             divider={<Divider orientation="vertical" />}
             spacing="8"
             alignItems="flex-start"
           >
             <Stat size="lg">
-              <StatLabel>{isCycleActive ? "Current bid" : "Winning bid"}</StatLabel>
+              <StatLabel>
+                {isCycleActive && !timerExpired ? "Current bid" : "Winning bid"}
+              </StatLabel>
               <Skeleton isLoaded={!!bids}>
                 <HighestBid amount={bids?.[0]?.amount} />
               </Skeleton>
             </Stat>
             <Stat size="lg">
-              {isCycleActive ? (
+              {isCycleActive && !timerExpired ? (
                 <>
-                  <StatLabel>
-                    {timerExpired
-                      ? bids?.length === 0
-                        ? "Cycle restarts in"
-                        : "Next cycle starts in"
-                      : "Ends in"}
-                  </StatLabel>
+                  <StatLabel>Ends in</StatLabel>
                   <Skeleton isLoaded={!!endTimestamp}>
-                    <Countdown
-                      expiryTimestamp={endTimestamp}
-                      onExpire={celebrate}
-                      setTimerExpired={setTimerExpired}
-                      timerExpired={timerExpired}
-                    />
+                    <Countdown expiryTimestamp={endTimestamp} onExpire={celebrate} />
                   </Skeleton>
                 </>
               ) : (
@@ -209,7 +190,7 @@ const Page = (): JSX.Element => {
             </Stat>
           </HStack>
           {isCycleActive !== undefined &&
-            (isCycleActive ? (
+            (isCycleActive && !timerExpired ? (
               <Bid />
             ) : (
               <Box>
@@ -217,23 +198,33 @@ const Page = (): JSX.Element => {
               </Box>
             ))}
           <VStack>
-            {bids?.slice(0, 2).map((bid) => (
-              <Flex
-                key={bid.amount.toString()}
-                bg="blackAlpha.300"
-                px="4"
-                py="3"
-                borderRadius="xl"
-                w="full"
-              >
-                <Identicon address={bid.bidderPubkey.toString()} size={20} />
-                <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
-                <Text ml="auto" fontWeight="semibold">
-                  {bid.amount} SOL
-                </Text>
-              </Flex>
-            ))}
-            <BidHistory />
+            {timerExpired ? (
+              <CycleEndAlert
+                nextCycleStartTimestamp={endTimestamp + 30_000}
+                setTimerExpired={setTimerExpired}
+                bidsLength={bids?.length ?? 0}
+              />
+            ) : (
+              <>
+                {bids?.slice(0, 2).map((bid) => (
+                  <Flex
+                    key={bid.amount.toString()}
+                    bg="blackAlpha.300"
+                    px="4"
+                    py="3"
+                    borderRadius="xl"
+                    w="full"
+                  >
+                    <Identicon address={bid.bidderPubkey.toString()} size={20} />
+                    <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
+                    <Text ml="auto" fontWeight="semibold">
+                      {bid.amount} SOL
+                    </Text>
+                  </Flex>
+                ))}
+                <BidHistory />
+              </>
+            )}
           </VStack>
         </VStack>
       </SimpleGrid>
