@@ -17,8 +17,8 @@ const usePlaceBid = (setValue) => {
   const router = useRouter()
   const { connection } = useConnection()
   const { sendTransaction, publicKey } = useWallet()
-  const { auction } = useAuction()
-  const { mutate } = useCycle()
+  const { auction, mutate: mutateAuction } = useAuction()
+  const { mutate: mutateCycle } = useCycle()
   const [amount, setAmount] = useState<number>()
 
   const handlePlaceBid = async ({ amount: inputAmount }: Data) => {
@@ -51,7 +51,8 @@ const usePlaceBid = (setValue) => {
         amount,
         bidderPubkey: publicKey,
       }
-      mutate()
+      mutateCycle()
+      mutateAuction()
       setValue("amount", "")
     },
   })
