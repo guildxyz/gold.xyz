@@ -1,6 +1,14 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle } from "@chakra-ui/react"
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  IconButton,
+  Tooltip,
+} from "@chakra-ui/react"
+import { ArrowClockwise } from "phosphor-react"
 import { useTimer } from "react-timer-hook"
 import useAuction from "./hooks/useAuction"
+import useCycle from "./hooks/useCycle"
 
 type Props = {
   nextCycleStartTimestamp: number
@@ -14,19 +22,37 @@ const CycleEndAlert = ({
   bidsLength,
 }: Props) => {
   const { mutate: mutateAuction } = useAuction()
+  const { mutate: mutateCycle, isValidating } = useCycle()
   const { seconds } = useTimer({
     expiryTimestamp: new Date(nextCycleStartTimestamp),
     onExpire: () => mutateAuction().finally(() => setTimerExpired(false)),
   })
 
   return (
-    <Alert status="info">
+    <Alert status="info" alignItems="center">
       <AlertIcon />
-      <AlertTitle fontSize="lg">Auction cycle ended</AlertTitle>
-      <AlertDescription maxWidth="sm">
+      <AlertDescription
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        w="100%"
+      >
         {bidsLength === 0
           ? `Cycle restarts in ${seconds}s`
           : `Next cycle starts in ${seconds}s`}
+
+        {bidsLength !== 0 && (
+          <Tooltip label="Refresh winning bid">
+            <IconButton
+              variant="ghost"
+              borderRadius="full"
+              isLoading={isValidating}
+              icon={<ArrowClockwise />}
+              aria-label="Reload bids"
+              onClick={() => mutateCycle()}
+            />
+          </Tooltip>
+        )}
       </AlertDescription>
     </Alert>
   )

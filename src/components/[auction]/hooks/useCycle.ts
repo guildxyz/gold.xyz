@@ -28,6 +28,7 @@ const useCycle = () => {
   return {
     cycle: { cycleNumber, ...data },
     isLoading: isValidating && !data,
+    isValidating,
     error,
     mutate,
   }
