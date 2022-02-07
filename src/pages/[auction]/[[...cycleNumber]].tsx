@@ -181,7 +181,12 @@ const Page = (): JSX.Element => {
                 </Box>
               ))}
             <VStack>
-              {bids?.slice(0, 2).map((bid) => (
+              {isCycleActive && !bids?.length ? (
+                <Text colorScheme={"gray"} w="full" fontSize={"sm"}>
+                  No bids yet
+                </Text>
+              ) : (
+                bids?.slice(0, 2).map((bid) => (
                 <Flex
                   key={bid.amount.toString()}
                   bg="blackAlpha.300"
@@ -196,7 +201,8 @@ const Page = (): JSX.Element => {
                     {bid.amount} SOL
                   </Text>
                 </Flex>
-              ))}
+                ))
+              )}
               <BidHistory />
             </VStack>
           </VStack>
