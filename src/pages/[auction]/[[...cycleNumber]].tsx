@@ -93,8 +93,7 @@ const Page = (): JSX.Element => {
           <ProgressBar />
           {publicKey &&
             ownerPubkey &&
-            publicKey?.toString() === ownerPubkey?.toString() &&
-            !!isCycleActive && <SettingsMenu />}
+            publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
         </HStack>
       }
     >
