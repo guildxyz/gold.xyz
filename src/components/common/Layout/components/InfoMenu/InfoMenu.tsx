@@ -1,6 +1,7 @@
 import {
   Icon,
   IconButton,
+  Link,
   Menu,
   MenuButton,
   MenuGroup,
@@ -8,7 +9,13 @@ import {
   MenuList,
   useColorMode,
 } from "@chakra-ui/react"
-import { Code, Info } from "phosphor-react"
+import {
+  ArrowSquareOut,
+  Code,
+  Info,
+  TelegramLogo,
+  TwitterLogo,
+} from "phosphor-react"
 
 const InfoMenu = () => {
   const { toggleColorMode } = useColorMode()
@@ -18,20 +25,32 @@ const InfoMenu = () => {
       <MenuButton
         as={IconButton}
         aria-label="Agora logo"
-        rounded="full"
+        isRound
         variant="ghost"
         h="10"
-      >
-        <Icon width="1.2em" height="1.2em" as={Info} />
-      </MenuButton>
+        icon={<Icon width="1.2em" height="1.2em" as={Info} />}
+      />
       {/* have to set zIndex, otherwise the search bar's icon lays over it */}
       <MenuList border="none" shadow="md" zIndex="3">
-        <MenuGroup title="Powered by agora.space" pb="2">
+        <MenuGroup
+          title={
+            (
+              <>
+                Powered by
+                <Link href="https://agora.xyz" isExternal ml="1" fontWeight={"bold"}>
+                  agora.xyz
+                  <Icon as={ArrowSquareOut} ml="1" />
+                </Link>
+              </>
+            ) as any
+          }
+          pb="2"
+        >
           <MenuItem
             py="2"
             as="a"
             target="_blank"
-            href="https://agora.space/"
+            href="https://mirror.xyz/goldxyz.eth/WMjkMsmze4U4D9lkjISYuF4NqZNdIbjqKarjms1Goew"
             rel="noopener"
             icon={<Info />}
           >
@@ -41,7 +60,27 @@ const InfoMenu = () => {
             py="2"
             as="a"
             target="_blank"
-            href="https://github.com/AgoraSpaceDAO/gold.xyz"
+            href="https://t.me/+QQOiku7n-K02Zjc0"
+            rel="noopener"
+            icon={<TelegramLogo />}
+          >
+            Telegram
+          </MenuItem>
+          <MenuItem
+            py="2"
+            as="a"
+            target="_blank"
+            href="https://twitter.com/goldxyz_"
+            rel="noopener"
+            icon={<TwitterLogo />}
+          >
+            Twitter
+          </MenuItem>
+          <MenuItem
+            py="2"
+            as="a"
+            target="_blank"
+            href="https://github.com/agoraxyz/gold.xyz"
             rel="noopener"
             icon={<Code />}
           >
