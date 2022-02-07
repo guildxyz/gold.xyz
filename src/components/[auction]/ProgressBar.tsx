@@ -25,7 +25,7 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
             </Text>
             <Text fontSize="xs">
               <Text as="span" fontWeight="bold" fontSize="sm">
-                {`${percentage.toFixed(2)}%`}
+                {`${percentage.toFixed(0)}%`}
               </Text>
               {` of ${goalTreasuryAmount} SOL goal`}
             </Text>
