@@ -1,4 +1,5 @@
 import { FormControl, FormErrorMessage, HStack, Input } from "@chakra-ui/react"
+import auctionExists from "contract-logic/queries/auctionExists"
 import { useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import slugify from "utils/slugify"
@@ -8,6 +9,7 @@ const NameAndIcon = () => {
     register,
     formState: { errors, dirtyFields },
     setValue,
+    setError,
   } = useFormContext()
 
   const name = useWatch({ name: "name" })
@@ -30,10 +32,21 @@ const NameAndIcon = () => {
             },
             validate: (input) =>
               input?.trim() !== "404" || 'Name "404" is not allowed.',
+            pattern: {
+              value: /^[\x00-\xFF]*$/,
+              message: "Only ASCII characters are allowed (please don't use emojis)",
+            },
             onBlur: ({ target: { value } }) => {
               if (!dirtyFields?.asset?.name) {
-                setValue("asset.name", value)
+                setValue("asset.name", value, { shouldValidate: true })
               }
+
+              auctionExists(slugify(value))
+                .then((exists) => {
+                  if (exists)
+                    setError("name", { message: "This auction already exists." })
+                })
+                .catch((error) => console.error(error))
             },
           })}
         />

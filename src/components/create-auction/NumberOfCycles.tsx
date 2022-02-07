@@ -30,7 +30,12 @@ const NumberOfCycles = () => {
   const handleChange = (e) => {
     const isChecked = e.target.checked
     setIsInfinite(isChecked)
-    if (isChecked) setValue("numberOfCycles", undefined)
+    if (isChecked) {
+      setValue("numberOfCycles", undefined)
+      setTimeout(() => {
+        trigger("numberOfCycles")
+      }, 100)
+    }
   }
 
   useEffect(() => {
@@ -54,6 +59,10 @@ const NumberOfCycles = () => {
           {...register("numberOfCycles", {
             required: !isInfinite && "This field is required.",
             valueAsNumber: true,
+            min: {
+              value: 1,
+              message: "There must be at least one round",
+            },
             max: {
               value: maxSupply,
               message: `Can't exceed max NFT supply (${maxSupply})`,

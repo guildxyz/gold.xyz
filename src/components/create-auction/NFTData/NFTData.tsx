@@ -3,11 +3,43 @@ import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
-import { useEffect } from "react"
+import useToast from "hooks/useToast"
+import { useCallback, useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
 import NFTCard from "./components/NFTCard"
+import useDropzone from "./hooks/useDropzone"
 
-const NFTData = () => {
+type Props = {
+  setUploadPromise: (uploadPromise: Promise<Record<string, string>>) => void
+}
+
+const uploadImages = async (
+  files: File[],
+  clientId: string,
+  ids: string[]
+): Promise<Record<string, string>> => {
+  const formData = new FormData()
+  files.forEach((file, index) => formData.append(ids[index], file))
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-file/${clientId}`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  )
+
+  const body = await response.json()
+
+  if (response.ok) return body
+  else throw Error(body.message ?? "Failed to upload images")
+}
+
+const NFTData = ({ setUploadPromise }: Props) => {
+  const toast = useToast()
+  const [progresses, setProgresses] = useState<Record<string, number>>({})
+  const [hashes, setHashes] = useState<Record<string, string>>({})
   const { fields, append, remove } = useFieldArray({ name: "nfts" })
   const {
     register,
@@ -25,6 +57,90 @@ const NFTData = () => {
     if (nfts.length === 1) setValue("asset.isRepeated", true)
     else setValue("asset.isRepeated", false)
   }, [nfts])
+
+  const onDrop = (acceptedFiles: File[]) => {
+    append(
+      acceptedFiles.map((file) => ({
+        file,
+        traits: [],
+        preview: URL.createObjectURL(file),
+      }))
+    )
+  }
+
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
+    onDrop,
+  })
+
+  const setupEventSource = useCallback(
+    (clientId: string) =>
+      new Promise<EventSource>((resolve, reject) => {
+        const source = new EventSource(
+          `${process.env.NEXT_PUBLIC_UPLOADER_API}/${clientId}`
+        )
+
+        source.addEventListener("progress", (event: Event) => {
+          try {
+            const progressReport: Record<string, number> = JSON.parse(
+              (event as Event & { data: string }).data
+            )
+            setProgresses((prev: Record<string, number>) => ({
+              ...prev,
+              ...progressReport,
+            }))
+          } catch (error) {
+            console.error(`Failed to parse SSE "progress" event message`, error)
+          }
+        })
+
+        source.addEventListener("open", () => resolve(source))
+
+        source.addEventListener("error", () =>
+          reject(Error("Failed to open SSE connection"))
+        )
+      }),
+    [setProgresses]
+  )
+
+  // Not triggering upload on acceptedFiles change, since we need the generated field ids
+  useEffect(() => {
+    if (acceptedFiles.length > 0) {
+      const uploadProgressId = uuidv4()
+      setupEventSource(uploadProgressId)
+        .then((progressEventSource) =>
+          setUploadPromise(
+            uploadImages(
+              acceptedFiles,
+              uploadProgressId,
+              fields
+                .slice(fields.length - acceptedFiles.length)
+                .map((field) => field.id)
+            )
+              .then((hashReport) => {
+                setHashes((prev) => ({ ...prev, ...hashReport }))
+                return hashReport
+              })
+              .catch((e) => {
+                toast({
+                  status: "error",
+                  title: "Upload failed",
+                  description: e?.message ?? "Failed to upload images",
+                })
+                return {}
+              })
+              .finally(() => progressEventSource.close())
+          )
+        )
+        .catch((e) => {
+          console.error("Failed to open SSE connection", e)
+          toast({
+            status: "error",
+            title: "Upload failed",
+            description: e?.message ?? "Failed to upload images",
+          })
+        })
+    }
+  }, [fields])
 
   return (
     <>
@@ -66,11 +182,17 @@ const NFTData = () => {
                 key={field.id}
                 index={index}
                 removeNft={() => remove(index)}
+                progress={progresses[field.id] ?? 0}
+                imageHash={hashes[field.id] ?? ""}
               />
             ))}
             {/* </AnimatePresence> */}
             <CardMotionWrapper>
-              <UploadFile addNft={append} />
+              <UploadFile
+                dropzoneProps={getRootProps()}
+                inputProps={getInputProps()}
+                isDragActive={isDragActive}
+              />
             </CardMotionWrapper>
           </AnimateSharedLayout>
         </Grid>

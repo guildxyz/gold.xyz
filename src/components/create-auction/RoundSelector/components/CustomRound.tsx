@@ -44,7 +44,7 @@ const CustomRound = ({ isChecked }) => {
           h="12"
           bg={isChecked ? "indigo.500" : "var(--chakra-colors-whiteAlpha-200)"}
         >
-          Days
+          Hours
         </InputRightAddon>
       </InputGroup>
     </FormControl>

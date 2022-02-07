@@ -2,9 +2,16 @@ import { StatGroup, Text } from "@chakra-ui/react"
 import { Stat, StatHelpText, StatNumber } from "@chakra-ui/stat"
 import { useTimer } from "react-timer-hook"
 
-const Countdown = ({ expiryTimestamp, simple = false }) => {
+type Props = {
+  expiryTimestamp: number
+  onExpire?: () => void
+  simple?: any
+}
+
+const Countdown = ({ expiryTimestamp, onExpire, simple }: Props): JSX.Element => {
   const { seconds, minutes, hours, days } = useTimer({
     expiryTimestamp: new Date(expiryTimestamp),
+    onExpire,
   })
 
   if (simple)

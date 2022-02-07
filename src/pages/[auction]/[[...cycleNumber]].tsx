@@ -31,21 +31,21 @@ import Countdown from "components/[auction]/Countdown"
 import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import useCycle from "components/[auction]/hooks/useCycle"
+import useNftData from "components/[auction]/hooks/useNftData"
 import ProgressBar from "components/[auction]/ProgressBar"
 import SettingsMenu from "components/[auction]/SettingsMenu"
+import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import useSWRImmutable from "swr/immutable"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error: auctionError } = useAuction()
-  const { cycle, error: cycleError } = useCycle()
+  const { cycle, error: cycleError, mutate: mutateCycle } = useCycle()
+  const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
-  const { data: nftData } = useSWRImmutable(
-    auction?.asset?.type === "NFT" ? auction.asset.uri : null
-  )
+  const showCoinfetti = useCoinfetti()
 
   if (auctionError || cycleError)
     return (
@@ -63,18 +63,23 @@ const Page = (): JSX.Element => {
     name = router.query.auction as string,
     description,
     goalTreasuryAmount,
-    availableTreasuryAmount,
     allTimeTreasuryAmount,
     currentCycle,
     isFinished,
     isFrozen,
     ownerPubkey,
-    numberOfCycles,
   } = auction ?? {}
 
   const { cycleNumber, bids, endTimestamp } = cycle ?? {}
 
-  const isCycleActive = !isFinished && cycleNumber === currentCycle
+  const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
+
+  const celebrate = async () => {
+    if (!isCycleActive) return
+    await mutateCycle()
+    if (bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
+    showCoinfetti()
+  }
 
   return (
     <Layout
@@ -149,7 +154,10 @@ const Page = (): JSX.Element => {
                   <>
                     <StatLabel>Ends in</StatLabel>
                     <Skeleton isLoaded={!!endTimestamp}>
-                      <Countdown expiryTimestamp={endTimestamp} />
+                      <Countdown
+                        expiryTimestamp={endTimestamp}
+                        onExpire={celebrate}
+                      />
                     </Skeleton>
                   </>
                 ) : (

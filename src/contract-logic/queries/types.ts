@@ -29,19 +29,19 @@ export type AuctionBaseConfig = {
 // NOTE encore_period: if bid occurs within this period before the auction
 // ends, same amount of extra time is added to the auction end
 export type AuctionConfig = AuctionBaseConfig & {
-  description: string
-  socials: string[]
+  description?: string
+  socials?: string[]
   asset: NFTData | TokenData
-  encorePeriod: number
+  encorePeriod?: number
   cyclePeriod: number
   numberOfCycles: number
   startTime?: number
-  minBid: number
+  minBid?: number
 }
 
 export type AuctionBase = AuctionBaseConfig & {
   allTimeTreasuryAmount: number
-  isVerified: boolean,
+  isVerified: boolean
 }
 
 export type Auction = AuctionConfig &
@@ -50,7 +50,7 @@ export type Auction = AuctionConfig &
     currentCycle: number
     isFinished: boolean
     isFrozen: boolean
-    isFiltered: boolean,
+    isFiltered: boolean
     rootStatePubkey: PublicKey
   }
 

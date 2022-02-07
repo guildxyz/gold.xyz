@@ -23,7 +23,7 @@ const Bid = () => {
   const minBid = useMemo(
     () =>
       cycle?.bids?.[0]?.amount ? cycle?.bids?.[0]?.amount + 0.01 : auction?.minBid,
-    [auction]
+    [cycle, auction]
   )
   const toast = useToast()
   const {
