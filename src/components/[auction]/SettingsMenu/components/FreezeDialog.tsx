@@ -30,7 +30,7 @@ export default function FreezeDialog({ isOpen, onClose }) {
     })
     console.log("info", "Transaction sent:", signature)
 
-    await connection.confirmTransaction(signature, "finalized")
+    await connection.confirmTransaction(signature, "confirmed")
     console.log("success", "Transaction successful!", signature)
   }
 
