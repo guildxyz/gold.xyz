@@ -19,7 +19,7 @@ export async function deleteAuction(
     auctionOwnerPubkey,
     topBidderPubkey: topBidder,
     auctionId: auctionIdArray,
-    cycleNumber: currentCycleNumber,
+    currentAuctionCycle: currentCycleNumber,
     numOfCyclesToDelete: NUM_OF_CYCLES_TO_DELETE,
   })
 
