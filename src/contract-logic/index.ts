@@ -54,7 +54,7 @@ global.Response = fetch.Response
   //console.log("Auction created successfully.");
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  const auction = await getAuction(auction_config.id)
+  const auction = await getAuction("gold-dao")
   console.log(auction)
   console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
   // CLAIM FUNDS

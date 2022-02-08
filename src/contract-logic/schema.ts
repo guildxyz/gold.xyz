@@ -117,11 +117,12 @@ export class AuctionPool extends Struct {
     pool: [32][];
 };
 
-export class FreezeAuctionArgs extends Struct {
+export class DeleteAuctionArgs extends Struct {
     auctionOwnerPubkey: PublicKey;
-    auctionId: [32];
     topBidderPubkey: PublicKey | null;
-    cycleNumber: BN;
+    auctionId: [32];
+    currentAuctionCycle: BN;
+    numOfCyclesToDelete: BN;
 };
 
 export class PlaceBidArgs extends Struct {
@@ -357,13 +358,14 @@ export const SCHEMA = new Map<any, any>([
             },
     ],
     [
-            FreezeAuctionArgs,
+            DeleteAuctionArgs,
             {
                 kind: 'struct', fields: [
 			['auctionOwnerPubkey', 'publicKey'],
-			['auctionId', [32]],
 			['topBidderPubkey', { kind: 'option', type: 'publicKey' }],
-			['cycleNumber', 'u64'],
+			['auctionId', [32]],
+			['currentAuctionCycle', 'u64'],
+			['numOfCyclesToDelete', 'u64'],
                 ],
             },
     ],
