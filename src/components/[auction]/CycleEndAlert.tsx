@@ -5,6 +5,7 @@ import {
   IconButton,
   Tooltip,
 } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { ArrowClockwise } from "phosphor-react"
 import { useTimer } from "react-timer-hook"
 import useAuction from "./hooks/useAuction"
@@ -12,12 +13,21 @@ import useCycle from "./hooks/useCycle"
 
 const CycleEndAlert = () => {
   const { mutate: mutateAuction } = useAuction()
+  const router = useRouter()
   const { cycle, mutate: mutateCycle, isValidating } = useCycle()
   const { bids, endTimestamp } = cycle ?? {}
+  const willRestart = bids?.length === 0
+
+  const fetchNextCycle = async () => {
+    const { currentCycle } = await mutateAuction()
+    if (!router.query.cycleNumber || willRestart) return
+    if (currentCycle == (router.query.cycleNumber as any)) return
+    router.push(`/${router.query.auction}/${cycle?.cycleNumber + 1}`)
+  }
 
   const { seconds } = useTimer({
-    expiryTimestamp: new Date(endTimestamp + 8_000),
-    onExpire: () => mutateAuction(),
+    expiryTimestamp: new Date(endTimestamp + 12_000),
+    onExpire: fetchNextCycle,
   })
 
   return (
@@ -29,7 +39,7 @@ const CycleEndAlert = () => {
         justifyContent="space-between"
         w="100%"
       >
-        {bids?.length === 0
+        {willRestart
           ? `Cycle restarts in ${seconds}s`
           : `Next cycle starts in ${seconds}s`}
 
@@ -41,7 +51,11 @@ const CycleEndAlert = () => {
             isLoading={isValidating}
             icon={<ArrowClockwise />}
             aria-label="Refresh"
-            onClick={() => mutateCycle() && mutateAuction()}
+            onClick={() => {
+              // fetch bids if the cycle is still in intermediate state
+              mutateCycle()
+              fetchNextCycle()
+            }}
           />
         </Tooltip>
       </AlertDescription>
