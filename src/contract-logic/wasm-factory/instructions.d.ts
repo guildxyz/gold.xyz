@@ -9,7 +9,7 @@ export function initializeAuctionWasm(serialized_input: Uint8Array): string;
 * @param {Uint8Array} serialized_input
 * @returns {string}
 */
-export function freezeAuctionWasm(serialized_input: Uint8Array): string;
+export function deleteAuctionWasm(serialized_input: Uint8Array): string;
 /**
 * @param {Uint8Array} serialized_input
 * @returns {string}
@@ -42,9 +42,10 @@ export function getTopBidderWasm(auction_id: string): Promise<Pubkey>;
 */
 export function getCurrentCycleWasm(auction_id: string): Promise<BigInt>;
 /**
+* @param {boolean} secondary
 * @returns {Pubkey}
 */
-export function getAuctionPoolPubkeyWasm(): Pubkey;
+export function getAuctionPoolPubkeyWasm(secondary: boolean): Pubkey;
 /**
 * @param {Uint8Array} auction_id
 * @returns {Pubkey}

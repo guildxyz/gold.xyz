@@ -80,7 +80,7 @@ const NumberOfCycles = () => {
           <HStack>
             <span>Infinite auction</span>
             <Tooltip
-              label="You can upload more NFT images gradually, and freeze the auction permanently if you want it to end. If it runs out of set NFTs, it'll auction ones with just the incremented index as their data."
+              label="You can upload more NFT images gradually, and delete the auction if you want it to end. If it runs out of set NFTs, it'll auction ones with just the incremented index as their data."
               shouldWrapChildren
             >
               <Question />

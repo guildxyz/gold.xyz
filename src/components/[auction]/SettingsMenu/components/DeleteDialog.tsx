@@ -9,20 +9,20 @@ import {
 } from "@chakra-ui/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import useAuction from "components/[auction]/hooks/useAuction"
-import { freezeAuction } from "contract-logic/transactions/freezeAuction"
+import { deleteAuction } from "contract-logic/transactions/deleteAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRef } from "react"
 
-export default function FreezeDialog({ isOpen, onClose }) {
+export default function DeleteDialog({ isOpen, onClose }) {
   const { auction, mutate } = useAuction()
   const { connection } = useConnection()
   const { sendTransaction } = useWallet()
   const toast = useToast()
   const alertCancelRef = useRef()
 
-  const handleFreezeAuction = async () => {
-    const tx = await freezeAuction(auction?.id, auction?.ownerPubkey)
+  const handleDeleteAuction = async () => {
+    const tx = await deleteAuction(auction?.id, auction?.ownerPubkey)
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
@@ -34,7 +34,7 @@ export default function FreezeDialog({ isOpen, onClose }) {
     console.log("success", "Transaction successful!", signature)
   }
 
-  const { onSubmit, isLoading } = useSubmit(handleFreezeAuction, {
+  const { onSubmit, isLoading } = useSubmit(handleDeleteAuction, {
     onSuccess: () => {
       toast({
         title: `Auction successfully frozen!`,
@@ -45,7 +45,7 @@ export default function FreezeDialog({ isOpen, onClose }) {
     },
     onError: (e) =>
       toast({
-        title: "Error freezing auction",
+        title: "Error deleting auction",
         description: e.toString(),
         status: "error",
       }),
@@ -59,11 +59,12 @@ export default function FreezeDialog({ isOpen, onClose }) {
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
-          <AlertDialogHeader>Freeze auction</AlertDialogHeader>
+          <AlertDialogHeader>Delete auction</AlertDialogHeader>
 
           <AlertDialogBody>
-            Are you sure? Freezing the auction cannot be undone. Funds will be sent
-            back to the top bidder and eventually the auction will be deleted.
+            Are you sure? Deleting the auction cannot be undone. Current cycle's top
+            bidder will be refunded and you receive all remaining funds from your
+            treasury.
           </AlertDialogBody>
 
           <AlertDialogFooter>
@@ -76,7 +77,7 @@ export default function FreezeDialog({ isOpen, onClose }) {
               isLoading={isLoading}
               ml={3}
             >
-              Freeze
+              Delete
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
