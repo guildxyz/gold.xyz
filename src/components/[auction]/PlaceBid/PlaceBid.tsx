@@ -17,7 +17,7 @@ import useAuction from "../hooks/useAuction"
 import useCycle from "../hooks/useCycle"
 import usePlaceBid from "./hook/usePlaceBid"
 
-const Bid = () => {
+const PlaceBid = () => {
   const { auction } = useAuction()
   const { cycle } = useCycle()
   const { publicKey } = useWallet()
@@ -96,4 +96,4 @@ const Bid = () => {
   )
 }
 
-export default Bid
+export default PlaceBid

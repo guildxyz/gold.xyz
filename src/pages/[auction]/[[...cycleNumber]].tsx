@@ -27,7 +27,6 @@ import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
 import Section from "components/common/Section"
-import Bid from "components/[auction]/Bid"
 import BidHistory from "components/[auction]/BidHistory"
 import Countdown from "components/[auction]/Countdown"
 import CycleEndAlert from "components/[auction]/CycleEndAlert"
@@ -35,6 +34,7 @@ import HighestBid from "components/[auction]/HighestBid"
 import useAuction from "components/[auction]/hooks/useAuction"
 import useCycle from "components/[auction]/hooks/useCycle"
 import useNftData from "components/[auction]/hooks/useNftData"
+import PlaceBid from "components/[auction]/PlaceBid"
 import ProgressBar from "components/[auction]/ProgressBar"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
@@ -190,7 +190,7 @@ const Page = (): JSX.Element => {
             </HStack>
             {cycleState !== undefined &&
               (cycleState === "active" ? (
-                <Bid />
+                <PlaceBid />
               ) : cycleState === "intermediate" ? (
                 <CycleEndAlert />
               ) : (
