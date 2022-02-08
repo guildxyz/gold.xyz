@@ -10,7 +10,7 @@ import {
 import { CurrencyDollarSimple, Gear, Snowflake } from "phosphor-react"
 import useAuction from "../hooks/useAuction"
 import ClaimDialog from "./components/ClaimDialog"
-import FreezeDialog from "./components/FreezeDialog"
+import DeleteDialog from "./components/DeleteDialog"
 
 const SettingsMenu = () => {
   const { auction } = useAuction()
@@ -20,9 +20,9 @@ const SettingsMenu = () => {
     onClose: onCloseClaim,
   } = useDisclosure()
   const {
-    isOpen: isOpenFreeze,
-    onOpen: onOpenFreeze,
-    onClose: onCloseFreeze,
+    isOpen: isOpenDelete,
+    onOpen: onOpenDelete,
+    onClose: onCloseDelete,
   } = useDisclosure()
 
   return (
@@ -47,16 +47,16 @@ const SettingsMenu = () => {
             <MenuItem
               py="2"
               icon={<Snowflake />}
-              onClick={onOpenFreeze}
+              onClick={onOpenDelete}
               color="red.300"
             >
-              Freeze auction
+              Delete auction
             </MenuItem>
           )}
         </MenuList>
       </Menu>
       <ClaimDialog isOpen={isOpenClaim} onClose={onCloseClaim} />
-      <FreezeDialog isOpen={isOpenFreeze} onClose={onCloseFreeze} />
+      <DeleteDialog isOpen={isOpenDelete} onClose={onCloseDelete} />
     </>
   )
 }
