@@ -4,8 +4,13 @@ import { useRouter } from "next/router"
 import useSWR from "swr"
 import useAuction from "./useAuction"
 
-const handleGetCycle = (_, auctionPubkey: PublicKey, cycleNumber: number) =>
-  getAuctionCycle(auctionPubkey, cycleNumber)
+/**
+ * Casting auctionPubkey from PublicKey to string to PublicKey again, because the
+ * PublicKey object's reference is not stable so SWR can't rely on it
+ */
+
+const handleGetCycle = (_, auctionPubkey: string, cycleNumber: number) =>
+  getAuctionCycle(new PublicKey(auctionPubkey), cycleNumber)
 
 const useCycle = () => {
   const router = useRouter()
@@ -17,7 +22,7 @@ const useCycle = () => {
   const shouldFetch = auction?.rootStatePubkey && cycleNumber
 
   const { data, isValidating, error, mutate } = useSWR(
-    shouldFetch ? ["cycle", auction.rootStatePubkey, cycleNumber] : null,
+    shouldFetch ? ["cycle", auction.rootStatePubkey.toString(), cycleNumber] : null,
     handleGetCycle,
     {
       onSuccess: (cycle) => console.log("cycle", cycle),

@@ -65,7 +65,7 @@ const Bid = () => {
           <NumberInput w="full" {...field}>
             <NumberInputField
               ref={inputRef}
-              placeholder={minBid && `min: ${minBid}`}
+              placeholder={minBid && `min: ${minBid.toFixed(2)}`}
             />
           </NumberInput>
           <InputRightElement>
