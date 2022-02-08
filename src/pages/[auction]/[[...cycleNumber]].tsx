@@ -40,11 +40,10 @@ import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useState } from "react"
+import { useMemo } from "react"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
-  const [timerExpired, setTimerExpired] = useState<boolean>(false)
   const { auction, error: auctionError } = useAuction()
   const { cycle, error: cycleError, mutate: mutateCycle } = useCycle()
   const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
@@ -52,6 +51,20 @@ const Page = (): JSX.Element => {
   const router = useRouter()
   const showCoinfetti = useCoinfetti()
   const statSize = useBreakpointValue({ base: "md", md: "lg" })
+
+  const cycleState = useMemo(() => {
+    if (!auction || !cycle) return undefined
+    if (
+      auction?.isFinished ||
+      auction?.isFrozen ||
+      cycle?.cycleNumber !== auction?.currentCycle
+    )
+      return "inactive"
+    if (Date.now() < cycle?.endTimestamp) return "active"
+    if (auction?.currentCycle < auction?.numberOfCycles || cycle?.bids?.length === 0)
+      return "intermediate"
+    return "inactive"
+  }, [auction, cycle])
 
   if (auctionError || cycleError)
     return (
@@ -65,40 +78,25 @@ const Page = (): JSX.Element => {
       </Layout>
     )
 
-  const {
-    name = router.query.auction as string,
-    description,
-    goalTreasuryAmount,
-    allTimeTreasuryAmount,
-    currentCycle,
-    isFinished,
-    isFrozen,
-    ownerPubkey,
-    numberOfCycles,
-  } = auction ?? {}
-
-  const { cycleNumber, bids, endTimestamp } = cycle ?? {}
-
-  const isCycleActive = !isFinished && !isFrozen && cycleNumber === currentCycle
-
   const celebrate = async () => {
-    setTimerExpired(true)
-    if (!isCycleActive) return
+    if (cycleState === "inactive") return
     await mutateCycle()
-    if (bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
+    if (cycle?.bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
     showCoinfetti()
   }
 
   return (
     <Layout
-      title={name}
-      description={description}
+      title={auction?.name ?? (router.query.auction as string)}
+      description={auction?.description}
       action={
         <HStack w="full" spacing={4}>
           <ProgressBar />
           {publicKey &&
-            ownerPubkey &&
-            publicKey?.toString() === ownerPubkey?.toString() && <SettingsMenu />}
+            auction?.ownerPubkey &&
+            publicKey?.toString() === auction?.ownerPubkey?.toString() && (
+              <SettingsMenu />
+            )}
         </HStack>
       }
     >
@@ -122,21 +120,21 @@ const Page = (): JSX.Element => {
           </Center>
           <VStack p={{ base: 6, md: 12 }} alignItems="stretch" spacing="8">
             <HStack justifyContent="space-between" mb="-3" w="full" minH="1.3em">
-              {cycleNumber > 1 && (
+              {cycle?.cycleNumber > 1 && (
                 <Link
                   fontSize="sm"
                   opacity="0.6"
-                  href={`/${router.query.auction}/${cycleNumber - 1}`}
+                  href={`/${router.query.auction}/${cycle?.cycleNumber - 1}`}
                 >
                   <Icon as={CaretLeft} mr="2" />
                   Prev cycle
                 </Link>
               )}
-              {cycleNumber < currentCycle && (
+              {cycle?.cycleNumber < auction?.currentCycle && (
                 <Link
                   fontSize="sm"
                   opacity="0.6"
-                  href={`/${router.query.auction}/${cycleNumber + 1}`}
+                  href={`/${router.query.auction}/${cycle?.cycleNumber + 1}`}
                   ml="auto"
                 >
                   Next cycle
@@ -161,19 +159,19 @@ const Page = (): JSX.Element => {
             >
               <Stat size={statSize}>
                 <StatLabel>
-                  {isCycleActive && !timerExpired ? "Current bid" : "Winning bid"}
+                  {cycleState === "active" ? "Current bid" : "Winning bid"}
                 </StatLabel>
-                <Skeleton isLoaded={!!bids}>
-                  <HighestBid amount={bids?.[0]?.amount} />
+                <Skeleton isLoaded={!!cycle?.bids}>
+                  <HighestBid amount={cycle?.bids?.[0]?.amount} />
                 </Skeleton>
               </Stat>
               <Stat size={statSize}>
-                {isCycleActive && !timerExpired ? (
+                {cycleState === "active" ? (
                   <>
                     <StatLabel>Ends in</StatLabel>
-                    <Skeleton isLoaded={!!endTimestamp}>
+                    <Skeleton isLoaded={!!cycle?.endTimestamp}>
                       <Countdown
-                        expiryTimestamp={endTimestamp}
+                        expiryTimestamp={cycle?.endTimestamp}
                         onExpire={celebrate}
                       />
                     </Skeleton>
@@ -182,63 +180,56 @@ const Page = (): JSX.Element => {
                   <>
                     <StatLabel>Winner</StatLabel>
                     <StatNumber>
-                      {bids?.[0]?.bidderPubkey
-                        ? shortenHex(bids?.[0]?.bidderPubkey.toString())
+                      {cycle?.bids?.[0]?.bidderPubkey
+                        ? shortenHex(cycle?.bids?.[0]?.bidderPubkey.toString())
                         : "-"}
                     </StatNumber>
                   </>
                 )}
               </Stat>
             </HStack>
-            {isCycleActive !== undefined &&
-              (isCycleActive && !timerExpired ? (
+            {cycleState !== undefined &&
+              (cycleState === "active" ? (
                 <Bid />
+              ) : cycleState === "intermediate" ? (
+                <CycleEndAlert />
               ) : (
                 <Box>
                   <Tag size="lg">Auction ended</Tag>
                 </Box>
               ))}
             <VStack>
-              {timerExpired &&
-              (bids?.length === 0 || currentCycle !== numberOfCycles) ? (
-                <CycleEndAlert
-                  nextCycleStartTimestamp={endTimestamp + 30_000}
-                  setTimerExpired={setTimerExpired}
-                  bidsLength={bids?.length ?? 0}
-                />
-              ) : isCycleActive && !bids?.length ? (
+              {cycle?.bids?.length === 0 ? (
                 <Text colorScheme={"gray"} w="full" fontSize={"sm"}>
-                  No bids yet
+                  No bids {cycleState === "active" ? "yet" : ""}
                 </Text>
               ) : (
-                <>
-                  {bids?.slice(0, 2).map((bid) => (
-                    <Flex
-                      key={bid.amount.toString()}
-                      bg="blackAlpha.300"
-                      px="4"
-                      py="3"
-                      borderRadius="xl"
-                      w="full"
-                    >
-                      <Identicon address={bid.bidderPubkey.toString()} size={20} />
-                      <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
-                      <Text ml="auto" fontWeight="semibold">
-                        {bid.amount} SOL
-                      </Text>
-                    </Flex>
-                  ))}
-                  <BidHistory />
-                </>
+                cycle?.bids?.slice(0, 2).map((bid) => (
+                  <Flex
+                    key={bid.amount.toString()}
+                    bg="blackAlpha.300"
+                    px="4"
+                    py="3"
+                    borderRadius="xl"
+                    w="full"
+                  >
+                    <Identicon address={bid.bidderPubkey.toString()} size={20} />
+                    <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
+                    <Text ml="auto" fontWeight="semibold">
+                      {bid.amount} SOL
+                    </Text>
+                  </Flex>
+                ))
               )}
+              <BidHistory />
             </VStack>
           </VStack>
         </SimpleGrid>
       </Card>
 
-      {description && (
+      {auction?.description && (
         <Section title="Description">
-          <Text>{description}</Text>
+          <Text>{auction?.description}</Text>
         </Section>
       )}
     </Layout>
