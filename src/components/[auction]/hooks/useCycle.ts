@@ -1,7 +1,6 @@
 import { PublicKey } from "@solana/web3.js"
 import { getAuctionCycle } from "contract-logic/queries/getAuctions"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
 import useSWR from "swr"
 import useAuction from "./useAuction"
 
@@ -26,17 +25,15 @@ const useCycle = () => {
     shouldFetch ? ["cycle", auction.rootStatePubkey.toString(), cycleNumber] : null,
     handleGetCycle,
     {
+      onSuccess: (cycle) => console.log("cycle", cycle),
       refreshInterval: 5000,
     }
   )
 
-  useEffect(() => {
-    console.log("cycle", data)
-  }, [data])
-
   return {
     cycle: { cycleNumber, ...data },
     isLoading: isValidating && !data,
+    isValidating,
     error,
     mutate,
   }
