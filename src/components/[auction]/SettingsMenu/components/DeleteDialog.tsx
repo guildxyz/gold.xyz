@@ -45,7 +45,7 @@ export default function DeleteDialog({ isOpen, onClose }) {
     },
     onError: (e) =>
       toast({
-        title: "Error freezing auction",
+        title: "Error deleting auction",
         description: e.toString(),
         status: "error",
       }),
@@ -62,8 +62,9 @@ export default function DeleteDialog({ isOpen, onClose }) {
           <AlertDialogHeader>Delete auction</AlertDialogHeader>
 
           <AlertDialogBody>
-            Are you sure? Deleting the auction cannot be undone. Current cycle's top bidder
-            will be refunded and you receive all remaining funds from your treasury.
+            Are you sure? Deleting the auction cannot be undone. Current cycle's top
+            bidder will be refunded and you receive all remaining funds from your
+            treasury.
           </AlertDialogBody>
 
           <AlertDialogFooter>
