@@ -63,7 +63,7 @@ export async function startAuction(frontendAuctionConfig: AuctionConfigType) {
   const initAuctionArgs = new InitializeAuctionArgs({
     auctionOwnerPubkey: frontendAuctionConfig.ownerPubkey,
     auctionId: padTo32Bytes(frontendAuctionConfig.id),
-    auctionName: padTo32Bytes(frontendAuctionConfig.id),
+    auctionName: padTo32Bytes(frontendAuctionConfig.name),
     auctionConfig: auctionConfig,
     auctionDescription: auctionDescription,
     createTokenArgs: createTokenArgs,

@@ -1,4 +1,4 @@
-import { StatGroup } from "@chakra-ui/react"
+import { StatGroup, useBreakpointValue } from "@chakra-ui/react"
 import { Stat, StatHelpText, StatNumber } from "@chakra-ui/stat"
 import { useTimer } from "react-timer-hook"
 
@@ -12,25 +12,26 @@ const Countdown = ({ expiryTimestamp, onExpire }: Props): JSX.Element => {
     expiryTimestamp: new Date(expiryTimestamp),
     onExpire,
   })
+  const statSize = useBreakpointValue({ base: "sm", md: "md" })
 
   return (
     <StatGroup sx={{ gap: "6px" }}>
       {!!days && (
-        <Stat>
+        <Stat size={statSize}>
           <StatNumber>{days}</StatNumber>
           <StatHelpText mb="0">Days</StatHelpText>
         </Stat>
       )}
-      <Stat>
+      <Stat size={statSize}>
         <StatNumber>{hours}</StatNumber>
         <StatHelpText mb="0">Hours</StatHelpText>
       </Stat>
-      <Stat>
+      <Stat size={statSize}>
         <StatNumber>{minutes}</StatNumber>
         <StatHelpText mb="0">Minutes</StatHelpText>
       </Stat>
       {!days && (
-        <Stat>
+        <Stat size={statSize}>
           <StatNumber>{seconds}</StatNumber>
           <StatHelpText mb="0">Seconds</StatHelpText>
         </Stat>
