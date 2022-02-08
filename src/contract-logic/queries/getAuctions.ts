@@ -7,7 +7,7 @@ import { Auction, AuctionBase, NFTData, TokenData, Cycle} from "./types"
 
 async function getAuctionPool(connection: Connection, secondary?: boolean): Promise<AuctionPool> {
   let secondary_flag = false;
-  if secondary {
+  if (secondary) {
     secondary_flag = true;
   }
   const { getAuctionPoolPubkeyWasm } = await import("../wasm-factory")

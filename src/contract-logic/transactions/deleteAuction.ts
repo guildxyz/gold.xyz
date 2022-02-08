@@ -1,6 +1,6 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { FreezeAuctionArgs, SCHEMA } from "../schema"
+import { DeleteAuctionArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
 import { NUM_OF_CYCLES_TO_DELETE } from "../consts"
@@ -9,7 +9,7 @@ export async function deleteAuction(
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { freezeAuctionWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../wasm-factory")
+  const { deleteAuctionWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../wasm-factory")
 
   const topBidder = await getTopBidderWasm(auctionId)
   const currentCycleNumber = await getCurrentCycleWasm(auctionId)
