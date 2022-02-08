@@ -7,7 +7,7 @@ import {
   MenuList,
   useDisclosure,
 } from "@chakra-ui/react"
-import { CurrencyDollarSimple, Gear, Snowflake } from "phosphor-react"
+import { CurrencyDollarSimple, Gear, TrashSimple } from "phosphor-react"
 import useAuction from "../hooks/useAuction"
 import ClaimDialog from "./components/ClaimDialog"
 import DeleteDialog from "./components/DeleteDialog"
@@ -46,7 +46,7 @@ const SettingsMenu = () => {
           {!auction.isFrozen && (
             <MenuItem
               py="2"
-              icon={<Snowflake />}
+              icon={<TrashSimple />}
               onClick={onOpenDelete}
               color="red.300"
             >
