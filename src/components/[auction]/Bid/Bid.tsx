@@ -1,12 +1,13 @@
 import {
   Button,
-  HStack,
   InputGroup,
   InputRightElement,
   NumberInput,
   NumberInputField,
+  Stack,
   Text,
   Tooltip,
+  useBreakpointValue,
 } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import useToast from "hooks/useToast"
@@ -45,6 +46,7 @@ const Bid = () => {
   })
   const inputRef = useRef(null)
   const { onSubmit, isLoading } = usePlaceBid(setValue)
+  const buttonSize = useBreakpointValue({ base: "md", sm: "lg" })
 
   const onError = () => {
     if (errors?.amount?.message)
@@ -58,7 +60,7 @@ const Bid = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit, onError)}>
-      <HStack spacing="3">
+      <Stack spacing="3" direction={{ base: "column", sm: "row" }}>
         <InputGroup size="lg">
           <NumberInput w="full" {...field}>
             <NumberInputField
@@ -80,7 +82,8 @@ const Bid = () => {
         >
           <Button
             type="submit"
-            size="lg"
+            size={buttonSize}
+            w={{ base: "full", md: "unset" }}
             flexShrink={0}
             isLoading={isLoading}
             disabled={!publicKey || auction?.isFrozen}
@@ -88,7 +91,7 @@ const Bid = () => {
             Place bid
           </Button>
         </Tooltip>
-      </HStack>
+      </Stack>
     </form>
   )
 }

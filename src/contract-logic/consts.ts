@@ -1,4 +1,4 @@
-import { Connection, Keypair, PublicKey } from "@solana/web3.js"
+import { Connection, PublicKey } from "@solana/web3.js"
 
 // razorblade localnet
 //export const PROGRAM_ID = new PublicKey("3Pa861iqJgg7YDWxJse7HkGqBuArMFvX7e13JWXhjogS");

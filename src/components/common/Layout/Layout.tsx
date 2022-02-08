@@ -7,6 +7,7 @@ import {
   Icon,
   IconButton,
   Img,
+  SimpleGrid,
   Text,
   useBreakpointValue,
   useColorMode,
@@ -99,13 +100,16 @@ const Layout = ({
           px={{ base: 4, sm: 6, md: 8, lg: 10 }}
         >
           <VStack spacing={{ base: 6, md: 10 }} pb={{ base: 12, md: 14 }} w="full">
-            <HStack
-              spacing={{ base: 4, md: 8 }}
-              alignItems="center"
-              justify="space-between"
+            <SimpleGrid
               w="full"
+              templateColumns={{ base: "1fr", lg: "5fr 4fr" }}
+              gap={{ base: 8, lg: 0 }}
             >
-              <HStack alignItems="center" spacing={{ base: 3, md: 4, lg: 5 }}>
+              <HStack
+                alignItems="center"
+                spacing={{ base: 3, md: 4, lg: 5 }}
+                pr={{ base: 4, md: 8 }}
+              >
                 {imageUrl && (
                   <Img
                     src={imageUrl}
@@ -129,7 +133,7 @@ const Layout = ({
               </HStack>
 
               {action}
-            </HStack>
+            </SimpleGrid>
             {showLayoutDescription && description?.length && (
               <Text w="full" fontWeight="semibold">
                 {description}
