@@ -31,6 +31,7 @@ const CoinfettiProvider = ({
   const { width, height } = useWindowSize()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [image, setImage] = useState<HTMLImageElement>(null)
+  const [animationInProgress, setAnimationInProgress] = useState(false)
 
   const resizeCanvas = () => {
     const canvas = canvasRef?.current
@@ -39,12 +40,27 @@ const CoinfettiProvider = ({
     canvas.height = height
   }
 
+  const windowBlurHandler = () => {
+    setAnimationInProgress(false)
+    window.requestAnimationFrame(draw)
+  }
+
   useEffect(() => {
+    // Initializing the coing image
     const img = new Image()
     img.src = "/img/coin.png"
     img.onload = () => setImage(img)
 
+    // Resizing the canvas (to fill the whole screen)
     resizeCanvas()
+
+    // Registering event listeners
+    window.addEventListener("blur", windowBlurHandler)
+
+    // Unregistering event listeners
+    return () => {
+      window.removeEventListener("blur", windowBlurHandler)
+    }
   }, [])
 
   // Handle window resize
@@ -71,6 +87,7 @@ const CoinfettiProvider = ({
       }
     }
 
+    setAnimationInProgress(true)
     window.requestAnimationFrame(draw)
   }
 
@@ -80,12 +97,21 @@ const CoinfettiProvider = ({
     if (!canvas) return
 
     const ctx = canvas.getContext("2d")
+
+    if (!animationInProgress) {
+      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
+      return
+    }
+
     const time = Date.now()
 
     ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
     for (let i = 0; i < imageCount; i++) drawAtRandomPosition(time, i)
 
-    if (positions.every((position) => position?.finishedAnimation)) return
+    if (positions.every((position) => position?.finishedAnimation)) {
+      setAnimationInProgress(false)
+      return
+    }
 
     window.requestAnimationFrame(draw)
   }
