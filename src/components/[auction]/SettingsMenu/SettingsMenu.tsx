@@ -7,13 +7,11 @@ import {
   MenuList,
   useDisclosure,
 } from "@chakra-ui/react"
-import { CurrencyDollarSimple, Gear } from "phosphor-react"
-import useAuction from "../hooks/useAuction"
+import { CurrencyDollarSimple, Gear, TrashSimple } from "phosphor-react"
 import ClaimDialog from "./components/ClaimDialog"
 import DeleteDialog from "./components/DeleteDialog"
 
 const SettingsMenu = () => {
-  const { auction } = useAuction()
   const {
     isOpen: isOpenClaim,
     onOpen: onOpenClaim,
@@ -43,16 +41,14 @@ const SettingsMenu = () => {
           >
             Claim funds
           </MenuItem>
-          {/* {!auction.isFrozen && (
-            <MenuItem
-              py="2"
-              icon={<TrashSimple />}
-              onClick={onOpenDelete}
-              color="red.300"
-            >
-              Delete auction
-            </MenuItem>
-          )} */}
+          <MenuItem
+            py="2"
+            icon={<TrashSimple />}
+            onClick={onOpenDelete}
+            color="red.300"
+          >
+            Delete auction
+          </MenuItem>
         </MenuList>
       </Menu>
       <ClaimDialog isOpen={isOpenClaim} onClose={onCloseClaim} />
