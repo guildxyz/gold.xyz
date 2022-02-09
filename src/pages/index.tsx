@@ -1,4 +1,4 @@
-import { Stack, Tag } from "@chakra-ui/react"
+import { Divider, Stack, Tag } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import AddCard from "components/common/AddCard"
 import Layout from "components/common/Layout"
@@ -16,12 +16,18 @@ const filterByName = (name: string, searchInput: string) =>
 const Page = (): JSX.Element => {
   const [searchInput, setSearchInput] = useState("")
   const { auctions, isLoading } = useAuctions()
+  const { auctions: inactiveAuctions, isLoading: inactiveIsLoading } =
+    useAuctions(true)
   const usersAuctions = useUsersAuctions()
   const { publicKey } = useWallet()
 
   const filteredAuctions = useMemo(
     () => auctions?.filter(({ name }) => filterByName(name, searchInput)),
     [auctions, searchInput]
+  )
+  const filteredInactiveAuctions = useMemo(
+    () => inactiveAuctions?.filter(({ name }) => filterByName(name, searchInput)),
+    [inactiveAuctions, searchInput]
   )
   const filteredUsersAuctions = useMemo(
     () => usersAuctions?.filter(({ name }) => filterByName(name, searchInput)),
@@ -66,7 +72,7 @@ const Page = (): JSX.Element => {
               )}
         </CategorySection>
         <CategorySection
-          title="All auctions"
+          title="All active auctions"
           titleRightElement={
             auctions?.length && <Tag size="sm">{auctions?.length}</Tag>
           }
@@ -79,6 +85,31 @@ const Page = (): JSX.Element => {
         >
           {filteredAuctions?.length &&
             filteredAuctions.map((auction) => (
+              <ExplorerCardMotionWrapper key={auction.id}>
+                <AuctionCard auction={auction} />
+              </ExplorerCardMotionWrapper>
+            ))}
+        </CategorySection>
+        <Divider />
+        <CategorySection
+          title="Inactive auctions"
+          opacity={0.5}
+          transition="opacity .2s"
+          _hover={{ opacity: 1 }}
+          titleRightElement={
+            inactiveAuctions?.length && (
+              <Tag size="sm">{inactiveAuctions?.length}</Tag>
+            )
+          }
+          isLoading={inactiveIsLoading}
+          fallbackText={
+            inactiveAuctions?.length
+              ? `No results for ${searchInput}`
+              : "Unable to load inactive auctions"
+          }
+        >
+          {filteredInactiveAuctions?.length &&
+            filteredInactiveAuctions.map((auction) => (
               <ExplorerCardMotionWrapper key={auction.id}>
                 <AuctionCard auction={auction} />
               </ExplorerCardMotionWrapper>
