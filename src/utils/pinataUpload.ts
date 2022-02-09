@@ -1,3 +1,5 @@
+import Bottleneck from "bottleneck"
+
 type PinataPinFileResponse = {
   IpfsHash: string
   PinSize: number
@@ -6,6 +8,7 @@ type PinataPinFileResponse = {
 }
 
 type PinToIPFSProps = {
+  jwt?: string
   data: (File | string)[]
   fileNames?: string[]
   pinataOptions?: {
@@ -22,62 +25,77 @@ type PinToIPFSProps = {
   onProgress?: (progress: number) => void
 }
 
+const pinataLimiter = new Bottleneck({
+  minTime: 2000, // 60_000 / 30 -> 30 requests / min rate limit
+})
+
 const pinFileToIPFS = ({
   data,
   fileNames = [""],
   pinataOptions = {},
   pinataMetadata = {},
+  jwt,
   onProgress,
 }: PinToIPFSProps) =>
-  new Promise<PinataPinFileResponse>(async (resolve, reject) => {
-    const jwtResponse = await fetch("/api/pinata-key")
-    const { jwt, key } = await jwtResponse.json()
+  pinataLimiter.schedule(
+    () =>
+      new Promise<PinataPinFileResponse>(async (resolve, reject) => {
+        const apiKey =
+          jwt?.length > 0
+            ? { jwt, key: undefined }
+            : await fetch("/api/pinata-key").then((response) =>
+                response.json().then((body) => ({ jwt: body.jwt, key: body.key }))
+              )
 
-    const formData = new FormData()
+        const formData = new FormData()
 
-    if (data.length <= 0) reject(new Error("Passed an empty array"))
-    if (data.length !== fileNames.length)
-      reject(
-        new Error("The same number of file names has to be passed as data objects")
-      )
-    data.forEach((d, index) => {
-      if (typeof d === "string") {
-        const blob = new Blob([d])
-        formData.append("file", blob, fileNames[index])
-      } else {
-        formData.append("file", d)
-      }
-    })
+        if (data.length <= 0) reject(new Error("Passed an empty array"))
+        if (data.length !== fileNames.length)
+          reject(
+            new Error(
+              "The same number of file names has to be passed as data objects"
+            )
+          )
+        data.forEach((d, index) => {
+          if (typeof d === "string") {
+            const blob = new Blob([d])
+            formData.append("file", blob, fileNames[index])
+          } else {
+            formData.append("file", d)
+          }
+        })
 
-    if (Object.keys(pinataOptions).length > 0) {
-      formData.append("pinataOptions", JSON.stringify(pinataOptions))
-    }
+        if (Object.keys(pinataOptions).length > 0) {
+          formData.append("pinataOptions", JSON.stringify(pinataOptions))
+        }
 
-    if (Object.keys(pinataMetadata).length > 0) {
-      formData.append("pinataMetadata", JSON.stringify(pinataMetadata))
-    }
+        if (Object.keys(pinataMetadata).length > 0) {
+          formData.append("pinataMetadata", JSON.stringify(pinataMetadata))
+        }
 
-    const xhr = new XMLHttpRequest()
-    xhr.open("POST", "https://api.pinata.cloud/pinning/pinFileToIPFS")
-    xhr.setRequestHeader("Authorization", `Bearer ${jwt}`)
+        const xhr = new XMLHttpRequest()
+        xhr.open("POST", "https://api.pinata.cloud/pinning/pinFileToIPFS")
+        xhr.setRequestHeader("Authorization", `Bearer ${apiKey.jwt}`)
 
-    xhr.upload.onprogress = (event) =>
-      onProgress?.((event.loaded / event.total) * 0.9)
-    xhr.onload = async () => {
-      await fetch("/api/pinata-key", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key }),
-      }).catch(() => console.error("Failed to revoke API key after request"))
+        xhr.upload.onprogress = (event) =>
+          onProgress?.((event.loaded / event.total) * 0.9)
+        xhr.onload = async () => {
+          if (!jwt)
+            await fetch("/api/pinata-key", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ key: apiKey.key }),
+            }).catch(() => console.error("Failed to revoke API key after request"))
 
-      onProgress?.(1)
-      resolve(JSON.parse(xhr.response))
-    }
-    xhr.onerror = () => reject(new Error("Failed to upload image to Pinata"))
+          onProgress?.(1)
+          resolve(JSON.parse(xhr.response))
+        }
+        xhr.onerror = () => reject(new Error("Failed to upload image to Pinata"))
 
-    xhr.onabort = () => reject(new Error("Failed to upload image to Pinata"))
+        xhr.onabort = () => reject(new Error("Failed to upload image to Pinata"))
 
-    xhr.send(formData as any)
-  })
+        xhr.send(formData as any)
+      })
+  )
 
 export default pinFileToIPFS

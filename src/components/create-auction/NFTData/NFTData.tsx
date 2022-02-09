@@ -62,23 +62,36 @@ const NFTData = ({ setUploadPromise }: Props) => {
         ...Object.fromEntries(newFields.map(({ id }) => [id, 0])),
       }))
 
-      setUploadPromise(
-        Promise.all(
-          newFields.map(({ id }, index) =>
-            pinFileToIPFS({
-              data: [acceptedFiles[index]],
-              onProgress: (progress) =>
-                setProgresses((prev) => ({ ...prev, [id]: progress })),
-            }).then(({ IpfsHash }) => {
-              setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
-            })
+      fetch("/api/pinata-key").then((response) =>
+        response.json().then(({ jwt, key }) => {
+          setUploadPromise(
+            Promise.all(
+              newFields.map(({ id }, index) =>
+                pinFileToIPFS({
+                  jwt,
+                  data: [acceptedFiles[index]],
+                  onProgress: (progress) =>
+                    setProgresses((prev) => ({ ...prev, [id]: progress })),
+                }).then(({ IpfsHash }) => {
+                  setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
+                })
+              )
+            )
+              .catch((error) => {
+                toast({
+                  status: "error",
+                  title: "Upload failed",
+                  description: error.message || "Failed to upload images to IPFS",
+                })
+              })
+              .finally(() => {
+                fetch("/api/pinata-key", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ key }),
+                })
+              })
           )
-        ).catch((error) => {
-          toast({
-            status: "error",
-            title: "Upload failed",
-            description: error.message || "Failed to upload images to IPFS",
-          })
         })
       )
     }
