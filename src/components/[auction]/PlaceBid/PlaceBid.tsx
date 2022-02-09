@@ -17,15 +17,17 @@ import useAuction from "../hooks/useAuction"
 import useCycle from "../hooks/useCycle"
 import usePlaceBid from "./hook/usePlaceBid"
 
-const Bid = () => {
+const PlaceBid = () => {
   const { auction } = useAuction()
   const { cycle } = useCycle()
   const { publicKey } = useWallet()
-  const minBid = useMemo(
-    () =>
-      cycle?.bids?.[0]?.amount ? cycle?.bids?.[0]?.amount + 0.01 : auction?.minBid,
-    [cycle, auction]
-  )
+  const minBid = useMemo(() => {
+    const value = cycle?.bids?.[0]?.amount
+      ? cycle?.bids?.[0]?.amount + 0.01
+      : auction?.minBid
+    return value.toFixed(2)
+  }, [cycle, auction])
+
   const toast = useToast()
   const {
     handleSubmit,
@@ -96,4 +98,4 @@ const Bid = () => {
   )
 }
 
-export default Bid
+export default PlaceBid

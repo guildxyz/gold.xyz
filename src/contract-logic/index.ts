@@ -34,8 +34,8 @@ global.Response = fetch.Response
   //}
 
   const auction_config: AuctionConfig = {
-    id: "hehehehehehi",
-    name: "hehehehehehi",
+    id: "heheheheheho",
+    name: "heheheheheho",
     description: "xd",
     socials: ["aaa.aaa"],
     goalTreasuryAmount: null,
@@ -54,7 +54,7 @@ global.Response = fetch.Response
   //console.log("Auction created successfully.");
   // Query auction
   console.log(await getAuctions(CONNECTION))
-  const auction = await getAuction(auction_config.id)
+  const auction = await getAuction("gold-dao")
   console.log(auction)
   console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
   // CLAIM FUNDS
@@ -71,7 +71,7 @@ global.Response = fetch.Response
   //await sendTransaction(bidTransaction, bidder);
   //console.log("Bid placed successfully.");
   // FREEZE_AUCTION
-  //const freezeAuctionTransaction = await freezeAuction(auction_config.id, auctionOwner.publicKey)
-  //await sendTransaction(freezeAuctionTransaction, auctionOwner)
+  //const deleteAuctionTransaction = await deleteAuction(auction_config.id, auctionOwner.publicKey)
+  //await sendTransaction(deleteAuctionTransaction, auctionOwner)
   //console.log("Auction frozen successfully.")
 })()

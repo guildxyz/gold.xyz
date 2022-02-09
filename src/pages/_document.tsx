@@ -18,12 +18,15 @@ class MyDocument extends Document {
             crossOrigin="anonymous"
           />
           {process.env.NODE_ENV === "production" && (
-            <script
-              async
-              defer
-              data-domain="alpha.gold.xyz"
-              src="/js/script.js"
-            ></script>
+            <>
+              <script
+                async
+                defer
+                data-domain="alpha.gold.xyz"
+                src="/js/script.js"
+              ></script>
+              <script async src="/js/dd_rum.js"></script>
+            </>
           )}
         </Head>
         <body>

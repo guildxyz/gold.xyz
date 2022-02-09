@@ -5,17 +5,21 @@ import { AuctionPool, AuctionCycleState, AuctionRootState, FrontendAuction, SCHE
 import { parseAuctionId } from "../utils/parseAuctionId"
 import { Auction, AuctionBase, NFTData, TokenData, Cycle} from "./types"
 
-async function getAuctionPool(connection: Connection): Promise<AuctionPool> {
+async function getAuctionPool(connection: Connection, secondary?: boolean): Promise<AuctionPool> {
+  let secondary_flag = false;
+  if (secondary) {
+    secondary_flag = true;
+  }
   const { getAuctionPoolPubkeyWasm } = await import("../wasm-factory")
-  const auctionPoolPubkey = new PublicKey(await getAuctionPoolPubkeyWasm().toBytes())
+  const auctionPoolPubkey = new PublicKey(await getAuctionPoolPubkeyWasm(secondary_flag).toBytes())
   const auctionPoolAccount = await connection.getAccountInfo(auctionPoolPubkey)
   const auctionPoolData: Buffer = auctionPoolAccount!.data
   return deserializeUnchecked(SCHEMA, AuctionPool, auctionPoolData)
 }
 
-export async function getAuctions(connection: Connection): Promise<Array<AuctionBase>> {
+export async function getAuctions(connection: Connection, secondary?: boolean): Promise<Array<AuctionBase>> {
   const { getAuctionRootStatePubkeyWasm } = await import("../wasm-factory")
-  const auctionPool = await getAuctionPool(connection)
+  const auctionPool = await getAuctionPool(connection, secondary)
 
   let auctionBaseArray = []
   for (let index = 0; index < auctionPool.pool.length; index++) {

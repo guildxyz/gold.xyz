@@ -1,28 +1,30 @@
 import { Connection, PublicKey, Transaction } from "@solana/web3.js"
 import { serialize } from "borsh"
-import { FreezeAuctionArgs, SCHEMA } from "../schema"
+import { DeleteAuctionArgs, SCHEMA } from "../schema"
 import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
+import { NUM_OF_CYCLES_TO_DELETE } from "../consts"
 
-export async function freezeAuction(
+export async function deleteAuction(
   auctionId: string,
   auctionOwnerPubkey: PublicKey
 ) {
-  const { freezeAuctionWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../wasm-factory")
+  const { deleteAuctionWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../wasm-factory")
 
   const topBidder = await getTopBidderWasm(auctionId)
   const currentCycleNumber = await getCurrentCycleWasm(auctionId)
 
   const auctionIdArray = padTo32Bytes(auctionId)
-  const freezeAuctionArgs = new FreezeAuctionArgs({
-    auctionOwnerPubkey: auctionOwnerPubkey,
-    auctionId: auctionIdArray,
+  const deleteAuctionArgs = new DeleteAuctionArgs({
+    auctionOwnerPubkey,
     topBidderPubkey: topBidder,
-    cycleNumber: currentCycleNumber,
+    auctionId: auctionIdArray,
+    currentAuctionCycle: currentCycleNumber,
+    numOfCyclesToDelete: NUM_OF_CYCLES_TO_DELETE,
   })
 
   try {
-    const instruction = parseInstruction(freezeAuctionWasm(serialize(SCHEMA, freezeAuctionArgs)))
+    const instruction = parseInstruction(deleteAuctionWasm(serialize(SCHEMA, deleteAuctionArgs)))
     return new Transaction().add(instruction)
   } catch (e) {
     console.log("wasm error:", e)
