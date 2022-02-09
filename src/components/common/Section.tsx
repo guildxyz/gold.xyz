@@ -26,3 +26,4 @@ const Section = ({
 )
 
 export default Section
+export type { Props as SectionProps }

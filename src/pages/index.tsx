@@ -1,4 +1,4 @@
-import { HStack, Stack, Tag, Text } from "@chakra-ui/react"
+import { Stack, Tag } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import AddCard from "components/common/AddCard"
 import Layout from "components/common/Layout"
@@ -41,7 +41,7 @@ const Page = (): JSX.Element => {
               : "Your auctions"
           }
           isLoading={isLoading}
-          fallback={
+          fallbackText={
             !publicKey
               ? "Connect your wallet to view your auctions"
               : `No results for ${searchInput}`
@@ -66,14 +66,12 @@ const Page = (): JSX.Element => {
               )}
         </CategorySection>
         <CategorySection
-          title={
-            <HStack spacing={2} alignItems="center">
-              <Text as="span">All auctions</Text>
-              {auctions?.length && <Tag size="sm">{auctions?.length}</Tag>}
-            </HStack>
+          title="All auctions"
+          titleRightElement={
+            auctions?.length && <Tag size="sm">{auctions?.length}</Tag>
           }
           isLoading={isLoading}
-          fallback={
+          fallbackText={
             auctions?.length
               ? `No results for ${searchInput}`
               : "Unable to load auctions"
