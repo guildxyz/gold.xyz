@@ -7,10 +7,12 @@ const MotionBox = motion(Box)
 
 type Props = {
   animateOnMount?: boolean
+  shouldBounce?: boolean
 } & Rest
 
 const CardMotionWrapper = ({
   animateOnMount = true,
+  shouldBounce = false,
   children,
   ...rest
 }: PropsWithChildren<Props>): JSX.Element => (
@@ -21,8 +23,11 @@ const CardMotionWrapper = ({
     })}
     animate={{
       opacity: 1,
-      scale: 1,
-      transition: { duration: 0.2, ease: EASINGS.easeOut },
+      scale: shouldBounce ? [1, 1.05, 1] : 1,
+      transition: {
+        duration: 0.2,
+        ease: EASINGS.easeOut,
+      },
     }}
     exit={{
       opacity: 0,
