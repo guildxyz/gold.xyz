@@ -21,11 +21,13 @@ const PlaceBid = () => {
   const { auction } = useAuction()
   const { cycle } = useCycle()
   const { publicKey } = useWallet()
-  const minBid = useMemo(
-    () =>
-      cycle?.bids?.[0]?.amount ? cycle?.bids?.[0]?.amount + 0.01 : auction?.minBid,
-    [cycle, auction]
-  )
+  const minBid = useMemo(() => {
+    const value = cycle?.bids?.[0]?.amount
+      ? cycle?.bids?.[0]?.amount + 0.01
+      : auction?.minBid
+    return value.toFixed(2)
+  }, [cycle, auction])
+
   const toast = useToast()
   const {
     handleSubmit,
@@ -65,7 +67,7 @@ const PlaceBid = () => {
           <NumberInput w="full" {...field}>
             <NumberInputField
               ref={inputRef}
-              placeholder={minBid && `min: ${minBid.toFixed(2)}`}
+              placeholder={minBid && `min: ${minBid}`}
             />
           </NumberInput>
           <InputRightElement>
