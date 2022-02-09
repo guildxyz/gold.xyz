@@ -28,7 +28,7 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
           <HStack justifyContent="space-between" width="full" px="2px">
             <Text fontSize="xs">
               <Text as="span" fontWeight="extrabold" fontSize="sm">
-                {treasuryAmount}
+                {treasuryAmount.toFixed(2)}
               </Text>
               {" SOL raised"}
             </Text>
