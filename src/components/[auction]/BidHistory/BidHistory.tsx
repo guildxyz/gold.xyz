@@ -30,7 +30,7 @@ const BidHistory = ({ cycleState }) => {
     <>
       <VStack>
         {cycle?.bids?.slice(0, 2).map((bid) => (
-          <Bid key={bid.amount.toString()} bid={bid} />
+          <Bid key={`${cycle.cycleNumber}${bid.amount}`} bid={bid} />
         ))}
         <Button
           variant="ghost"
