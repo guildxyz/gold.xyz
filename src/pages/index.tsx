@@ -1,4 +1,4 @@
-import { HStack, Stack, Tag, Text } from "@chakra-ui/react"
+import { Divider, Stack, Tag } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import AddCard from "components/common/AddCard"
 import Layout from "components/common/Layout"
@@ -15,7 +15,12 @@ const filterByName = (name: string, searchInput: string) =>
 
 const Page = (): JSX.Element => {
   const [searchInput, setSearchInput] = useState("")
-  const { auctions, isLoading } = useAuctions()
+  const { auctions, isLoading, error } = useAuctions()
+  const {
+    auctions: inactiveAuctions,
+    isLoading: inactiveIsLoading,
+    error: inactiveError,
+  } = useAuctions(true)
   const usersAuctions = useUsersAuctions()
   const { publicKey } = useWallet()
 
@@ -23,10 +28,20 @@ const Page = (): JSX.Element => {
     () => auctions?.filter(({ name }) => filterByName(name, searchInput)),
     [auctions, searchInput]
   )
+  const filteredInactiveAuctions = useMemo(
+    () => inactiveAuctions?.filter(({ name }) => filterByName(name, searchInput)),
+    [inactiveAuctions, searchInput]
+  )
   const filteredUsersAuctions = useMemo(
     () => usersAuctions?.filter(({ name }) => filterByName(name, searchInput)),
     [usersAuctions, searchInput]
   )
+
+  const fallbackText = (data, error_) => {
+    if (error_) return "Unable to load auctions. Check the console for more details"
+    if (!data?.length) return "There're no auctions currently"
+    return `No results for ${searchInput}`
+  }
 
   return (
     <Layout title="Gold.xyz" imageUrl="/logo.svg">
@@ -41,7 +56,7 @@ const Page = (): JSX.Element => {
               : "Your auctions"
           }
           isLoading={isLoading}
-          fallback={
+          fallbackText={
             !publicKey
               ? "Connect your wallet to view your auctions"
               : `No results for ${searchInput}`
@@ -66,21 +81,36 @@ const Page = (): JSX.Element => {
               )}
         </CategorySection>
         <CategorySection
-          title={
-            <HStack spacing={2} alignItems="center">
-              <Text as="span">All auctions</Text>
-              {auctions?.length && <Tag size="sm">{auctions?.length}</Tag>}
-            </HStack>
+          title="All active auctions"
+          titleRightElement={
+            auctions?.length && <Tag size="sm">{auctions?.length}</Tag>
           }
           isLoading={isLoading}
-          fallback={
-            auctions?.length
-              ? `No results for ${searchInput}`
-              : "Unable to load auctions"
-          }
+          fallbackText={fallbackText(auctions, error)}
         >
           {filteredAuctions?.length &&
             filteredAuctions.map((auction) => (
+              <ExplorerCardMotionWrapper key={auction.id}>
+                <AuctionCard auction={auction} />
+              </ExplorerCardMotionWrapper>
+            ))}
+        </CategorySection>
+        <Divider />
+        <CategorySection
+          title="Inactive auctions"
+          opacity={0.5}
+          transition="opacity .2s"
+          _hover={{ opacity: 1 }}
+          titleRightElement={
+            inactiveAuctions?.length && (
+              <Tag size="sm">{inactiveAuctions?.length}</Tag>
+            )
+          }
+          isLoading={inactiveIsLoading}
+          fallbackText={fallbackText(inactiveAuctions, inactiveError)}
+        >
+          {filteredInactiveAuctions?.length &&
+            filteredInactiveAuctions.map((auction) => (
               <ExplorerCardMotionWrapper key={auction.id}>
                 <AuctionCard auction={auction} />
               </ExplorerCardMotionWrapper>
