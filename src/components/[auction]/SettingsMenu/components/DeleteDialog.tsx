@@ -45,7 +45,7 @@ export default function DeleteDialog({ isOpen, onClose }) {
         status: "success",
       })
       mutate("auctions", (auctions) =>
-        auctions.filter((auction_) => auction_.id !== auction.id)
+        auctions?.filter((auction_) => auction_.id !== auction.id)
       )
       router.push("/")
     },
