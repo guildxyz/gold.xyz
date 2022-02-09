@@ -12,12 +12,13 @@ import useAuction from "./useAuction"
 const handleGetCycle = (_, auctionPubkey: string, cycleNumber: number) =>
   getAuctionCycle(new PublicKey(auctionPubkey), cycleNumber)
 
-const useCycle = () => {
+const useCycle = (forceCurrentCycle?: boolean) => {
   const router = useRouter()
   const { auction } = useAuction()
 
-  const cycleNumber =
-    parseInt(router.query.cycleNumber as string) || auction?.currentCycle
+  const cycleNumber = forceCurrentCycle
+    ? auction?.currentCycle
+    : parseInt(router.query.cycleNumber as string) || auction?.currentCycle
 
   const shouldFetch = auction?.rootStatePubkey && cycleNumber
 

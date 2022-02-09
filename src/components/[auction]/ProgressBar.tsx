@@ -2,14 +2,23 @@ import { HStack, Progress, Text, VStack } from "@chakra-ui/react"
 import { useMemo } from "react"
 import { Rest } from "types"
 import useAuction from "./hooks/useAuction"
+import useCycle from "./hooks/useCycle"
 
 const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
   const { auction } = useAuction()
-  const { goalTreasuryAmount, allTimeTreasuryAmount } = auction || {}
+  const { cycle } = useCycle(true)
+  const { goalTreasuryAmount, allTimeTreasuryAmount, isFinished, isFrozen } =
+    auction || {}
+  const { bids } = cycle || {}
+  const highestBid = bids?.[0]?.amount ?? 0
+  const treasuryAmount =
+    isFinished || isFrozen
+      ? allTimeTreasuryAmount
+      : allTimeTreasuryAmount + highestBid
 
   const percentage = useMemo(
-    () => (allTimeTreasuryAmount * 100) / goalTreasuryAmount,
-    [goalTreasuryAmount, allTimeTreasuryAmount]
+    () => (treasuryAmount * 100) / goalTreasuryAmount,
+    [goalTreasuryAmount, treasuryAmount]
   )
 
   return (
@@ -19,7 +28,7 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
           <HStack justifyContent="space-between" width="full" px="2px">
             <Text fontSize="xs">
               <Text as="span" fontWeight="extrabold" fontSize="sm">
-                {allTimeTreasuryAmount}
+                {treasuryAmount}
               </Text>
               {" SOL raised"}
             </Text>
