@@ -15,9 +15,12 @@ const filterByName = (name: string, searchInput: string) =>
 
 const Page = (): JSX.Element => {
   const [searchInput, setSearchInput] = useState("")
-  const { auctions, isLoading } = useAuctions()
-  const { auctions: inactiveAuctions, isLoading: inactiveIsLoading } =
-    useAuctions(true)
+  const { auctions, isLoading, error } = useAuctions()
+  const {
+    auctions: inactiveAuctions,
+    isLoading: inactiveIsLoading,
+    error: inactiveError,
+  } = useAuctions(true)
   const usersAuctions = useUsersAuctions()
   const { publicKey } = useWallet()
 
@@ -33,6 +36,12 @@ const Page = (): JSX.Element => {
     () => usersAuctions?.filter(({ name }) => filterByName(name, searchInput)),
     [usersAuctions, searchInput]
   )
+
+  const fallbackText = (data, error_) => {
+    if (error_) return "Unable to load auctions. Check the console for more details"
+    if (!data?.length) return "There're no auctions currently"
+    return `No results for ${searchInput}`
+  }
 
   return (
     <Layout title="Gold.xyz" imageUrl="/logo.svg">
@@ -77,11 +86,7 @@ const Page = (): JSX.Element => {
             auctions?.length && <Tag size="sm">{auctions?.length}</Tag>
           }
           isLoading={isLoading}
-          fallbackText={
-            auctions?.length
-              ? `No results for ${searchInput}`
-              : "Unable to load auctions"
-          }
+          fallbackText={fallbackText(auctions, error)}
         >
           {filteredAuctions?.length &&
             filteredAuctions.map((auction) => (
@@ -102,11 +107,7 @@ const Page = (): JSX.Element => {
             )
           }
           isLoading={inactiveIsLoading}
-          fallbackText={
-            inactiveAuctions?.length
-              ? `No results for ${searchInput}`
-              : "Unable to load inactive auctions"
-          }
+          fallbackText={fallbackText(inactiveAuctions, inactiveError)}
         >
           {filteredInactiveAuctions?.length &&
             filteredInactiveAuctions.map((auction) => (

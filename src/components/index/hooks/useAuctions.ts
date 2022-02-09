@@ -7,12 +7,16 @@ const useAuctions = (secondaryPool?: boolean) => {
 
   const handleGetAuctions = () => getAuctions(connection, secondaryPool)
 
-  const { data, isValidating } = useSWR(
+  const { data, isValidating, error } = useSWR(
     `auctions${secondaryPool ? "_inactive" : ""}`,
     handleGetAuctions
   )
 
-  return { auctions: data, isLoading: !data && isValidating }
+  return {
+    auctions: data,
+    isLoading: !data && isValidating,
+    error,
+  }
 }
 
 export default useAuctions
