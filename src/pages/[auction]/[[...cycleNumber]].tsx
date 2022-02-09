@@ -5,7 +5,6 @@ import {
   Box,
   Center,
   Divider,
-  Flex,
   Heading,
   HStack,
   Icon,
@@ -23,7 +22,6 @@ import {
 } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Card from "components/common/Card"
-import Identicon from "components/common/Identicon"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
 import Section from "components/common/Section"
@@ -198,31 +196,7 @@ const Page = (): JSX.Element => {
                   <Tag size="lg">Auction ended</Tag>
                 </Box>
               ))}
-            <VStack>
-              {cycle?.bids?.length === 0 ? (
-                <Text colorScheme={"gray"} w="full" fontSize={"sm"}>
-                  No bids {cycleState === "active" ? "yet" : ""}
-                </Text>
-              ) : (
-                cycle?.bids?.slice(0, 2).map((bid) => (
-                  <Flex
-                    key={bid.amount.toString()}
-                    bg="blackAlpha.300"
-                    px="4"
-                    py="3"
-                    borderRadius="xl"
-                    w="full"
-                  >
-                    <Identicon address={bid.bidderPubkey.toString()} size={20} />
-                    <Text ml="2">{shortenHex(bid.bidderPubkey.toString())}</Text>
-                    <Text ml="auto" fontWeight="semibold">
-                      {bid.amount} SOL
-                    </Text>
-                  </Flex>
-                ))
-              )}
-              <BidHistory />
-            </VStack>
+            <BidHistory cycleState={cycleState} />
           </VStack>
         </SimpleGrid>
       </Card>
