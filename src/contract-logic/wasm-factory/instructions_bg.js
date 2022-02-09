@@ -1948,8 +1948,8 @@ export function __wbindgen_memory() {
     return addHeapObject(ret);
 };
 
-export function __wbindgen_closure_wrapper3602() { return logError(function (arg0, arg1, arg2) {
-    var ret = makeMutClosure(arg0, arg1, 272, __wbg_adapter_30);
+export function __wbindgen_closure_wrapper3465() { return logError(function (arg0, arg1, arg2) {
+    var ret = makeMutClosure(arg0, arg1, 271, __wbg_adapter_30);
     return addHeapObject(ret);
 }, arguments) };
 
