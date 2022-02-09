@@ -4,36 +4,14 @@ import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
 import useToast from "hooks/useToast"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
-import { v4 as uuidv4 } from "uuid"
+import pinFileToIPFS from "utils/pinataUpload"
 import NFTCard from "./components/NFTCard"
 import useDropzone from "./hooks/useDropzone"
 
 type Props = {
-  setUploadPromise: (uploadPromise: Promise<Record<string, string>>) => void
-}
-
-const uploadImages = async (
-  files: File[],
-  clientId: string,
-  ids: string[]
-): Promise<Record<string, string>> => {
-  const formData = new FormData()
-  files.forEach((file, index) => formData.append(ids[index], file))
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-file/${clientId}`,
-    {
-      method: "POST",
-      body: formData,
-    }
-  )
-
-  const body = await response.json()
-
-  if (response.ok) return body
-  else throw Error(body.message ?? "Failed to upload images")
+  setUploadPromise: (uploadPromise: Promise<void | void[]>) => void
 }
 
 const NFTData = ({ setUploadPromise }: Props) => {
@@ -72,73 +50,37 @@ const NFTData = ({ setUploadPromise }: Props) => {
     onDrop,
   })
 
-  const setupEventSource = useCallback(
-    (clientId: string) =>
-      new Promise<EventSource>((resolve, reject) => {
-        const source = new EventSource(
-          `${process.env.NEXT_PUBLIC_UPLOADER_API}/${clientId}`
-        )
-
-        source.addEventListener("progress", (event: Event) => {
-          try {
-            const progressReport: Record<string, number> = JSON.parse(
-              (event as Event & { data: string }).data
-            )
-            setProgresses((prev: Record<string, number>) => ({
-              ...prev,
-              ...progressReport,
-            }))
-          } catch (error) {
-            console.error(`Failed to parse SSE "progress" event message`, error)
-          }
-        })
-
-        source.addEventListener("open", () => resolve(source))
-
-        source.addEventListener("error", () =>
-          reject(Error("Failed to open SSE connection"))
-        )
-      }),
-    [setProgresses]
-  )
-
   // Not triggering upload on acceptedFiles change, since we need the generated field ids
   useEffect(() => {
     if (acceptedFiles.length > 0) {
-      const uploadProgressId = uuidv4()
-      setupEventSource(uploadProgressId)
-        .then((progressEventSource) =>
-          setUploadPromise(
-            uploadImages(
-              acceptedFiles,
-              uploadProgressId,
-              fields
-                .slice(fields.length - acceptedFiles.length)
-                .map((field) => field.id)
-            )
-              .then((hashReport) => {
-                setHashes((prev) => ({ ...prev, ...hashReport }))
-                return hashReport
-              })
-              .catch((e) => {
-                toast({
-                  status: "error",
-                  title: "Upload failed",
-                  description: e?.message ?? "Failed to upload images",
-                })
-                return {}
-              })
-              .finally(() => progressEventSource.close())
+      const newFields = fields.filter(
+        ({ id }) => !(id in hashes || id in progresses)
+      )
+
+      setProgresses((prev) => ({
+        ...prev,
+        ...Object.fromEntries(newFields.map(({ id }) => [id, 0])),
+      }))
+
+      setUploadPromise(
+        Promise.all(
+          newFields.map(({ id }, index) =>
+            pinFileToIPFS({
+              data: [acceptedFiles[index]],
+              onProgress: (progress) =>
+                setProgresses((prev) => ({ ...prev, [id]: progress })),
+            }).then(({ IpfsHash }) => {
+              setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
+            })
           )
-        )
-        .catch((e) => {
-          console.error("Failed to open SSE connection", e)
+        ).catch((error) => {
           toast({
             status: "error",
             title: "Upload failed",
-            description: e?.message ?? "Failed to upload images",
+            description: error.message || "Failed to upload images to IPFS",
           })
         })
+      )
     }
   }, [fields])
 

@@ -36,8 +36,7 @@ const CreateGuildPage = (): JSX.Element => {
     methods.formState?.isDirty && !methods.formState.isSubmitted
   )
 
-  const [uploadPromise, setUploadPromise] =
-    useState<Promise<Record<string, string>>>(null)
+  const [uploadPromise, setUploadPromise] = useState<Promise<void | void[]>>(null)
 
   return (
     <FormProvider {...methods}>

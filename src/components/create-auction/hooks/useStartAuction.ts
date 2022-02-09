@@ -6,6 +6,7 @@ import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
+import pinFileToIpfs from "utils/pinataUpload"
 
 const HOUR_IN_SECONDS = 3600
 
@@ -132,22 +133,26 @@ const useStartAuction = () => {
           })
         )
 
-      const cid = await fetch(
-        `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-metadata`,
-        {
-          method: "POST",
-          body: JSON.stringify({ data: metaDatas }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((res) => res.json())
+      const { IpfsHash } = await pinFileToIpfs({
+        data: metaDatas,
+        fileNames: metaDatas.map((_, index) => `${_data.id}/${index}.json`),
+      })
+
+      console.log(IpfsHash)
+
+      if (!IpfsHash) {
+        return toast({
+          title: "IPFS upload failed",
+          description: "Failed to upload metadata of the images to IPFS",
+          status: "error",
+        })
+      }
 
       setData(finalData)
 
       return onSubmit({
         ...finalData,
-        asset: { ...finalData.asset, uri: `https://ipfs.io/ipfs/${cid}` },
+        asset: { ...finalData.asset, uri: `https://ipfs.io/ipfs/${IpfsHash}` },
       })
     },
     error,
