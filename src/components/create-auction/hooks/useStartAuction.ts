@@ -138,8 +138,6 @@ const useStartAuction = () => {
         fileNames: metaDatas.map((_, index) => `${_data.id}/${index}.json`),
       })
 
-      console.log(IpfsHash)
-
       if (!IpfsHash) {
         return toast({
           title: "IPFS upload failed",
