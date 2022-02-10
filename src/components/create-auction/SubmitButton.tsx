@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form"
 import useStartAuction, { FormData } from "./hooks/useStartAuction"
 
 type Props = {
-  uploadPromise: Promise<Record<string, string>>
+  uploadPromise: Promise<void | void[]>
 }
 
 const SubmitButton = ({ uploadPromise }: Props) => {
