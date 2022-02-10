@@ -18,6 +18,7 @@ const NFTData = ({ setUploadPromise }: Props) => {
   const toast = useToast()
   const [progresses, setProgresses] = useState<Record<string, number>>({})
   const [hashes, setHashes] = useState<Record<string, string>>({})
+  const [imageErrors, setImageErrors] = useState<Record<string, string>>({})
   const { fields, append, remove } = useFieldArray({ name: "nfts" })
   const {
     register,
@@ -72,9 +73,19 @@ const NFTData = ({ setUploadPromise }: Props) => {
                   data: [acceptedFiles[index]],
                   onProgress: (progress) =>
                     setProgresses((prev) => ({ ...prev, [id]: progress })),
-                }).then(({ IpfsHash }) => {
-                  setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
                 })
+                  .then(({ IpfsHash }) => {
+                    setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
+                  })
+                  .catch((error) =>
+                    setImageErrors((prev) => ({
+                      ...prev,
+                      [id]:
+                        typeof error === "string"
+                          ? error
+                          : error.message || "Something went wrong",
+                    }))
+                  )
               )
             )
               .catch((error) => {
@@ -96,6 +107,57 @@ const NFTData = ({ setUploadPromise }: Props) => {
       )
     }
   }, [fields])
+
+  const getUploadRetryFn = (fieldId: string, index: number) => () => {
+    setImageErrors((prev) => {
+      const newImageErrors = { ...prev }
+      delete newImageErrors[fieldId]
+      return newImageErrors
+    })
+
+    setProgresses((prev) => ({
+      ...prev,
+      [fieldId]: 0,
+    }))
+
+    fetch("/api/pinata-key").then((response) =>
+      response.json().then(({ jwt, key }) => {
+        setUploadPromise(
+          pinFileToIPFS({
+            jwt,
+            data: [nfts?.[index]?.file],
+            onProgress: (progress) =>
+              setProgresses((prev) => ({
+                ...prev,
+                [fieldId]: progress,
+              })),
+          })
+            .then(({ IpfsHash }) => {
+              setHashes((prev) => ({
+                ...prev,
+                [fieldId]: IpfsHash,
+              }))
+            })
+            .catch((error) =>
+              setImageErrors((prev) => ({
+                ...prev,
+                [fieldId]:
+                  typeof error === "string"
+                    ? error
+                    : error.message || "Something went wrong",
+              }))
+            )
+            .finally(() => {
+              fetch("/api/pinata-key", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key }),
+              })
+            })
+        )
+      })
+    )
+  }
 
   return (
     <>
@@ -139,6 +201,12 @@ const NFTData = ({ setUploadPromise }: Props) => {
                 removeNft={() => remove(index)}
                 progress={progresses[field.id] ?? 0}
                 imageHash={hashes[field.id] ?? ""}
+                error={imageErrors[field.id] ?? ""}
+                retryUpload={
+                  imageErrors[field.id]?.length > 0
+                    ? getUploadRetryFn(field.id, index)
+                    : undefined
+                }
               />
             ))}
             {/* </AnimatePresence> */}
