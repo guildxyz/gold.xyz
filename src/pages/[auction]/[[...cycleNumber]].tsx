@@ -48,7 +48,7 @@ const Page = (): JSX.Element => {
   const { publicKey } = useWallet()
   const router = useRouter()
   const showCoinfetti = useCoinfetti()
-  const statSize = useBreakpointValue({ base: "md", md: "lg" })
+  const statSize = useBreakpointValue({ base: "md", xl: "lg" })
 
   const cycleState = useMemo(() => {
     if (!auction || !cycle) return undefined

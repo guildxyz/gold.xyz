@@ -12,7 +12,7 @@ const Countdown = ({ expiryTimestamp, onExpire }: Props): JSX.Element => {
     expiryTimestamp: new Date(expiryTimestamp),
     onExpire,
   })
-  const statSize = useBreakpointValue({ base: "sm", md: "md" })
+  const statSize = useBreakpointValue({ base: "sm", md: "md", xl: "lg" })
 
   return (
     <StatGroup sx={{ gap: "6px" }}>
