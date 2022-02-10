@@ -31,7 +31,6 @@ const CoinfettiProvider = ({
   const { width, height } = useWindowSize()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [image, setImage] = useState<HTMLImageElement>(null)
-  const [animationInProgress, setAnimationInProgress] = useState(false)
 
   const resizeCanvas = () => {
     const canvas = canvasRef?.current
@@ -40,10 +39,7 @@ const CoinfettiProvider = ({
     canvas.height = height
   }
 
-  const windowBlurHandler = () => {
-    setAnimationInProgress(false)
-    window.requestAnimationFrame(draw)
-  }
+  const windowBlurHandler = () => window.requestAnimationFrame(draw)
 
   useEffect(() => {
     // Initializing the coing image
@@ -87,7 +83,6 @@ const CoinfettiProvider = ({
       }
     }
 
-    setAnimationInProgress(true)
     window.requestAnimationFrame(draw)
   }
 
@@ -97,21 +92,12 @@ const CoinfettiProvider = ({
     if (!canvas) return
 
     const ctx = canvas.getContext("2d")
-
-    if (!animationInProgress) {
-      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
-      return
-    }
-
     const time = Date.now()
 
     ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
     for (let i = 0; i < imageCount; i++) drawAtRandomPosition(time, i)
 
-    if (positions.every((position) => position?.finishedAnimation)) {
-      setAnimationInProgress(false)
-      return
-    }
+    if (positions.every((position) => position?.finishedAnimation)) return
 
     window.requestAnimationFrame(draw)
   }
@@ -130,8 +116,6 @@ const CoinfettiProvider = ({
     ctx.rotate(y * (2 - positions[index].rotationRandomness) * (Math.PI / 360))
     ctx.translate(-x - imageWidth / 2, -y - imageHeight / 2)
 
-    // ctx.fillStyle = "#ff0000";
-    // ctx.fillRect(x, y, imageWidth, imageHeight);
     if (image && y !== 0) ctx.drawImage(image, x, y, imageWidth, imageHeight)
 
     ctx.restore()
