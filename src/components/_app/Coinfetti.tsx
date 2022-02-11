@@ -42,25 +42,18 @@ const CoinfettiProvider = ({
   const windowBlurHandler = () => window.requestAnimationFrame(draw)
 
   useEffect(() => {
-    // Initializing the coing image
     const img = new Image()
     img.src = "/img/coin.png"
     img.onload = () => setImage(img)
 
-    // Resizing the canvas (to fill the whole screen)
-    resizeCanvas()
-
-    // Registering event listeners
     window.addEventListener("blur", windowBlurHandler)
-
-    // Unregistering event listeners
     return () => {
       window.removeEventListener("blur", windowBlurHandler)
     }
   }, [])
 
   // Handle window resize
-  useEffect(() => resizeCanvas(), [width, height])
+  useEffect(() => window && height && resizeCanvas(), [width, height])
 
   const start = () => {
     startTime = Date.now()
