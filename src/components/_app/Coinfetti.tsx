@@ -39,16 +39,21 @@ const CoinfettiProvider = ({
     canvas.height = height
   }
 
+  const windowBlurHandler = () => window.requestAnimationFrame(draw)
+
   useEffect(() => {
     const img = new Image()
     img.src = "/img/coin.png"
     img.onload = () => setImage(img)
 
-    resizeCanvas()
+    window.addEventListener("blur", windowBlurHandler)
+    return () => {
+      window.removeEventListener("blur", windowBlurHandler)
+    }
   }, [])
 
   // Handle window resize
-  useEffect(() => resizeCanvas(), [width, height])
+  useEffect(() => window && height && resizeCanvas(), [width, height])
 
   const start = () => {
     startTime = Date.now()
@@ -104,8 +109,6 @@ const CoinfettiProvider = ({
     ctx.rotate(y * (2 - positions[index].rotationRandomness) * (Math.PI / 360))
     ctx.translate(-x - imageWidth / 2, -y - imageHeight / 2)
 
-    // ctx.fillStyle = "#ff0000";
-    // ctx.fillRect(x, y, imageWidth, imageHeight);
     if (image && y !== 0) ctx.drawImage(image, x, y, imageWidth, imageHeight)
 
     ctx.restore()
