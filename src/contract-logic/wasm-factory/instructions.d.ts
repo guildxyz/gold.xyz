@@ -52,6 +52,15 @@ export function getAuctionPoolPubkeyWasm(secondary: boolean): Pubkey;
 */
 export function getAuctionRootStatePubkeyWasm(auction_id: Uint8Array): Pubkey;
 /**
+* @param {string} auction_id
+* @returns {Promise<boolean>}
+*/
+export function isIdUniqueWasm(auction_id: string): Promise<boolean>;
+/**
+* @returns {string}
+*/
+export function getNetWasm(): string;
+/**
 * Initialize Javascript logging and panic handler
 */
 export function init(): void;

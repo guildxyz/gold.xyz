@@ -31,6 +31,7 @@ module.exports = withTM({
         new WasmPackPlugin({
           crateDirectory: resolve("./rust/client"),
           args: "--log-level warn",
+          extraArgs: `--features ${process.env.NEXT_PUBLIC_NETWORK}`,
           outDir: "../../src/contract-logic/wasm-factory",
           outName: "instructions",
         })
