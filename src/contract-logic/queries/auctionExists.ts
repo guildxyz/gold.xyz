@@ -3,7 +3,7 @@ const auctionExists = async (auction_id: string): Promise<boolean> => {
   return getAuctionWasm(auction_id)
     .then(() => true)
     .catch((error) => {
-      if (error.message === "no auction found with this id") return false
+      if (error.startsWith("error decoding response body")) return false
       console.log("wasm error: ", error)
       Promise.reject(error)
     })
