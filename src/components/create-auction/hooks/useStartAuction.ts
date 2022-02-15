@@ -1,6 +1,7 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { AuctionConfig, NFTData } from "contract-logic/queries/types"
 import { startAuction } from "contract-logic/transactions/startAuction"
+import usePinataCredentials from "hooks/usePinataCredentials"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
@@ -33,6 +34,7 @@ const useStartAuction = () => {
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const { sendTransaction, publicKey } = useWallet()
+  const getJWT = usePinataCredentials()
 
   const handleStartAuction = async (data_: AuctionConfig) => {
     console.log(data_)
@@ -133,7 +135,9 @@ const useStartAuction = () => {
           })
         )
 
+      const jwt = await getJWT()
       const { IpfsHash } = await pinFileToIpfs({
+        jwt,
         data: metaDatas,
         fileNames: metaDatas.map((_, index) => `${_data.id}/${index}.json`),
       })

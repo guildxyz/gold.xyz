@@ -8,7 +8,7 @@ type PinataPinFileResponse = {
 }
 
 type PinToIPFSProps = {
-  jwt?: string
+  jwt: string
   data: (File | string)[]
   fileNames?: string[]
   pinataOptions?: {
@@ -40,13 +40,6 @@ const pinFileToIPFS = ({
   pinataLimiter.schedule(
     () =>
       new Promise<PinataPinFileResponse>(async (resolve, reject) => {
-        const apiKey =
-          jwt?.length > 0
-            ? { jwt, key: undefined }
-            : await fetch("/api/pinata-key").then((response) =>
-                response.json().then((body) => ({ jwt: body.jwt, key: body.key }))
-              )
-
         const formData = new FormData()
 
         if (data.length <= 0)
@@ -76,18 +69,11 @@ const pinFileToIPFS = ({
 
         const xhr = new XMLHttpRequest()
         xhr.open("POST", "https://api.pinata.cloud/pinning/pinFileToIPFS")
-        xhr.setRequestHeader("Authorization", `Bearer ${apiKey.jwt}`)
+        xhr.setRequestHeader("Authorization", `Bearer ${jwt}`)
 
         xhr.upload.onprogress = (event) =>
           onProgress?.((event.loaded / event.total) * 0.9)
         xhr.onload = async () => {
-          if (!jwt)
-            await fetch("/api/pinata-key", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ key: apiKey.key }),
-            }).catch(() => console.error("Failed to revoke API key after request"))
-
           if (xhr.status >= 200 && xhr.status < 300) {
             onProgress?.(1)
             resolve(JSON.parse(xhr.response))
