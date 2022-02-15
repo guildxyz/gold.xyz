@@ -3,11 +3,10 @@ import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
-import usePinataJWT from "hooks/usePinataJWT"
+import usePinata from "hooks/usePinata"
 import useToast from "hooks/useToast"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
-import pinFileToIPFS from "utils/pinataUpload"
 import NFTCard from "./components/NFTCard"
 import useDropzone from "./hooks/useDropzone"
 
@@ -27,7 +26,7 @@ const NFTData = ({ setUploadPromise }: Props) => {
     formState: { errors },
   } = useFormContext()
 
-  const { jwt } = usePinataJWT()
+  const { pinFile } = usePinata()
 
   const nfts = useWatch({ name: "nfts" })
 
@@ -67,8 +66,7 @@ const NFTData = ({ setUploadPromise }: Props) => {
       }))
 
       const pinRequests = newFields.map(({ id }, index) =>
-        pinFileToIPFS({
-          jwt,
+        pinFile({
           data: [acceptedFiles[index]],
           onProgress: (progress) =>
             setProgresses((prev) => ({ ...prev, [id]: progress })),
@@ -112,8 +110,7 @@ const NFTData = ({ setUploadPromise }: Props) => {
     }))
 
     setUploadPromise(
-      pinFileToIPFS({
-        jwt,
+      pinFile({
         data: [nfts?.[index]?.file],
         onProgress: (progress) =>
           setProgresses((prev) => ({
