@@ -46,11 +46,11 @@ const CoinfettiProvider = ({
     img.src = "/img/coin.png"
     img.onload = () => setImage(img)
 
-    window.addEventListener("blur", windowBlurHandler)
+    if (startTime > 0) window.addEventListener("blur", windowBlurHandler)
     return () => {
       window.removeEventListener("blur", windowBlurHandler)
     }
-  }, [])
+  }, [startTime])
 
   // Handle window resize
   useEffect(() => window && height && resizeCanvas(), [width, height])
