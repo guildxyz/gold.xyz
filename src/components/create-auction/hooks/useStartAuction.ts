@@ -1,7 +1,7 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { usePinataJWT } from "components/_app/PinataProvider"
 import { AuctionConfig, NFTData } from "contract-logic/queries/types"
 import { startAuction } from "contract-logic/transactions/startAuction"
+import usePinataJWT from "hooks/usePinataJWT"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
@@ -34,7 +34,7 @@ const useStartAuction = () => {
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const { sendTransaction, publicKey } = useWallet()
-  const jwt = usePinataJWT()
+  const { jwt } = usePinataJWT()
 
   const handleStartAuction = async (data_: AuctionConfig) => {
     console.log(data_)

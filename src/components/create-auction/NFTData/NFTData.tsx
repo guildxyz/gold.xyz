@@ -2,17 +2,17 @@ import { FormControl, FormErrorMessage, Grid, HStack, Input } from "@chakra-ui/r
 import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
-import { usePinataJWT } from "components/_app/PinataProvider"
 import { AnimateSharedLayout } from "framer-motion"
+import usePinataJWT from "hooks/usePinataJWT"
 import useToast from "hooks/useToast"
-import { useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
 import pinFileToIPFS from "utils/pinataUpload"
 import NFTCard from "./components/NFTCard"
 import useDropzone from "./hooks/useDropzone"
 
 type Props = {
-  setUploadPromise: (uploadPromise: Promise<void | void[]>) => void
+  setUploadPromise: Dispatch<SetStateAction<Promise<void | void[]>>>
 }
 
 const NFTData = ({ setUploadPromise }: Props) => {
@@ -27,7 +27,7 @@ const NFTData = ({ setUploadPromise }: Props) => {
     formState: { errors },
   } = useFormContext()
 
-  const jwt = usePinataJWT()
+  const { jwt } = usePinataJWT()
 
   const nfts = useWatch({ name: "nfts" })
 

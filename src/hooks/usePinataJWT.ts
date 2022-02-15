@@ -1,10 +1,4 @@
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-} from "react"
+import { useCallback, useEffect } from "react"
 import useSWRImmutable from "swr/immutable"
 
 type Credentials = {
@@ -12,20 +6,13 @@ type Credentials = {
   key: string
 }
 
-const PinataContext = createContext<string>(null)
-
 const fetchCredentials = async (_: string): Promise<Credentials> => {
   const response = await fetch("/api/pinata-key")
   return response.json()
 }
 
-const PinataProvider = ({
-  children,
-}: PropsWithChildren<Record<string, unknown>>) => {
-  const {
-    data: { jwt, key },
-    mutate,
-  } = useSWRImmutable("pinataJWT", fetchCredentials, {
+const usePinataJWT = () => {
+  const swrResponse = useSWRImmutable("pinataJWT", fetchCredentials, {
     revalidateOnMount: true,
     fallbackData: { jwt: null, key: null },
   })
@@ -34,25 +21,26 @@ const PinataProvider = ({
     fetch("/api/pinata-key", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key }),
+      body: JSON.stringify({ key: swrResponse.data.key }),
     }).then((response) => {
       if (response.ok) {
-        mutate({
+        swrResponse.mutate({
           jwt: null,
           key: null,
         })
       }
     })
-  }, [key, mutate])
+  }, [swrResponse])
 
   useEffect(() => {
     window.addEventListener("beforeunload", revokeKey)
     return () => window.removeEventListener("beforeunload", revokeKey)
   }, [revokeKey])
 
-  return <PinataContext.Provider value={jwt}>{children}</PinataContext.Provider>
+  return {
+    ...swrResponse,
+    jwt: swrResponse.data.jwt,
+  }
 }
 
-const usePinataJWT = () => useContext(PinataContext)
-
-export { PinataProvider, usePinataJWT }
+export default usePinataJWT
