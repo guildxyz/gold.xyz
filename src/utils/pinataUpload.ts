@@ -1,13 +1,14 @@
 import Bottleneck from "bottleneck"
+import shortenHex from "./shortenHex"
 
-type PinataPinFileResponse = {
+export type PinataPinFileResponse = {
   IpfsHash: string
   PinSize: number
   Timestamp: string
   isDuplicate?: boolean
 }
 
-type PinToIPFSProps = {
+export type PinToIPFSProps = {
   jwt: string
   data: (File | string)[]
   fileNames?: string[]
@@ -87,6 +88,7 @@ const pinFileToIPFS = ({
 
         xhr.onabort = () => reject("Upload request aborted")
 
+        console.log("JWT used for request:", shortenHex(jwt))
         xhr.send(formData as any)
       })
   )
