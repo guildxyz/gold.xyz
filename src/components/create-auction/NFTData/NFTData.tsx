@@ -65,9 +65,6 @@ const NFTData = ({ setUploadPromise }: Props) => {
         ...prev,
         ...Object.fromEntries(newFields.map(({ id }) => [id, 0])),
       }))
-      console.log(
-        `Uploading ${newFields.length} image${newFields.length > 1 ? "s" : ""}`
-      )
 
       const pinRequests = newFields.map(({ id }, index) =>
         pinFileToIPFS({
@@ -91,19 +88,13 @@ const NFTData = ({ setUploadPromise }: Props) => {
       )
 
       setUploadPromise(
-        Promise.all(pinRequests)
-          .then(() => {
-            console.log(
-              `Uploaded ${newFields.length} image${newFields.length > 1 ? "s" : ""}`
-            )
+        Promise.all(pinRequests).catch((error) => {
+          toast({
+            status: "error",
+            title: "Upload failed",
+            description: error.message || "Failed to upload images to IPFS",
           })
-          .catch((error) => {
-            toast({
-              status: "error",
-              title: "Upload failed",
-              description: error.message || "Failed to upload images to IPFS",
-            })
-          })
+        })
       )
     }
   }, [fields])

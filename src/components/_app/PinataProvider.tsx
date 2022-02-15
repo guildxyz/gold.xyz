@@ -6,7 +6,6 @@ import {
   useEffect,
 } from "react"
 import useSWRImmutable from "swr/immutable"
-import shortenHex from "utils/shortenHex"
 
 type Credentials = {
   jwt: string
@@ -17,12 +16,7 @@ const PinataContext = createContext<string>(null)
 
 const fetchCredentials = async (_: string): Promise<Credentials> => {
   const response = await fetch("/api/pinata-key")
-  const body = await response.json()
-  console.log("Generated Pinata key:", {
-    key: shortenHex(body.key),
-    jwt: shortenHex(body.jwt),
-  })
-  return body
+  return response.json()
 }
 
 const PinataProvider = ({
@@ -37,7 +31,6 @@ const PinataProvider = ({
   })
 
   const revokeKey = useCallback(() => {
-    console.log("Revoking Pinata key:", shortenHex(key))
     fetch("/api/pinata-key", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
