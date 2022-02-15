@@ -6,10 +6,6 @@ import {
   useEffect,
 } from "react"
 import useSWRImmutable from "swr/immutable"
-import pinFileToIPFS, {
-  PinataPinFileResponse,
-  PinToIPFSProps,
-} from "utils/pinataUpload"
 import shortenHex from "utils/shortenHex"
 
 type Credentials = {
@@ -17,17 +13,7 @@ type Credentials = {
   key: string
 }
 
-const PinataContext = createContext<{
-  jwt: string
-  pinFileToIPFS: (
-    props: Omit<PinToIPFSProps, "jwt">
-  ) => Promise<PinataPinFileResponse>
-  updateCredentials: () => Promise<Credentials>
-}>({
-  jwt: null,
-  pinFileToIPFS: null,
-  updateCredentials: null,
-})
+const PinataContext = createContext<string>(null)
 
 const fetchCredentials = async (_: string): Promise<Credentials> => {
   const response = await fetch("/api/pinata-key")
@@ -46,7 +32,7 @@ const PinataProvider = ({
     data: { jwt, key },
     mutate,
   } = useSWRImmutable("pinataJWT", fetchCredentials, {
-    revalidateOnMount: false,
+    revalidateOnMount: true,
     fallbackData: { jwt: null, key: null },
   })
 
@@ -66,29 +52,14 @@ const PinataProvider = ({
     })
   }, [key, mutate])
 
-  const pinWithJWT = async (props: Omit<PinToIPFSProps, "jwt">) => {
-    const jwtToUse = jwt || (await mutate().then((d) => d.jwt))
-    return pinFileToIPFS({ ...props, jwt: jwtToUse })
-  }
-
   useEffect(() => {
     window.addEventListener("beforeunload", revokeKey)
     return () => window.removeEventListener("beforeunload", revokeKey)
   }, [revokeKey])
 
-  return (
-    <PinataContext.Provider
-      value={{
-        jwt,
-        pinFileToIPFS: pinWithJWT,
-        updateCredentials: async () => (jwt ? { jwt, key } : mutate()),
-      }}
-    >
-      {children}
-    </PinataContext.Provider>
-  )
+  return <PinataContext.Provider value={jwt}>{children}</PinataContext.Provider>
 }
 
-const usePinata = () => useContext(PinataContext)
+const usePinataJWT = () => useContext(PinataContext)
 
-export { PinataProvider, usePinata }
+export { PinataProvider, usePinataJWT }

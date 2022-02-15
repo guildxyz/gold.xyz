@@ -2,7 +2,7 @@ import { FormControl, FormErrorMessage, Grid, HStack, Input } from "@chakra-ui/r
 import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
-import { usePinata } from "components/_app/PinataProvider"
+import { usePinataJWT } from "components/_app/PinataProvider"
 import { AnimateSharedLayout } from "framer-motion"
 import useToast from "hooks/useToast"
 import { useEffect, useState } from "react"
@@ -27,7 +27,7 @@ const NFTData = ({ setUploadPromise }: Props) => {
     formState: { errors },
   } = useFormContext()
 
-  const { updateCredentials, pinFileToIPFS: pinWithExistingJWT } = usePinata()
+  const jwt = usePinataJWT()
 
   const nfts = useWatch({ name: "nfts" })
 
@@ -61,59 +61,52 @@ const NFTData = ({ setUploadPromise }: Props) => {
         ({ id }) => !(id in hashes || id in progresses)
       )
 
-      if (newFields.length > 0) {
-        setProgresses((prev) => ({
-          ...prev,
-          ...Object.fromEntries(newFields.map(({ id }) => [id, 0])),
-        }))
-        ;(async () => {
-          const { jwt } = await updateCredentials()
-          console.log(
-            `Uploading ${newFields.length} image${newFields.length > 1 ? "s" : ""}`
-          )
+      setProgresses((prev) => ({
+        ...prev,
+        ...Object.fromEntries(newFields.map(({ id }) => [id, 0])),
+      }))
+      console.log(
+        `Uploading ${newFields.length} image${newFields.length > 1 ? "s" : ""}`
+      )
 
-          const pinRequests = newFields.map(({ id }, index) =>
-            pinFileToIPFS({
-              jwt,
-              data: [acceptedFiles[index]],
-              onProgress: (progress) =>
-                setProgresses((prev) => ({ ...prev, [id]: progress })),
+      const pinRequests = newFields.map(({ id }, index) =>
+        pinFileToIPFS({
+          jwt,
+          data: [acceptedFiles[index]],
+          onProgress: (progress) =>
+            setProgresses((prev) => ({ ...prev, [id]: progress })),
+        })
+          .then(({ IpfsHash }) => {
+            setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
+          })
+          .catch((error) =>
+            setImageErrors((prev) => ({
+              ...prev,
+              [id]:
+                typeof error === "string"
+                  ? error
+                  : error.message || "Something went wrong",
+            }))
+          )
+      )
+
+      setUploadPromise(
+        Promise.all(pinRequests)
+          .then(() => {
+            console.log(
+              `Uploaded ${newFields.length} image${newFields.length > 1 ? "s" : ""}`
+            )
+          })
+          .catch((error) => {
+            toast({
+              status: "error",
+              title: "Upload failed",
+              description: error.message || "Failed to upload images to IPFS",
             })
-              .then(({ IpfsHash }) => {
-                setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
-              })
-              .catch((error) =>
-                setImageErrors((prev) => ({
-                  ...prev,
-                  [id]:
-                    typeof error === "string"
-                      ? error
-                      : error.message || "Something went wrong",
-                }))
-              )
-          )
-
-          setUploadPromise(
-            Promise.all(pinRequests)
-              .then(() => {
-                console.log(
-                  `Uploaded ${newFields.length} image${
-                    newFields.length > 1 ? "s" : ""
-                  }`
-                )
-              })
-              .catch((error) => {
-                toast({
-                  status: "error",
-                  title: "Upload failed",
-                  description: error.message || "Failed to upload images to IPFS",
-                })
-              })
-          )
-        })()
-      }
+          })
+      )
     }
-  }, [fields, updateCredentials, pinFileToIPFS])
+  }, [fields])
 
   const getUploadRetryFn = (fieldId: string, index: number) => () => {
     setImageErrors((prev) => {
@@ -128,7 +121,8 @@ const NFTData = ({ setUploadPromise }: Props) => {
     }))
 
     setUploadPromise(
-      pinWithExistingJWT({
+      pinFileToIPFS({
+        jwt,
         data: [nfts?.[index]?.file],
         onProgress: (progress) =>
           setProgresses((prev) => ({

@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { usePinata } from "components/_app/PinataProvider"
+import { usePinataJWT } from "components/_app/PinataProvider"
 import { AuctionConfig, NFTData } from "contract-logic/queries/types"
 import { startAuction } from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
@@ -7,6 +7,7 @@ import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
+import pinFileToIPFS from "utils/pinataUpload"
 
 const HOUR_IN_SECONDS = 3600
 
@@ -33,7 +34,7 @@ const useStartAuction = () => {
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const { sendTransaction, publicKey } = useWallet()
-  const { pinFileToIPFS } = usePinata()
+  const jwt = usePinataJWT()
 
   const handleStartAuction = async (data_: AuctionConfig) => {
     console.log(data_)
@@ -134,7 +135,9 @@ const useStartAuction = () => {
           })
         )
 
+      console.log("Uploading metadata")
       const { IpfsHash } = await pinFileToIPFS({
+        jwt,
         data: metaDatas,
         fileNames: metaDatas.map((_, index) => `${_data.id}/${index}.json`),
       })
