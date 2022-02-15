@@ -12,6 +12,7 @@ import NFTData from "components/create-auction/NFTData"
 import NumberOfCycles from "components/create-auction/NumberOfCycles"
 import RoundSelector from "components/create-auction/RoundSelector"
 import SubmitButton from "components/create-auction/SubmitButton"
+import { PinataProvider } from "components/_app/PinataProvider"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
@@ -39,37 +40,42 @@ const CreateGuildPage = (): JSX.Element => {
   const [uploadPromise, setUploadPromise] = useState<Promise<void | void[]>>(null)
 
   return (
-    <FormProvider {...methods}>
-      <Layout title="Start auction" maxWidth="container.lg">
-        {connected ? (
-          <>
-            <VStack spacing={10} alignItems="start">
-              <Stack w="full" direction={{ base: "column", md: "row" }} spacing="10">
-                <Section title="Choose a name for your auction">
-                  <NameAndIcon />
-                </Section>
-                <Section
-                  title="Set goal treasury amount"
-                  maxW={{ base: "2xs", lg: "xs" }}
-                  flexShrink="0"
+    <PinataProvider>
+      <FormProvider {...methods}>
+        <Layout title="Start auction" maxWidth="container.lg">
+          {connected ? (
+            <>
+              <VStack spacing={10} alignItems="start">
+                <Stack
+                  w="full"
+                  direction={{ base: "column", md: "row" }}
+                  spacing="10"
                 >
-                  <GoalAmount />
+                  <Section title="Choose a name for your auction">
+                    <NameAndIcon />
+                  </Section>
+                  <Section
+                    title="Set goal treasury amount"
+                    maxW={{ base: "2xs", lg: "xs" }}
+                    flexShrink="0"
+                  >
+                    <GoalAmount />
+                  </Section>
+                </Stack>
+
+                <Section title="Description">
+                  <Description />
                 </Section>
-              </Stack>
 
-              <Section title="Description">
-                <Description />
-              </Section>
+                <Divider />
 
-              <Divider />
+                <Section title="Asset type">
+                  <AssetSelector />
+                </Section>
 
-              <Section title="Asset type">
-                <AssetSelector />
-              </Section>
+                <NFTData setUploadPromise={setUploadPromise} />
 
-              <NFTData setUploadPromise={setUploadPromise} />
-
-              {/* <Section
+                {/* <Section
                 title={
                   <>
                     Set the minimum price
@@ -80,29 +86,30 @@ const CreateGuildPage = (): JSX.Element => {
                 <MinBid />
               </Section> */}
 
-              <Divider />
+                <Divider />
 
-              <Section title="Round term">
-                <RoundSelector />
-              </Section>
+                <Section title="Round term">
+                  <RoundSelector />
+                </Section>
 
-              <Section title="Number of rounds">
-                <NumberOfCycles />
-              </Section>
-            </VStack>
+                <Section title="Number of rounds">
+                  <NumberOfCycles />
+                </Section>
+              </VStack>
 
-            <Flex justifyContent="right" mt="14">
-              <SubmitButton uploadPromise={uploadPromise} />
-            </Flex>
-          </>
-        ) : (
-          <WalletNotConnectedAlert />
+              <Flex justifyContent="right" mt="14">
+                <SubmitButton uploadPromise={uploadPromise} />
+              </Flex>
+            </>
+          ) : (
+            <WalletNotConnectedAlert />
+          )}
+        </Layout>
+        {process.env.NODE_ENV === "development" && (
+          <DevTool control={methods.control} />
         )}
-      </Layout>
-      {process.env.NODE_ENV === "development" && (
-        <DevTool control={methods.control} />
-      )}
-    </FormProvider>
+      </FormProvider>
+    </PinataProvider>
   )
 }
 

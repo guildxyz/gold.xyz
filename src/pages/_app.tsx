@@ -1,6 +1,5 @@
 import Chakra from "components/_app/Chakra"
 import { CoinfettiProvider } from "components/_app/Coinfetti"
-import { PinataProvider } from "components/_app/PinataProvider"
 import "focus-visible/dist/focus-visible"
 import type { AppProps } from "next/app"
 import dynamic from "next/dynamic"
@@ -39,9 +38,7 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
               imageCount={40}
               speed={1.5}
             >
-              <PinataProvider>
-                <Component {...pageProps} />
-              </PinataProvider>
+              <Component {...pageProps} />
             </CoinfettiProvider>
           </WalletConnectionProvider>
         </IconContext.Provider>
