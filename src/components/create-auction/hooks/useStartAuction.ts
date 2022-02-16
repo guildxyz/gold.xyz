@@ -134,7 +134,6 @@ const useStartAuction = () => {
           })
         )
 
-      console.log("Uploading metadata")
       const { IpfsHash } = await pinFile({
         data: metaDatas,
         fileNames: metaDatas.map((_, index) => `${_data.id}/${index}.json`),
