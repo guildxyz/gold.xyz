@@ -17,7 +17,7 @@ const NumberOfCycles = () => {
     register,
     setValue,
     trigger,
-    formState: { errors, dirtyFields },
+    formState: { errors, touchedFields },
   } = useFormContext()
   const [isInfinite, setIsInfinite] = useState()
 
@@ -40,9 +40,12 @@ const NumberOfCycles = () => {
 
   useEffect(() => {
     if (!maxSupply) return
-    if (!dirtyFields?.numberOfCycles) setValue("numberOfCycles", maxSupply)
-    trigger("numberOfCycles")
-  }, [maxSupply, setValue, dirtyFields])
+    if (!touchedFields?.numberOfCycles)
+      setValue("numberOfCycles", maxSupply, {
+        shouldTouch: false,
+        shouldValidate: true,
+      })
+  }, [maxSupply, setValue, touchedFields])
 
   return (
     <FormControl
