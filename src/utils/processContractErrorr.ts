@@ -21,14 +21,14 @@ const processContractError = (
     case "1f9":
       return {
         title: "Auction is in progress",
-        description: "",
+        description: "This auction is in progress",
       }
 
     case "20e":
     case "1fb":
       return {
         title: "Invalid bid amount",
-        description: "Please adjust the bit amount to reach the dsipalyed minimum",
+        description: "Please adjust the bid amount to reach the dispalyed minimum",
       }
 
     case "1fc":
@@ -48,13 +48,7 @@ const processContractError = (
     case "201": // Nft already exists
       return {
         title: "NFT error",
-        description: "The submitted NFTs are invelid",
-      }
-
-    case "1f9":
-      return {
-        title: "Auction is in progress",
-        description: "",
+        description: "Some of the submitted NFTs are invalid",
       }
 
     case "202":
@@ -69,6 +63,7 @@ const processContractError = (
         description: "This auction has already ended",
       }
 
+    case "1f7":
     case "204":
       return {
         title: "Auction name taken",
@@ -79,7 +74,7 @@ const processContractError = (
     case "205":
       return {
         title: "Not admin",
-        description: "Only contract admin can execute this action",
+        description: "Only admin can execute this action",
       }
 
     // Looks like this one does not get thrown anywhere
@@ -92,20 +87,20 @@ const processContractError = (
     case "20a":
       return {
         title: "Arithmetic error",
-        description: "This is likely caudes by a bug. Please contact us",
+        description: "This is likely caused by a bug. Please contact us",
       }
 
     case "210":
       return {
         title: "Invalid cycle period",
-        description:
-          "Make sure to set the cycle period correctly. If it looks fine, contact us",
+        description: "Make sure to set the cycle period correctly",
       }
 
     case "211":
       return {
         title: "Auction ID not ASCII",
-        description: "This should not happen. Please contact us",
+        description:
+          "The id generated from the auction name contains invalid characters",
       }
 
     case "214": // Invalid encore period
@@ -121,7 +116,6 @@ const processContractError = (
     case "1fe": // Top bidder account mismatch
     case "1fa": // Invalid seeds
     case "1f4": // Invalid instruction
-    case "1f7": // Auction already initialized
     case "1f8": // Contract already initialized
     default:
       console.error("Unknown contract error:", error)
