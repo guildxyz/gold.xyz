@@ -15,13 +15,14 @@ import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useRef } from "react"
 import { useSWRConfig } from "swr"
+import processContractError from "utils/processContractErrorr"
 
 export default function DeleteDialog({ isOpen, onClose }) {
   const { mutate } = useSWRConfig()
   const { auction } = useAuction()
   const { connection } = useConnection()
   const { sendTransaction } = useWallet()
-  const toast = useToast()
+  const toast = useToast({ status: "error" })
   const router = useRouter()
   const alertCancelRef = useRef()
 
@@ -49,12 +50,7 @@ export default function DeleteDialog({ isOpen, onClose }) {
       )
       router.push("/")
     },
-    onError: (e) =>
-      toast({
-        title: "Error deleting auction",
-        description: e.toString(),
-        status: "error",
-      }),
+    onError: (e) => toast(processContractError(e)),
   })
 
   return (

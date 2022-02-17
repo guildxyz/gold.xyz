@@ -61,9 +61,7 @@ const useStartAuction = () => {
         mutate("auctions")
         router.push(`/${data.id}`)
       },
-      onError: (e) => {
-        toast(processContractError(e))
-      },
+      onError: (e) => toast(processContractError(e)),
     }
   )
 

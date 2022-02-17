@@ -13,12 +13,13 @@ import { claimFunds } from "contract-logic/transactions/claimFunds"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRef } from "react"
+import processContractError from "utils/processContractErrorr"
 
 const ClaimDialog = ({ isOpen, onClose }) => {
   const { auction, mutate } = useAuction()
   const { connection } = useConnection()
   const { sendTransaction } = useWallet()
-  const toast = useToast()
+  const toast = useToast({ status: "error" })
   const alertCancelRef = useRef()
 
   const handleClaimFunds = async () => {
@@ -47,12 +48,7 @@ const ClaimDialog = ({ isOpen, onClose }) => {
       mutate()
       onClose()
     },
-    onError: (e) =>
-      toast({
-        title: "Error claiming funds",
-        description: e.toString(),
-        status: "error",
-      }),
+    onError: (e) => toast(processContractError(e)),
   })
 
   return (
