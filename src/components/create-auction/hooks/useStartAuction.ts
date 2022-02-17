@@ -7,6 +7,7 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
 import pinFileToIpfs from "utils/pinataUpload"
+import processContractError from "utils/processContractErrorr"
 
 const HOUR_IN_SECONDS = 3600
 
@@ -28,7 +29,7 @@ export type FormData = {
 
 const useStartAuction = () => {
   const [data, setData] = useState<AuctionConfig>()
-  const toast = useToast()
+  const toast = useToast({ status: "error" })
   const { connection } = useConnection()
   const { mutate } = useSWRConfig()
   const router = useRouter()
@@ -60,12 +61,9 @@ const useStartAuction = () => {
         mutate("auctions")
         router.push(`/${data.id}`)
       },
-      onError: (e) =>
-        toast({
-          title: "Error creating auction",
-          description: e.toString(),
-          status: "error",
-        }),
+      onError: (e) => {
+        toast(processContractError(e))
+      },
     }
   )
 
