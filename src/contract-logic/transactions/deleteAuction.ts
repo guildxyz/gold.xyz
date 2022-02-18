@@ -7,19 +7,18 @@ import { NUM_OF_CYCLES_TO_DELETE } from "../consts"
 
 export async function deleteAuction(
   auctionId: string,
-  auctionOwnerPubkey: PublicKey
+  auctionOwnerPubkey: PublicKey,
+  topBidderPubkey: PublicKey,
+  currentAuctionCycle: number,
 ) {
-  const { deleteAuctionWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../wasm-factory")
-
-  const topBidder = await getTopBidderWasm(auctionId)
-  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
+  const { deleteAuctionWasm } = await import("../wasm-factory")
 
   const auctionIdArray = padTo32Bytes(auctionId)
   const deleteAuctionArgs = new DeleteAuctionArgs({
     auctionOwnerPubkey,
     topBidderPubkey: topBidder,
     auctionId: auctionIdArray,
-    currentAuctionCycle: currentCycleNumber,
+    currentAuctionCycle,
     numOfCyclesToDelete: NUM_OF_CYCLES_TO_DELETE,
   })
 

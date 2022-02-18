@@ -7,19 +7,19 @@ import { LAMPORTS } from "../consts"
 
 export async function placeBid(
   auctionId: string,
-  bidder: PublicKey,
+  bidderPubkey: PublicKey,
+  topBidderPubkey: PublicKey,
   amount: number // in SOL
+  cycleNumber: number,
 ) {
-  const { placeBidWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../wasm-factory")
-  const topBidder = await getTopBidderWasm(auctionId)
-  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
+  const { placeBidWasm } = await import("../wasm-factory")
 
   const auctionIdArray = padTo32Bytes(auctionId)
   const placeBidArgs = new PlaceBidArgs({
-    userMainPubkey: bidder,
+    bidderPubkey,
     auctionId: auctionIdArray,
-    cycleNumber: currentCycleNumber,
-    topBidderPubkey: topBidder,
+    cycleNumber,
+    topBidderPubkey,
     amount: amount * LAMPORTS,
   })
 

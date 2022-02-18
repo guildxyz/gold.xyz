@@ -1,6 +1,6 @@
 const auctionExists = async (auction_id: string): Promise<boolean> => {
-  const { isIdUniqueWasm } = await import("../wasm-factory")
-  return isIdUniqueWasm(auction_id).then((isUnique) => !isUnique)
+  const { auctionExists } = await import("../wasm-factory")
+  return auctionExists(auction_id).then((exists) => exists)
 }
 
 export default auctionExists

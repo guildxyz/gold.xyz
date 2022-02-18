@@ -7,18 +7,19 @@ import { parseInstruction } from "../utils/parseInstruction"
 
 export async function claimFunds(
   auctionId: string,
-  auctionOwnerPubkey: PublicKey,
+  callerPubkey: PublicKey,
+  ownerPubkey: PublicKey,
+  cycle_number: number,
   amount: number,
 ): Promise<Transaction> {
-  const { claimFundsWasm, getCurrentCycleWasm } = await import("../wasm-factory")
-
-  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
+  const { claimFundsWasm } = await import("../wasm-factory")
 
   const auctionIdArray = padTo32Bytes(auctionId)
   const claimFundsArgs = new ClaimFundsArgs({
-    auctionOwnerPubkey: auctionOwnerPubkey,
+    callerPubkey,
+    auctionOwnerPubkey: ownerPubkey,
     auctionId: auctionIdArray,
-    cycleNumber: currentCycleNumber,
+    cycleNumber,
     amount: amount * LAMPORTS,
   })
 
