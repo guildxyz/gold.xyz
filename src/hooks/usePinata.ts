@@ -1,7 +1,6 @@
 import { useRouter } from "next/router"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 import useSWRImmutable from "swr/immutable"
-import fetcher from "utils/fetcher"
 import pinFileToIPFS, { PinToIPFSProps } from "utils/pinataUpload"
 
 type Credentials = {
@@ -11,27 +10,23 @@ type Credentials = {
 
 const usePinata = () => {
   const router = useRouter()
+  const [revokeFetchOptions, setRevokeFetchOptions] = useState<RequestInit>(null)
 
-  const swrResponse = useSWRImmutable<Credentials>("/api/pinata-key", {
-    revalidateOnMount: true,
-    dedupingInterval: 60_000,
-    fallbackData: { jwt: null, key: null },
-  })
-
-  const revokeKey = useCallback(
-    () =>
-      fetcher("/api/pinata-key", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key: swrResponse.data.key }),
-      }).then(() => {
-        swrResponse.mutate({
-          jwt: null,
-          key: null,
-        })
-      }),
-    [swrResponse]
+  const { data } = useSWRImmutable<Credentials>(
+    ["/api/pinata-key", revokeFetchOptions],
+    {
+      revalidateOnMount: true,
+    }
   )
+
+  const revokeKey = useCallback(() => {
+    if (!data?.key) return
+    setRevokeFetchOptions({
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: data?.key }),
+    })
+  }, [data])
 
   useEffect(() => {
     router.events.on("routeChangeStart", revokeKey)
@@ -45,13 +40,11 @@ const usePinata = () => {
 
   const pinFile = useCallback(
     (props: Omit<PinToIPFSProps, "jwt">) =>
-      pinFileToIPFS({ ...props, jwt: swrResponse.data.jwt }),
-    [swrResponse]
+      pinFileToIPFS({ ...props, jwt: data?.jwt }),
+    [data]
   )
 
   return {
-    ...swrResponse,
-    jwt: swrResponse.data.jwt,
     pinFile,
   }
 }
