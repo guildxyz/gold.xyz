@@ -40,7 +40,12 @@ const usePinata = () => {
 
   const pinFile = useCallback(
     (props: Omit<PinToIPFSProps, "jwt">) =>
-      pinFileToIPFS({ ...props, jwt: data?.jwt }),
+      pinFileToIPFS({ ...props, jwt: data?.jwt }).catch((reason) => {
+        if (reason === "Invalid authorization") {
+          setRevokeFetchOptions(null)
+          throw reason
+        } else throw reason
+      }),
     [data]
   )
 

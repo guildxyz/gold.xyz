@@ -73,16 +73,20 @@ const pinFileToIPFS = ({
 
         xhr.upload.onprogress = (event) =>
           onProgress?.((event.loaded / event.total) * 0.9)
+
         xhr.onload = async () => {
           if (xhr.status >= 200 && xhr.status < 300) {
             onProgress?.(1)
             resolve(JSON.parse(xhr.response))
           } else {
             onProgress?.(0)
-            if (xhr.status === 401) reject("Invalid authorization")
+            if ([401, 403].includes(xhr.status)) reject("Invalid authorization")
             else reject("Upload request failed")
           }
         }
+
+        xhr.timeout = 5000
+
         xhr.onerror = () => reject("Upload request failed")
 
         xhr.onabort = () => reject("Upload request aborted")
