@@ -10,6 +10,7 @@ type Credentials = {
 
 const usePinata = () => {
   const router = useRouter()
+  // really hacky way to revoke so we can use SWR's state management
   const [revokeFetchOptions, setRevokeFetchOptions] = useState<RequestInit>(null)
 
   const { data } = useSWRImmutable<Credentials>(
