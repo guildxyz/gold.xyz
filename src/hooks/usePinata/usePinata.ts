@@ -1,7 +1,7 @@
+import pinFileToIPFS, { PinToIPFSProps } from "hooks/usePinata/utils/pinataUpload"
 import { useRouter } from "next/router"
 import { useCallback, useEffect, useState } from "react"
 import useSWRImmutable from "swr/immutable"
-import pinFileToIPFS, { PinToIPFSProps } from "utils/pinataUpload"
 
 type Credentials = {
   jwt: string
