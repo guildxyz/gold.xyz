@@ -4,7 +4,7 @@ import CardMotionWrapper from "../common/CardMotionWrapper"
 const ExplorerCardMotionWrapper = ({ children }: PropsWithChildren<any>) => (
   <CardMotionWrapper
     animateOnMount={
-      process.browser ? document?.activeElement?.id === "searchBar" : false
+      typeof window ? document?.activeElement?.id === "searchBar" : false
     }
   >
     {children}
