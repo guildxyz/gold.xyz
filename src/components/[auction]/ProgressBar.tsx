@@ -23,7 +23,7 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
 
   return (
     <>
-      {goalTreasuryAmount && (
+      {goalTreasuryAmount ? (
         <VStack spacing={2} w="full">
           <HStack justifyContent="space-between" width="full" px="2px">
             <Text fontSize="xs">
@@ -46,7 +46,14 @@ const ProgressBar = ({ ...rest }: Rest): JSX.Element => {
             value={percentage}
           />
         </VStack>
-      )}
+      ) : treasuryAmount ? (
+        <Text fontSize="sm">
+          <Text as="span" fontWeight="extrabold" fontSize="md">
+            {treasuryAmount.toFixed(2)}
+          </Text>
+          {" SOL raised"}
+        </Text>
+      ) : null}
     </>
   )
 }

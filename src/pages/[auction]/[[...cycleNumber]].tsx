@@ -88,7 +88,7 @@ const Page = (): JSX.Element => {
       title={auction?.name ?? (router.query.auction as string)}
       description={auction?.description}
       action={
-        <HStack w="full" spacing={4}>
+        <HStack w="full" spacing={4} justifyContent="end">
           <ProgressBar />
           {publicKey &&
             auction?.ownerPubkey &&
