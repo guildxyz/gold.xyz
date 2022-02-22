@@ -1,9 +1,10 @@
 import { Keypair } from "@solana/web3.js"
 import fetch from "node-fetch"
 import { CONNECTION } from "./consts"
-import { getAuction, getAuctionCycle, getAuctions } from "./queries/getAuctions"
 import { AuctionConfig, NFTData } from "./queries/types"
 import { SECRET2, SECRET3 } from "./test"
+import auctionExists from "./queries/auctionExists"
+import { getAuctions } from "./queries/getAuctions"
 
 var assert = require("assert")
 // @ts-ignore
@@ -15,48 +16,48 @@ global.Request = fetch.Request
 // @ts-ignore
 global.Response = fetch.Response
 ;(async () => {
-  let auctionOwner = Keypair.fromSecretKey(SECRET2)
-  let bidder = Keypair.fromSecretKey(SECRET3)
-  console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
-  const nftAsset: NFTData = {
-    type: "NFT",
-    name: "aaa",
-    symbol: "AAA",
-    uri: "ipfs://nice/aaaa",
-    isRepeated: false,
-  }
-
+  console.log(await auctionExists("gold-dao"))
+  console.log(await getAuctions(CONNECTION))
+  //let auctionOwner = Keypair.fromSecretKey(SECRET2)
+  //let bidder = Keypair.fromSecretKey(SECRET3)
+  //console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
+  //const nftAsset: NFTData = {
+  //  type: "NFT",
+  //  name: "aaa",
+  //  symbol: "AAA",
+  //  uri: "ipfs://nice/aaaa",
+  //  isRepeated: false,
+  //}
   //const tokenAsset: TokenData = {
   //  type: "TOKEN",
   //  decimals: 1,
   //  perCycleAmount: 1000,
   //  mintAddress: PublicKey.default,
   //}
-
-  const auction_config: AuctionConfig = {
-    id: "heheheheheho",
-    name: "heheheheheho",
-    description: "xd",
-    socials: ["aaa.aaa"],
-    goalTreasuryAmount: null,
-    ownerPubkey: auctionOwner.publicKey,
-    asset: nftAsset,
-    encorePeriod: 0,
-    cyclePeriod: 86400,
-    numberOfCycles: 20,
-    startTime: null,
-    minBid: 0.07,
-  }
+  //const auction_config: AuctionConfig = {
+  //  id: "heheheheheho",
+  //  name: "heheheheheho",
+  //  description: "xd",
+  //  socials: ["aaa.aaa"],
+  //  goalTreasuryAmount: null,
+  //  ownerPubkey: auctionOwner.publicKey,
+  //  asset: nftAsset,
+  //  encorePeriod: 0,
+  //  cyclePeriod: 86400,
+  //  numberOfCycles: 20,
+  //  startTime: null,
+  //  minBid: 0.07,
+  //}
 
   // CREATE AUCTION
   //const startAuctionTransaction = await startAuction(auction_config);
   //await sendTransaction(startAuctionTransaction, auctionOwner);
   //console.log("Auction created successfully.");
   // Query auction
-  console.log(await getAuctions(CONNECTION))
-  const auction = await getAuction("gold-dao")
-  console.log(auction)
-  console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
+  //console.log(await getAuctions(CONNECTION))
+  //const auction = await getAuction("gold-dao")
+  //console.log(auction)
+  //console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
   // CLAIM FUNDS
   //let ownerBalanceBefore = await CONNECTION.getBalance(auctionOwner.publicKey);
   //const claimAmount = 0.3;
