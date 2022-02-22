@@ -7,21 +7,25 @@ import {
   NumberInputField,
   Text,
 } from "@chakra-ui/react"
-import { useFormContext } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 
 const GoalAmount = () => {
   const {
     register,
     formState: { errors },
   } = useFormContext()
+  const numberOfCycles = useWatch({ name: "numberOfCycles", exact: true })
+
+  const isInfinite = numberOfCycles === undefined
 
   return (
     <FormControl isRequired isInvalid={errors?.goalTreasuryAmount}>
       <InputGroup size="lg">
-        <NumberInput w="full">
+        <NumberInput w="full" isDisabled={isInfinite}>
           <NumberInputField
             {...register("goalTreasuryAmount", {
-              required: "This field is required.",
+              required: !isInfinite && "This field is required.",
+              valueAsNumber: true,
             })}
             placeholder="0"
           />

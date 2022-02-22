@@ -24,6 +24,7 @@ export type FormData = {
     file: File
     preview: string
   }[]
+  goalTreasuryAmount: number
 }
 
 const useStartAuction = () => {
@@ -144,6 +145,10 @@ const useStartAuction = () => {
           description: "Failed to upload metadata of the images to IPFS",
           status: "error",
         })
+      }
+
+      if (finalData.numberOfCycles === undefined) {
+        delete finalData.goalTreasuryAmount
       }
 
       setData(finalData)
