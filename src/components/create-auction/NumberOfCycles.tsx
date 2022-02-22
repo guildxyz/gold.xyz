@@ -17,32 +17,37 @@ const NumberOfCycles = () => {
     register,
     setValue,
     trigger,
-    formState: { errors, dirtyFields },
+    formState: { errors, touchedFields },
   } = useFormContext()
   const [isInfinite, setIsInfinite] = useState()
+  const [lastUserInput, setLastUserInput] = useState<number | "">("")
 
   const nfts = useWatch({ name: "nfts" })
   const maxSupply = useMemo(
     () => (Object.keys(nfts).length <= 1 ? undefined : Object.keys(nfts).length),
     [nfts]
   )
+  const numberOfCycles = useWatch({ name: "numberOfCycles", exact: true })
 
   const handleChange = (e) => {
     const isChecked = e.target.checked
     setIsInfinite(isChecked)
     if (isChecked) {
+      setLastUserInput(Number.isNaN(numberOfCycles) ? "" : numberOfCycles)
       setValue("numberOfCycles", undefined)
       setTimeout(() => {
         trigger("numberOfCycles")
       }, 100)
+    } else {
+      setValue("numberOfCycles", lastUserInput, { shouldValidate: true })
     }
   }
 
   useEffect(() => {
     if (!maxSupply) return
-    if (!dirtyFields?.numberOfCycles) setValue("numberOfCycles", maxSupply)
+    if (!touchedFields?.numberOfCycles) setValue("numberOfCycles", maxSupply)
     trigger("numberOfCycles")
-  }, [maxSupply, setValue, dirtyFields])
+  }, [maxSupply, setValue, touchedFields])
 
   return (
     <FormControl
