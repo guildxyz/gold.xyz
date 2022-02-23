@@ -24,6 +24,7 @@ export type FormData = {
     file: File
     preview: string
   }[]
+  minBid: string
 }
 
 const useStartAuction = () => {
@@ -85,6 +86,12 @@ const useStartAuction = () => {
             ? _data.customCyclePeriod
             : +_data.cyclePeriod) * HOUR_IN_SECONDS,
         ownerPubkey: publicKey,
+      }
+
+      if (_data.minBid?.length <= 0) {
+        delete finalData.minBid
+      } else {
+        finalData.minBid = +finalData.minBid
       }
 
       if (_data.asset.type !== "NFT") return onSubmit(finalData)

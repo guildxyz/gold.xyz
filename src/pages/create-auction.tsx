@@ -7,6 +7,7 @@ import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import AssetSelector from "components/create-auction/AssetSelector"
 import Description from "components/create-auction/Description"
 import GoalAmount from "components/create-auction/GoalAmount"
+import MinimumBidAmount from "components/create-auction/MinimumBidAmount"
 import NameAndIcon from "components/create-auction/NameAndIcon"
 import NFTData from "components/create-auction/NFTData"
 import NumberOfCycles from "components/create-auction/NumberOfCycles"
@@ -28,6 +29,7 @@ const CreateGuildPage = (): JSX.Element => {
         symbol: "",
       },
       nfts: [],
+      minimumBidAmount: "",
       numberOfCycles: 0,
     },
   })
@@ -88,6 +90,12 @@ const CreateGuildPage = (): JSX.Element => {
 
               <Section title="Number of rounds">
                 <NumberOfCycles />
+              </Section>
+
+              <Divider />
+
+              <Section title="Minimum bid amount">
+                <MinimumBidAmount />
               </Section>
             </VStack>
 
