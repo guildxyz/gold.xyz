@@ -17,6 +17,7 @@ const usePinata = () => {
     ["/api/pinata-key", revokeFetchOptions],
     {
       revalidateOnMount: true,
+      dedupingInterval: 500,
     }
   )
 
