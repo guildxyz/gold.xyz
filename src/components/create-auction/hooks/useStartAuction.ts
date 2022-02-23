@@ -33,7 +33,7 @@ const useStartAuction = () => {
   const { mutate } = useSWRConfig()
   const router = useRouter()
   const { sendTransaction, publicKey } = useWallet()
-  const { pinFile } = usePinata()
+  const pinFile = usePinata()
 
   const handleStartAuction = async (data_: AuctionConfig) => {
     console.log(data_)

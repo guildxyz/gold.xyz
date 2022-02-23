@@ -26,7 +26,7 @@ const NFTData = ({ setUploadPromise }: Props) => {
     formState: { errors },
   } = useFormContext()
 
-  const { pinFile } = usePinata()
+  const pinFile = usePinata()
 
   const nfts = useWatch({ name: "nfts" })
 

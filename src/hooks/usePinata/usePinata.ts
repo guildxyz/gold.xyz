@@ -50,9 +50,7 @@ const usePinata = () => {
     [data]
   )
 
-  return {
-    pinFile,
-  }
+  return pinFile
 }
 
 export default usePinata
