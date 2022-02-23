@@ -18,8 +18,8 @@ const EncorePeriod = () => {
           <NumberInputField placeholder="Optional, default: 0" />
         </NumberInput>
         <InputRightElement>
-          <Text colorScheme="gray" mr="4">
-            hours
+          <Text colorScheme="gray" mr="8">
+            minutes
           </Text>
         </InputRightElement>
       </InputGroup>
