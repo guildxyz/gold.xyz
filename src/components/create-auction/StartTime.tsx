@@ -10,7 +10,11 @@ const StartTime = () => {
   return (
     <FormControl isInvalid={errors?.startTime}>
       <Input
-        {...register("startTime", { valueAsDate: true })}
+        {...register("startTime", {
+          valueAsDate: true,
+          validate: (value) =>
+            +value > +Date.now() || isNaN(+value) || "This date already passed",
+        })}
         type="datetime-local"
         size="lg"
       />
