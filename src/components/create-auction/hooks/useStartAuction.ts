@@ -82,7 +82,6 @@ const useStartAuction = () => {
       })
       const finalData = {
         ..._data,
-        minBid: 0.05,
         cyclePeriod:
           (_data.cyclePeriod === "CUSTOM"
             ? _data.customCyclePeriod
@@ -90,12 +89,7 @@ const useStartAuction = () => {
         ownerPubkey: publicKey,
         encorePeriod: +_data.encorePeriod * 60, // empty string will be zero
         startTime: +_data.startTime,
-      }
-
-      if (_data.minBid?.length <= 0) {
-        delete finalData.minBid
-      } else {
-        finalData.minBid = +finalData.minBid
+        minBid: _data.minBid?.length <= 0 ? 0.05 : +_data.minBid,
       }
 
       // If the selected date gets cleared by the user on Firefox, we get an 'Invalid Date' object, which is NaN
