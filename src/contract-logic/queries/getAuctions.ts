@@ -22,3 +22,18 @@ export async function getAuctionCycle(rootStatePubkey: string, cycleNum: number)
   }
   return cycle
 }
+
+export async function getAuctions(secondary?: boolean): Promise<Array<AuctionBase>> {
+  const { getAuctionsWasm } = await import("../../gold-wasm")
+  let flag = false
+  if (secondary) {
+    flag = true
+  }
+  let auctions
+  try {
+    auctions = await getAuctionsWasm(flag)
+  } catch (error) {
+    console.log("wasm error: ", error)
+  }
+  return auctions
+}
