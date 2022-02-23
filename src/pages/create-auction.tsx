@@ -29,6 +29,7 @@ const CreateGuildPage = (): JSX.Element => {
       },
       nfts: [],
       numberOfCycles: 0,
+      startTime: "",
     },
   })
 
