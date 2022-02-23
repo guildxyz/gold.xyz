@@ -26,6 +26,7 @@ export type FormData = {
   }[]
   minBid: string
   encorePeriod: string
+  startTime: Date | ""
 }
 
 const useStartAuction = () => {
@@ -88,6 +89,7 @@ const useStartAuction = () => {
             : +_data.cyclePeriod) * HOUR_IN_SECONDS,
         ownerPubkey: publicKey,
         encorePeriod: +_data.encorePeriod * 60, // empty string will be zero
+        startTime: +_data.startTime,
       }
 
       if (_data.minBid?.length <= 0) {
@@ -95,6 +97,10 @@ const useStartAuction = () => {
       } else {
         finalData.minBid = +finalData.minBid
       }
+
+      // If the selected date gets cleared by the user on Firefox, we get an 'Invalid Date' object, which is NaN
+      if (_data.startTime === "" || isNaN(finalData.startTime))
+        delete finalData.startTime
 
       if (_data.asset.type !== "NFT") return onSubmit(finalData)
 
