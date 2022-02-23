@@ -117,6 +117,8 @@ const CreateGuildPage = (): JSX.Element => {
                 <Section title="Encore period">
                   <EncorePeriod />
                 </Section>
+
+                {/* TODO: Replace with startTime */}
                 <Section title="Encore period">
                   <EncorePeriod />
                 </Section>
