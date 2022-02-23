@@ -1,7 +1,5 @@
-import { PublicKey } from "@solana/web3.js"
-
 export type Bid = {
-  bidderPubkey: PublicKey
+  bidderPubkey: string
   amount: number
 }
 
@@ -16,7 +14,7 @@ export type NFTData = {
 export type TokenData = {
   type: "TOKEN"
   decimals: number
-  mintAddress: PublicKey
+  mintAddress: string
   perCycleAmount: number
 }
 
@@ -51,7 +49,7 @@ export type Auction = AuctionConfig &
     isFinished: boolean
     isFrozen: boolean
     isFiltered: boolean
-    rootStatePubkey: PublicKey
+    rootStatePubkey: string
   }
 
 export type Cycle = {

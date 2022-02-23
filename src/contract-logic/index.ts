@@ -3,7 +3,7 @@ import fetch from "node-fetch"
 import { AuctionConfig, NFTData } from "./queries/types"
 import { SECRET2, SECRET3 } from "./test"
 import auctionExists from "./queries/auctionExists"
-import { getAuction } from "./queries/getAuctions"
+import { getAuction, getAuctionCycle } from "./queries/getAuctions"
 
 var assert = require("assert")
 // @ts-ignore
@@ -16,7 +16,10 @@ global.Request = fetch.Request
 global.Response = fetch.Response
 ;(async () => {
   console.log(await auctionExists("gold-dao"))
-  console.log(await getAuction("teletubbies"))
+  const auction = await getAuction("teletubbies")
+  console.log(auction)
+  const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
+  console.log(cycle)
   //let auctionOwner = Keypair.fromSecretKey(SECRET2)
   //let bidder = Keypair.fromSecretKey(SECRET3)
   //console.log("AUCTION OWNER", auctionOwner.publicKey.toString())

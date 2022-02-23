@@ -12,4 +12,13 @@ export async function getAuction(auctionId: string): Promise<Auction> {
   return auction
 }
 
-export async function getAuctionCycle(auction
+export async function getAuctionCycle(rootStatePubkey: string, cycleNum: number): Promise<Cycle> {
+  const { getAuctionCycleWasm, Pubkey } = await import("../../gold-wasm")
+  let cycle
+  try {
+    cycle = await getAuctionCycleWasm(new Pubkey(rootStatePubkey), BigInt(cycleNum))
+  } catch (error) {
+    console.log("wasm error: ", error)
+  }
+  return cycle
+}
