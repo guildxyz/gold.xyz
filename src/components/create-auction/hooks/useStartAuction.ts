@@ -24,6 +24,7 @@ export type FormData = {
     file: File
     preview: string
   }[]
+  encorePeriod: string
 }
 
 const useStartAuction = () => {
@@ -85,6 +86,7 @@ const useStartAuction = () => {
             ? _data.customCyclePeriod
             : +_data.cyclePeriod) * HOUR_IN_SECONDS,
         ownerPubkey: publicKey,
+        encorePeriod: +_data.encorePeriod, // empty string will be zero
       }
 
       if (_data.asset.type !== "NFT") return onSubmit(finalData)
