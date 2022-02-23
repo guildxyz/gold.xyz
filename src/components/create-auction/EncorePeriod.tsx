@@ -13,7 +13,7 @@ const EncorePeriod = () => {
 
   return (
     <FormControl>
-      <InputGroup size="lg" maxW={{ base: "2xs", lg: "xs" }}>
+      <InputGroup size="lg">
         <NumberInput w="full" {...field}>
           <NumberInputField placeholder="Optional, default: 0" />
         </NumberInput>

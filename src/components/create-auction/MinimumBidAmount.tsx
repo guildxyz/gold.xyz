@@ -6,7 +6,7 @@ const MinimumBidAmount = () => {
 
   return (
     <FormControl>
-      <NumberInput w="full" size="lg" maxW={{ base: "2xs", lg: "xs" }} {...field}>
+      <NumberInput w="full" size="lg" {...field}>
         <NumberInputField placeholder="Optional, default: 0.05" />
       </NumberInput>
     </FormControl>

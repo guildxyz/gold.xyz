@@ -1,4 +1,11 @@
-import { Divider, Flex, Stack, VStack } from "@chakra-ui/react"
+import {
+  Divider,
+  Flex,
+  Grid,
+  Stack,
+  useBreakpointValue,
+  VStack,
+} from "@chakra-ui/react"
 import { DevTool } from "@hookform/devtools"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
@@ -41,6 +48,8 @@ const CreateGuildPage = (): JSX.Element => {
   )
 
   const [uploadPromise, setUploadPromise] = useState<Promise<void | void[]>>(null)
+
+  const optionalFieldsGridCols = useBreakpointValue({ base: 1, md: 2, lg: 3 })
 
   return (
     <FormProvider {...methods}>
@@ -96,13 +105,22 @@ const CreateGuildPage = (): JSX.Element => {
 
               <Divider />
 
-              <Section title="Minimum bid amount">
-                <MinimumBidAmount />
-              </Section>
+              <Grid
+                templateColumns={`repeat(${optionalFieldsGridCols}, 1fr)`}
+                gap={5}
+                w="full"
+              >
+                <Section title="Minimum bid amount">
+                  <MinimumBidAmount />
+                </Section>
 
-              <Section title="Encore period">
-                <EncorePeriod />
-              </Section>
+                <Section title="Encore period">
+                  <EncorePeriod />
+                </Section>
+                <Section title="Encore period">
+                  <EncorePeriod />
+                </Section>
+              </Grid>
             </VStack>
 
             <Flex justifyContent="right" mt="14">
