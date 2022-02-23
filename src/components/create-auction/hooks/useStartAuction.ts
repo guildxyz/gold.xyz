@@ -25,6 +25,7 @@ export type FormData = {
     preview: string
   }[]
   minBid: string
+  encorePeriod: string
 }
 
 const useStartAuction = () => {
@@ -86,6 +87,7 @@ const useStartAuction = () => {
             ? _data.customCyclePeriod
             : +_data.cyclePeriod) * HOUR_IN_SECONDS,
         ownerPubkey: publicKey,
+        encorePeriod: +_data.encorePeriod * 60, // empty string will be zero
       }
 
       if (_data.minBid?.length <= 0) {

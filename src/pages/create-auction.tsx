@@ -6,6 +6,7 @@ import Section from "components/common/Section"
 import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import AssetSelector from "components/create-auction/AssetSelector"
 import Description from "components/create-auction/Description"
+import EncorePeriod from "components/create-auction/EncorePeriod"
 import GoalAmount from "components/create-auction/GoalAmount"
 import MinimumBidAmount from "components/create-auction/MinimumBidAmount"
 import NameAndIcon from "components/create-auction/NameAndIcon"
@@ -31,6 +32,7 @@ const CreateGuildPage = (): JSX.Element => {
       nfts: [],
       minimumBidAmount: "",
       numberOfCycles: 0,
+      encorePeriod: "",
     },
   })
 
@@ -96,6 +98,10 @@ const CreateGuildPage = (): JSX.Element => {
 
               <Section title="Minimum bid amount">
                 <MinimumBidAmount />
+              </Section>
+
+              <Section title="Encore period">
+                <EncorePeriod />
               </Section>
             </VStack>
 
