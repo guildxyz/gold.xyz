@@ -1,4 +1,4 @@
-import { Divider, Flex, Stack, VStack } from "@chakra-ui/react"
+import { Divider, Flex, Stack, Tooltip, VStack } from "@chakra-ui/react"
 import { DevTool } from "@hookform/devtools"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
@@ -11,9 +11,11 @@ import NameAndIcon from "components/create-auction/NameAndIcon"
 import NFTData from "components/create-auction/NFTData"
 import NumberOfCycles from "components/create-auction/NumberOfCycles"
 import RoundSelector from "components/create-auction/RoundSelector"
+import StartTime from "components/create-auction/StartTime"
 import SubmitButton from "components/create-auction/SubmitButton"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
-import { useState } from "react"
+import { Warning } from "phosphor-react"
+import { useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const CreateGuildPage = (): JSX.Element => {
@@ -38,6 +40,10 @@ const CreateGuildPage = (): JSX.Element => {
   )
 
   const [uploadPromise, setUploadPromise] = useState<Promise<void | void[]>>(null)
+
+  const { current: isFirefox } = useRef<boolean>(
+    /firefox|fxios/i.test(navigator.userAgent)
+  )
 
   return (
     <FormProvider {...methods}>
@@ -89,6 +95,22 @@ const CreateGuildPage = (): JSX.Element => {
 
               <Section title="Number of rounds">
                 <NumberOfCycles />
+              </Section>
+
+              <Section
+                title="Start Time"
+                titleRightElement={
+                  isFirefox && (
+                    <Tooltip
+                      label="This kind of input field is very unintuitive in Firefox. You can only select the date in the picker tool, the time has to be typed in manually. In the last field it expects 'AM' or 'PM'."
+                      shouldWrapChildren
+                    >
+                      <Warning />
+                    </Tooltip>
+                  )
+                }
+              >
+                <StartTime />
               </Section>
             </VStack>
 
