@@ -3,6 +3,7 @@ import fetch from "node-fetch"
 import { AuctionConfig, NFTData } from "./queries/types"
 import { SECRET2, SECRET3 } from "./test"
 import auctionExists from "./queries/auctionExists"
+import { claimFunds } from "./transactions/claimFunds"
 import { getAuction, getAuctions, getAuctionCycle } from "./queries/getAuctions"
 
 var assert = require("assert")
@@ -15,13 +16,22 @@ global.Request = fetch.Request
 // @ts-ignore
 global.Response = fetch.Response
 ;(async () => {
-  console.log(await auctionExists("gold-dao"))
-  const auction = await getAuction("teletubbies")
-  console.log(auction)
-  const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
-  console.log(cycle)
-  const auctions = await getAuctions()
-  console.log(auctions)
+  const tx = await claimFunds(
+    "hello",
+    "7Z8ftDzMvoyXnGEJye8DurzgQQXNN4AdLghUw13KZTF",
+    "7Z8ftDzMvoyXnGEJye8DurzgQQXNN4AdLghUw13KZTF",
+    5,
+    2.34
+  );
+  console.log(tx)
+  //console.log(await auctionExists("gold-dao"))
+  //const auction = await getAuction("teletubbies")
+  //console.log(auction)
+  //const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
+  //console.log(cycle)
+  //const auctions = await getAuctions()
+  //console.log(auctions)
+
   //let auctionOwner = Keypair.fromSecretKey(SECRET2)
   //let bidder = Keypair.fromSecretKey(SECRET3)
   //console.log("AUCTION OWNER", auctionOwner.publicKey.toString())

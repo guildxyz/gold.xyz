@@ -3,24 +3,22 @@ import { Auction, AuctionBase, NFTData, TokenData, Cycle} from "./types"
 
 export async function getAuction(auctionId: string): Promise<Auction> {
   const { getAuctionWasm } = await import("../../gold-wasm")
-  let auction
   try {
-    auction = await getAuctionWasm(auctionId)
+    const auction = await getAuctionWasm(auctionId)
+    return auction
   } catch (error) {
     console.log("wasm error: ", error)
   }
-  return auction
 }
 
 export async function getAuctionCycle(rootStatePubkey: string, cycleNum: number): Promise<Cycle> {
   const { getAuctionCycleWasm, Pubkey } = await import("../../gold-wasm")
-  let cycle
   try {
-    cycle = await getAuctionCycleWasm(new Pubkey(rootStatePubkey), BigInt(cycleNum))
+    const cycle = await getAuctionCycleWasm(new Pubkey(rootStatePubkey), BigInt(cycleNum))
+    return cycle
   } catch (error) {
     console.log("wasm error: ", error)
   }
-  return cycle
 }
 
 export async function getAuctions(secondary?: boolean): Promise<Array<AuctionBase>> {
@@ -29,11 +27,10 @@ export async function getAuctions(secondary?: boolean): Promise<Array<AuctionBas
   if (secondary) {
     flag = true
   }
-  let auctions
   try {
-    auctions = await getAuctionsWasm(flag)
+    const auctions = await getAuctionsWasm(flag)
+    return auctions
   } catch (error) {
     console.log("wasm error: ", error)
   }
-  return auctions
 }
