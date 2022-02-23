@@ -1,10 +1,9 @@
 import { Keypair } from "@solana/web3.js"
 import fetch from "node-fetch"
-import { CONNECTION } from "./consts"
 import { AuctionConfig, NFTData } from "./queries/types"
 import { SECRET2, SECRET3 } from "./test"
 import auctionExists from "./queries/auctionExists"
-import { getAuctions } from "./queries/getAuctions"
+import { getAuction } from "./queries/getAuctions"
 
 var assert = require("assert")
 // @ts-ignore
@@ -17,7 +16,7 @@ global.Request = fetch.Request
 global.Response = fetch.Response
 ;(async () => {
   console.log(await auctionExists("gold-dao"))
-  console.log(await getAuctions(CONNECTION))
+  console.log(await getAuction("teletubbies"))
   //let auctionOwner = Keypair.fromSecretKey(SECRET2)
   //let bidder = Keypair.fromSecretKey(SECRET3)
   //console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
