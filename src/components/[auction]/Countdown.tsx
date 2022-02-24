@@ -9,15 +9,15 @@ type Props = {
 }
 
 const Countdown = ({ expiryTimestamp, onExpire }: Props): JSX.Element => {
-  const { seconds, minutes, hours, days, isRunning, restart } = useTimer({
+  const { seconds, minutes, hours, days, restart } = useTimer({
     expiryTimestamp: new Date(expiryTimestamp),
     onExpire,
   })
   const statSize = useBreakpointValue({ base: "sm", md: "md", xl: "lg" })
 
   useEffect(() => {
-    if (!isRunning) restart(new Date(expiryTimestamp))
-  }, [expiryTimestamp, restart, isRunning])
+    restart(new Date(expiryTimestamp))
+  }, [expiryTimestamp]) // Including restart would cause a render loop here
 
   return (
     <StatGroup sx={{ gap: "6px" }}>
