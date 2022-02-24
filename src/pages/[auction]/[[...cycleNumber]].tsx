@@ -192,7 +192,7 @@ const Page = (): JSX.Element => {
                       }
                     >
                       {!!countdownProps.expiryTimestamp && (
-                      <Countdown {...countdownProps} />
+                        <Countdown {...countdownProps} />
                       )}
                     </Skeleton>
                   </>
