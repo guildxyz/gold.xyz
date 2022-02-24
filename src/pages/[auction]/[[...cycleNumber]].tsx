@@ -72,8 +72,11 @@ const Page = (): JSX.Element => {
   const celebrate = useCallback(async () => {
     if (cycleState === "inactive") return
     await mutateCycle()
-    if (cycle?.bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
-    showCoinfetti()
+    if (
+      publicKey !== undefined &&
+      cycle?.bids?.[0]?.bidderPubkey?.toString() === publicKey?.toString()
+    )
+      showCoinfetti()
   }, [cycle?.bids, cycleState, mutateCycle, publicKey, showCoinfetti])
 
   const countdownProps = useMemo(
