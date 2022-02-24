@@ -38,7 +38,7 @@ import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
@@ -69,6 +69,27 @@ const Page = (): JSX.Element => {
     return "inactive"
   }, [auction, cycle])
 
+  const celebrate = useCallback(async () => {
+    if (cycleState === "inactive") return
+    await mutateCycle()
+    if (cycle?.bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
+    showCoinfetti()
+  }, [cycle?.bids, cycleState, mutateCycle, publicKey, showCoinfetti])
+
+  const countdownProps = useMemo(
+    () =>
+      hasStarted
+        ? {
+            expiryTimestamp: cycle?.endTimestamp,
+            onExpire: celebrate,
+          }
+        : {
+            expiryTimestamp: auction.startTime,
+            onExpire: () => setHasStarted(true),
+          },
+    [auction?.startTime, celebrate, cycle?.endTimestamp, hasStarted]
+  )
+
   if (auctionError || cycleError)
     return (
       <Layout title="">
@@ -80,13 +101,6 @@ const Page = (): JSX.Element => {
         </Alert>
       </Layout>
     )
-
-  const celebrate = async () => {
-    if (cycleState === "inactive") return
-    await mutateCycle()
-    if (cycle?.bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
-    showCoinfetti()
-  }
 
   return (
     <Layout
@@ -172,18 +186,12 @@ const Page = (): JSX.Element => {
                 {cycleState === "active" ? (
                   <>
                     <StatLabel>{hasStarted ? "Ends in" : "Starts in"}</StatLabel>
-                    <Skeleton isLoaded={!!cycle?.endTimestamp}>
-                      {hasStarted ? (
-                        <Countdown
-                          expiryTimestamp={cycle?.endTimestamp}
-                          onExpire={celebrate}
-                        />
-                      ) : (
-                        <Countdown
-                          expiryTimestamp={auction.startTime}
-                          onExpire={() => setHasStarted(true)}
-                        />
-                      )}
+                    <Skeleton
+                      isLoaded={
+                        hasStarted ? !!cycle?.endTimestamp : !!auction?.startTime
+                      }
+                    >
+                      <Countdown {...countdownProps} />
                     </Skeleton>
                   </>
                 ) : (
