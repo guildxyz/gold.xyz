@@ -4,17 +4,17 @@ export type Bid = {
 }
 
 export type NFTData = {
-  type: "NFT"
+  type: "Nft"
   name: string
   symbol: string
   uri: string
-  isRepeated: boolean
+  isRepeating: boolean
 }
 
 export type TokenData = {
-  type: "TOKEN"
+  type: "Token"
   decimals: number
-  mintAddress: string
+  mintAddress?: string
   perCycleAmount: number
 }
 

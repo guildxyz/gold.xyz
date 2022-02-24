@@ -1,7 +1,7 @@
 import { Transaction } from "@solana/web3.js"
 import { parseInstruction } from "../utils/parseInstruction"
 
-export async function claimFunds(
+export default async function claimFunds(
   auctionId: string,
   callerPubkey: string,
   ownerPubkey: string,

@@ -2,8 +2,8 @@ import { Keypair } from "@solana/web3.js"
 import fetch from "node-fetch"
 import { AuctionConfig, NFTData } from "./queries/types"
 import { SECRET2, SECRET3 } from "./test"
+import { startAuction } from "./transactions/startAuction"
 import auctionExists from "./queries/auctionExists"
-import { claimFunds } from "./transactions/claimFunds"
 import { getAuction, getAuctions, getAuctionCycle } from "./queries/getAuctions"
 
 var assert = require("assert")
@@ -16,14 +16,7 @@ global.Request = fetch.Request
 // @ts-ignore
 global.Response = fetch.Response
 ;(async () => {
-  const tx = await claimFunds(
-    "hello",
-    "7Z8ftDzMvoyXnGEJye8DurzgQQXNN4AdLghUw13KZTF",
-    "7Z8ftDzMvoyXnGEJye8DurzgQQXNN4AdLghUw13KZTF",
-    5,
-    2.34
-  );
-  console.log(tx)
+
   //console.log(await auctionExists("gold-dao"))
   //const auction = await getAuction("teletubbies")
   //console.log(auction)
@@ -32,39 +25,41 @@ global.Response = fetch.Response
   //const auctions = await getAuctions()
   //console.log(auctions)
 
-  //let auctionOwner = Keypair.fromSecretKey(SECRET2)
-  //let bidder = Keypair.fromSecretKey(SECRET3)
-  //console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
-  //const nftAsset: NFTData = {
-  //  type: "NFT",
-  //  name: "aaa",
-  //  symbol: "AAA",
-  //  uri: "ipfs://nice/aaaa",
-  //  isRepeated: false,
-  //}
+  let auctionOwner = Keypair.fromSecretKey(SECRET2)
+  let bidder = Keypair.fromSecretKey(SECRET3)
+  console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
+  const nftAsset: NFTData = {
+    type: "Nft",
+    name: "aaa",
+    symbol: "AAA",
+    uri: "ipfs://nice/aaaa",
+    isRepeating: false,
+  }
   //const tokenAsset: TokenData = {
-  //  type: "TOKEN",
+  //  type: "Token",
   //  decimals: 1,
   //  perCycleAmount: 1000,
-  //  mintAddress: PublicKey.default,
+  //  mintAddress: PublicKey.default.toString(),
   //}
-  //const auction_config: AuctionConfig = {
-  //  id: "heheheheheho",
-  //  name: "heheheheheho",
-  //  description: "xd",
-  //  socials: ["aaa.aaa"],
-  //  goalTreasuryAmount: null,
-  //  ownerPubkey: auctionOwner.publicKey,
-  //  asset: nftAsset,
-  //  encorePeriod: 0,
-  //  cyclePeriod: 86400,
-  //  numberOfCycles: 20,
-  //  startTime: null,
-  //  minBid: 0.07,
-  //}
+  const auctionConfig: AuctionConfig = {
+    id: "weheheheheho",
+    name: "Weheheheheho",
+    description: "xd",
+    socials: ["aaa.aaa"],
+    goalTreasuryAmount: null,
+    ownerPubkey: auctionOwner.publicKey.toString(),
+    asset: nftAsset,
+    encorePeriod: 0,
+    cyclePeriod: 86400,
+    numberOfCycles: 20,
+    startTime: null,
+    minBid: 0.07,
+  }
 
+  console.log(auctionConfig)
   // CREATE AUCTION
-  //const startAuctionTransaction = await startAuction(auction_config);
+  const startAuctionTransaction = await startAuction(auctionConfig);
+  console.log(startAuctionTransaction)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
   //console.log("Auction created successfully.");
   // Query auction
