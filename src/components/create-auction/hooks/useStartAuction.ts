@@ -88,7 +88,7 @@ const useStartAuction = () => {
             : +_data.cyclePeriod) * HOUR_IN_SECONDS,
         ownerPubkey: publicKey,
         encorePeriod: +_data.encorePeriod * 60, // empty string will be zero
-        startTime: +_data.startTime,
+        startTime: +_data.startTime / 1000,
         minBid: _data.minBid?.length <= 0 ? 0.05 : +_data.minBid,
       }
 
