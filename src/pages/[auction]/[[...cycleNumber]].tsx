@@ -38,7 +38,7 @@ import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
@@ -49,6 +49,11 @@ const Page = (): JSX.Element => {
   const router = useRouter()
   const showCoinfetti = useCoinfetti()
   const statSize = useBreakpointValue({ base: "md", xl: "lg" })
+  const [hasStarted, setHasStarted] = useState<boolean>(true)
+
+  useEffect(() => {
+    setHasStarted(!auction || !auction.startTime || auction.startTime < Date.now())
+  }, [auction])
 
   const cycleState = useMemo(() => {
     if (!auction || !cycle) return undefined
@@ -166,12 +171,19 @@ const Page = (): JSX.Element => {
               <Stat size={statSize}>
                 {cycleState === "active" ? (
                   <>
-                    <StatLabel>Ends in</StatLabel>
+                    <StatLabel>{hasStarted ? "Ends in" : "Starts in"}</StatLabel>
                     <Skeleton isLoaded={!!cycle?.endTimestamp}>
-                      <Countdown
-                        expiryTimestamp={cycle?.endTimestamp}
-                        onExpire={celebrate}
-                      />
+                      {hasStarted ? (
+                        <Countdown
+                          expiryTimestamp={cycle?.endTimestamp}
+                          onExpire={celebrate}
+                        />
+                      ) : (
+                        <Countdown
+                          expiryTimestamp={auction.startTime}
+                          onExpire={() => setHasStarted(true)}
+                        />
+                      )}
                     </Skeleton>
                   </>
                 ) : (
@@ -187,7 +199,12 @@ const Page = (): JSX.Element => {
               </Stat>
             </HStack>
             {cycleState !== undefined &&
-              (cycleState === "active" ? (
+              (!hasStarted ? (
+                <Alert status="info" alignItems="center">
+                  <AlertIcon mb="3px" />
+                  This Auction hasn't started yet
+                </Alert>
+              ) : cycleState === "active" ? (
                 <PlaceBid />
               ) : cycleState === "intermediate" ? (
                 <CycleEndAlert />
@@ -196,7 +213,7 @@ const Page = (): JSX.Element => {
                   <Tag size="lg">Auction ended</Tag>
                 </Box>
               ))}
-            <BidHistory cycleState={cycleState} />
+            {hasStarted && <BidHistory cycleState={cycleState} />}
           </VStack>
         </SimpleGrid>
       </Card>
