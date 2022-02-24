@@ -39,6 +39,7 @@ import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { useTimer } from "react-timer-hook"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
@@ -78,6 +79,20 @@ const Page = (): JSX.Element => {
     )
       showCoinfetti()
   }, [cycle?.bids, cycleState, mutateCycle, publicKey, showCoinfetti])
+
+  // Using usetimer here just to convert seconds to day, hour, minute, second
+  const encoreTime = useTimer({
+    expiryTimestamp: new Date(Date.now() + (auction?.encorePeriod ?? 0) * 1000),
+    autoStart: false,
+  })
+  useEffect(
+    () =>
+      encoreTime.restart(
+        new Date(Date.now() + (auction?.encorePeriod ?? 0) * 1000),
+        false
+      ),
+    [auction]
+  )
 
   const countdownProps = useMemo(
     () =>
@@ -226,6 +241,29 @@ const Page = (): JSX.Element => {
                   <Tag size="lg">Auction ended</Tag>
                 </Box>
               ))}
+            {cycle &&
+              auction &&
+              cycleState === "active" &&
+              cycle.endTimestamp - Date.now() <= auction.encorePeriod * 1000 && (
+                <Alert status="info" alignItems="center">
+                  <AlertIcon mb="3px" />
+                  If you bid now the bidding period will be extended to{" "}
+                  {/* TODO: This is possibly the ugliest way of doing this */}
+                  {encoreTime.days ? `${encoreTime.days} days` : ""}{" "}
+                  {encoreTime.days || encoreTime.hours
+                    ? `${encoreTime.hours} hours`
+                    : ""}{" "}
+                  {encoreTime.days || encoreTime.hours || encoreTime.minutes
+                    ? `${encoreTime.minutes} minutes`
+                    : ""}{" "}
+                  {encoreTime.days ||
+                  encoreTime.hours ||
+                  encoreTime.minutes ||
+                  encoreTime.seconds
+                    ? `${encoreTime.seconds} seconds`
+                    : ""}
+                </Alert>
+              )}
             {hasStarted && <BidHistory cycleState={cycleState} />}
           </VStack>
         </SimpleGrid>
