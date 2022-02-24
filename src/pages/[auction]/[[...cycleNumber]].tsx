@@ -191,7 +191,9 @@ const Page = (): JSX.Element => {
                         hasStarted ? !!cycle?.endTimestamp : !!auction?.startTime
                       }
                     >
+                      {!!countdownProps.expiryTimestamp && (
                       <Countdown {...countdownProps} />
+                      )}
                     </Skeleton>
                   </>
                 ) : (
@@ -215,7 +217,7 @@ const Page = (): JSX.Element => {
               ) : cycleState === "active" ? (
                 <PlaceBid />
               ) : cycleState === "intermediate" ? (
-                <CycleEndAlert />
+                <>{!!cycle.endTimestamp && <CycleEndAlert />}</>
               ) : (
                 <Box>
                   <Tag size="lg">Auction ended</Tag>
