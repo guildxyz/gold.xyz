@@ -39,8 +39,21 @@ import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useTimer } from "react-timer-hook"
+import { TimerResult, useTimer } from "react-timer-hook"
 import shortenHex from "utils/shortenHex"
+
+const displayTime = (timer: TimerResult) => {
+  const displayDays = !!timer.days
+  const displayHours = displayDays || !!timer.hours
+  const displayMinutes = displayHours || !!timer.minutes
+
+  if (displayDays)
+    return `${timer.days} days ${timer.hours} hours ${timer.minutes} minutes ${timer.seconds} seconds`
+  if (displayHours)
+    return `${timer.hours} hours ${timer.minutes} minutes ${timer.seconds} seconds`
+  if (displayMinutes) return `${timer.minutes} minutes ${timer.seconds} seconds`
+  return `${timer.seconds} seconds`
+}
 
 const Page = (): JSX.Element => {
   const { auction, error: auctionError } = useAuction()
@@ -248,20 +261,7 @@ const Page = (): JSX.Element => {
                 <Alert status="info" alignItems="center">
                   <AlertIcon mb="3px" />
                   If you bid now the bidding period will be extended to{" "}
-                  {/* TODO: This is possibly the ugliest way of doing this */}
-                  {encoreTime.days ? `${encoreTime.days} days` : ""}{" "}
-                  {encoreTime.days || encoreTime.hours
-                    ? `${encoreTime.hours} hours`
-                    : ""}{" "}
-                  {encoreTime.days || encoreTime.hours || encoreTime.minutes
-                    ? `${encoreTime.minutes} minutes`
-                    : ""}{" "}
-                  {encoreTime.days ||
-                  encoreTime.hours ||
-                  encoreTime.minutes ||
-                  encoreTime.seconds
-                    ? `${encoreTime.seconds} seconds`
-                    : ""}
+                  {displayTime(encoreTime)}
                 </Alert>
               )}
             {hasStarted && <BidHistory cycleState={cycleState} />}
