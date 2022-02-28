@@ -1,26 +1,31 @@
 import {
   FormControl,
+  FormErrorMessage,
   InputGroup,
   InputRightAddon,
   NumberInput,
   NumberInputField,
 } from "@chakra-ui/react"
 import { useEffect, useRef } from "react"
-import { useFormContext } from "react-hook-form"
+import { useFormContext, useFormState } from "react-hook-form"
 
 const CustomRound = ({ isChecked }) => {
-  const { register, setValue } = useFormContext()
+  const { register, setValue, clearErrors } = useFormContext()
+  const { errors } = useFormState()
   const inputRef = useRef(null)
-  const { ref, ...rest } = register("customCyclePeriod")
+  const { ref, ...rest } = register("customCyclePeriod", {
+    required: isChecked && "This field is required",
+  })
 
   useEffect(() => {
     if (isChecked) inputRef.current.focus()
+    if (!isChecked) clearErrors("customCyclePeriod")
   }, [isChecked])
 
   const handleClick = () => setValue("cyclePeriod", "CUSTOM")
 
   return (
-    <FormControl>
+    <FormControl isInvalid={!!errors.customCyclePeriod?.message}>
       <InputGroup>
         <NumberInput w="full">
           <NumberInputField
@@ -47,6 +52,7 @@ const CustomRound = ({ isChecked }) => {
           Hours
         </InputRightAddon>
       </InputGroup>
+      <FormErrorMessage>{errors.customCyclePeriod?.message}</FormErrorMessage>
     </FormControl>
   )
 }
