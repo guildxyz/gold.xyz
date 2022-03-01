@@ -16,7 +16,6 @@ global.Request = fetch.Request
 // @ts-ignore
 global.Response = fetch.Response
 ;(async () => {
-
   //console.log(await auctionExists("gold-dao"))
   //const auction = await getAuction("teletubbies")
   //console.log(auction)
@@ -41,6 +40,7 @@ global.Response = fetch.Response
   //  perCycleAmount: 1000,
   //  mintAddress: PublicKey.default.toString(),
   //}
+  
   const auctionConfig: AuctionConfig = {
     id: "weheheheheho",
     name: "Weheheheheho",
@@ -55,14 +55,12 @@ global.Response = fetch.Response
     startTime: null,
     minBid: 0.07,
   }
-
-  console.log(auctionConfig)
   // CREATE AUCTION
-  const startAuctionTransaction = await startAuction(auctionConfig);
-  console.log(startAuctionTransaction)
+  //const startAuctionTransaction = await startAuction(auctionConfig);
+  //console.log(startAuctionTransaction)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
   //console.log("Auction created successfully.");
-  // Query auction
+  // QUERY AUCTION
   //console.log(await getAuctions(CONNECTION))
   //const auction = await getAuction("gold-dao")
   //console.log(auction)
