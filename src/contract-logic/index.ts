@@ -1,12 +1,16 @@
 import { Keypair } from "@solana/web3.js"
-import fetch from "node-fetch"
 import { AuctionConfig, NFTData } from "./queries/types"
-import { SECRET2, SECRET3 } from "./test"
-import { startAuction } from "./transactions/startAuction"
+import { CONNECTION, SECRET2, SECRET3 } from "./test"
+import claimFunds from "./transactions/claimFunds"
+import claimRewards from "./transactions/claimRewards"
+import deleteAuction from "./transactions/deleteAuction"
+import modifyAuction from "./transactions/modifyAuction"
+import placeBid from "./transactions/placeBid"
+import startAuction from "./transactions/startAuction"
 import auctionExists from "./queries/auctionExists"
 import { getAuction, getAuctions, getAuctionCycle } from "./queries/getAuctions"
 
-var assert = require("assert")
+import fetch from "node-fetch"
 // @ts-ignore
 global.fetch = fetch
 // @ts-ignore
@@ -16,14 +20,6 @@ global.Request = fetch.Request
 // @ts-ignore
 global.Response = fetch.Response
 ;(async () => {
-  //console.log(await auctionExists("gold-dao"))
-  //const auction = await getAuction("teletubbies")
-  //console.log(auction)
-  //const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
-  //console.log(cycle)
-  //const auctions = await getAuctions()
-  //console.log(auctions)
-
   let auctionOwner = Keypair.fromSecretKey(SECRET2)
   let bidder = Keypair.fromSecretKey(SECRET3)
   console.log("AUCTION OWNER", auctionOwner.publicKey.toString())
@@ -42,9 +38,9 @@ global.Response = fetch.Response
   //}
   
   const auctionConfig: AuctionConfig = {
-    id: "weheheheheho",
-    name: "Weheheheheho",
-    description: "xd",
+    id: "weheho",
+    name: "Weheho",
+    description: "this is a test",
     socials: ["aaa.aaa"],
     goalTreasuryAmount: null,
     ownerPubkey: auctionOwner.publicKey.toString(),
@@ -56,30 +52,61 @@ global.Response = fetch.Response
     minBid: 0.07,
   }
   // CREATE AUCTION
-  //const startAuctionTransaction = await startAuction(auctionConfig);
-  //console.log(startAuctionTransaction)
+  //const startAuctionTx = await startAuction(auctionConfig);
+  //console.log(startAuctionTx)
   //await sendTransaction(startAuctionTransaction, auctionOwner);
   //console.log("Auction created successfully.");
   // QUERY AUCTION
-  //console.log(await getAuctions(CONNECTION))
-  //const auction = await getAuction("gold-dao")
+  //console.log(await auctionExists("gold-dao"))
+  //const auction = await getAuction(auctionConfig.id)
   //console.log(auction)
-  //console.log(await getAuctionCycle(auction.rootStatePubkey, 1))
+  //const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
+  //console.log(cycle)
+  //const auctions = await getAuctions()
+  //console.log(auctions)
+  // MODIFY AUCTION
+  //const modifyAuctionTx = await modifyAuction(
+  //  auctionOwner.publicKey.toString(),
+  //  "this-id",
+  //  {
+  //    //description: "this is a description",
+  //    //socials: ["aaa.aaa", "bbb.bbb"]
+  //    encorePeriod: 20,
+  //  }
+  //);
+  //console.log(modifyAuctionTx.instructions[0])
   // CLAIM FUNDS
-  //let ownerBalanceBefore = await CONNECTION.getBalance(auctionOwner.publicKey);
-  //const claimAmount = 0.3;
-  //let claimFundsTransaction = await claimFunds(auction_config.id, auctionOwner.publicKey, claimAmount)
-  //await sendTransaction(claimFundsTransaction, auctionOwner)
-  //let ownerBalanceAfter = await CONNECTION.getBalance(auctionOwner.publicKey);
-  //assert.equal(ownerBalanceAfter * LAMPORTS, (ownerBalanceBefore + claimAmount) * LAMPORTS - 5000);
-  //console.log("successfully claimed funds");
+  //const claimFundsTx = await claimFunds(
+  //  "loller",
+  //  auctionOwner.publicKey.toString(),
+  //  auctionOwner.publicKey.toString(),
+  //  1,
+  //  32.23
+  //);
+  //console.log(claimFundsTx)
   // PLACE BID
-  //CONNECTION.requestAirdrop(bidder.publicKey, 100000000);
-  //const bidTransaction = await placeBid(auction.id, bidder.publicKey, 0.6);
-  //await sendTransaction(bidTransaction, bidder);
-  //console.log("Bid placed successfully.");
-  // FREEZE_AUCTION
-  //const deleteAuctionTransaction = await deleteAuction(auction_config.id, auctionOwner.publicKey)
-  //await sendTransaction(deleteAuctionTransaction, auctionOwner)
-  //console.log("Auction frozen successfully.")
+  //const placeBidTx = await placeBid(
+  //  bidder.publicKey.toString(),
+  //  "loller",
+  //  3,
+  //  12.3,
+  //  //bidder.publicKey.toString(),
+  //);
+  // CLAIM REWARDS
+  //const claimRewardsTx = await claimRewards(
+  //  auctionOwner.publicKey.toString(),
+  //  bidder.publicKey.toString(),
+  //  "this-is-id",
+  //  32,
+  //  "Nft"
+  //);
+  //console.log(claimRewardsTx.instructions[0])
+  // DELETE AUCTION
+  //const deleteAuctionTx = await deleteAuction(
+  //  "loller",//auction.id,
+  //  auctionOwner.publicKey.toString(),//auction.ownerPubkey,
+  //  1,//auction.currentCycle,
+  //  bidder.publicKey.toString(),
+  //);
+  //console.log(deleteAuctionTx)
 })()

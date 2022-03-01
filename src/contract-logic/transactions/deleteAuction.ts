@@ -1,25 +1,24 @@
 import { Transaction } from "@solana/web3.js"
-import { DeleteAuctionArgs, SCHEMA } from "../schema"
-import { padTo32Bytes } from "../utils/padTo32Bytes"
 import { parseInstruction } from "../utils/parseInstruction"
-import { NUM_OF_CYCLES_TO_DELETE } from "../consts"
 
-export async function deleteAuction(
+export default async function deleteAuction(
   auctionId: string,
   auctionOwnerPubkey: string,
-  topBidderPubkey: string,
   cycleNumber: number,
+  topBidderPubkey?: string,
 ) {
-  const { deleteAuctionWasm } = await import("../../gold-wasm")
+  const { deleteAuctionWasm } = await import("gold-glue")
 
   try {
-    const instruction = parseInstruction(await deleteAuctionWasm({
+    const instructions = await deleteAuctionWasm({
       auctionOwnerPubkey,
       topBidderPubkey,
       auctionId,
-      cycleNumber: BigInt(cycleNumber),
-    }))
-    return new Transaction().add(instruction)
+      cycleNumber,
+    })
+    let tx = new Transaction()
+    instructions.forEach((ix) => tx.add(parseInstruction(ix)))
+    return tx
   } catch (e) {
     console.log("wasm error:", e)
   }

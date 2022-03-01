@@ -12,8 +12,6 @@
   },
   "dependencies": {
     "@solana/web3.js": "^1.30.2",
-    "bn": "^1.0.5",
-    "borsh": "file:../../../borsh-js",
-    "gold-glue": "file:../gold-glue"
+    "gold-glue": "github:agoraxyz/gold-glue#dev-nodejs"
   }
 }

@@ -1,22 +1,26 @@
 import { Transaction } from "@solana/web3.js"
 import { parseInstruction } from "../utils/parseInstruction"
 
-export default async function modifyAuctionWasm(
+export type ModifyData = {
+    description?: string,
+    socials?: string[],
+    encorePeriod?: number,
+}
+
+export default async function modifyAuction(
   auctionOwnerPubkey: string,
   auctionId: string,
-  description?: string,
-  socials?: string,
-  encorePeriod?: string,
+  modifyData: ModifyData,
 ): Promise<Transaction> {
-  const { modifyAuctionWasm } = await import("../../gold-wasm")
+  const { modifyAuctionWasm } = await import("gold-glue")
 
   try {
     const instruction = parseInstruction(await modifyAuctionWasm({
       auctionOwnerPubkey,
       auctionId,
-      description,
-      socials,
-      encorePeriod,
+      description: modifyData.description,
+      socials: modifyData.socials,
+      encorePeriod: modifyData.encorePeriod,
     }))
     return new Transaction().add(instruction)
   } catch (e) {

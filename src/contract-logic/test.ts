@@ -1,17 +1,12 @@
-import { Keypair, PublicKey, Transaction } from "@solana/web3.js"
-import { serialize } from "borsh"
-import { CONNECTION } from "./consts"
+import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js"
 import { parseInstruction } from "./utils/parseInstruction"
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export class MasterNftData {
-  name: string = "TEST"
-  symbol: string = "TST"
-  uri: string = "test.com"
-}
+// only used for nodejs tests
+export const CONNECTION = new Connection("https://api.devnet.solana.com", "confirmed")
 
 export const SECRET2 = Uint8Array.from([
   110, 156, 29, 116, 136, 221, 72, 113, 16, 84, 50, 192, 65, 209, 100, 231, 3, 47, 231, 28, 161,

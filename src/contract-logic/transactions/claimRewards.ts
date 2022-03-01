@@ -9,7 +9,7 @@ export default async function claimRewards(
   tokenType: string,
   existingTokenMint?: string,
 ): Promise<Transaction> {
-  const { claimRewardsWasm } = await import("../../gold-wasm")
+  const { claimRewardsWasm } = await import("gold-glue")
 
   try {
     const instruction = parseInstruction(await claimRewardsWasm({

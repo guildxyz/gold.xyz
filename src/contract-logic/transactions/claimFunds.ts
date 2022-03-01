@@ -8,14 +8,14 @@ export default async function claimFunds(
   cycleNumber: number,
   amount: number,
 ): Promise<Transaction> {
-  const { claimFundsWasm } = await import("../../gold-wasm")
+  const { claimFundsWasm } = await import("gold-glue")
 
   try {
     const instruction = parseInstruction(await claimFundsWasm({
       payerPubkey,
       auctionOwnerPubkey,
       auctionId,
-      cycleNumber: BigInt(cycleNumber),
+      cycleNumber: cycleNumber,
       amount
     }))
     return new Transaction().add(instruction)
