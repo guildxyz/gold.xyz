@@ -1,5 +1,5 @@
 import { Transaction } from "@solana/web3.js"
-import { parseInstruction } from "../utils/parseInstruction"
+import parseInstruction from "./parseInstruction"
 
 export type ModifyData = {
     description?: string,

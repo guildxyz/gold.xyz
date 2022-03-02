@@ -1,5 +1,4 @@
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js"
-import { parseInstruction } from "./utils/parseInstruction"
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))

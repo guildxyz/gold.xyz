@@ -1,5 +1,5 @@
 import { Transaction } from "@solana/web3.js"
-import { parseInstruction } from "../utils/parseInstruction"
+import parseInstruction from "./parseInstruction"
 
 export default async function placeBid(
   bidderPubkey: string,

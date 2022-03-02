@@ -52,15 +52,14 @@ global.Response = fetch.Response
   }
   // CREATE AUCTION
   //const startAuctionTx = await startAuction(auctionConfig);
-  //console.log(startAuctionTx)
   //await sendTransaction(startAuctionTx, auctionOwner);
   //console.log("Auction created successfully.");
   // QUERY AUCTION
   //console.log(await auctionExists("gold-dao"))
-  const auction = await getAuction(auctionConfig.id)
-  console.log(auction)
-  const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
-  console.log(cycle)
+  //const auction = await getAuction(auctionConfig.id)
+  //console.log(auction)
+  //const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
+  //console.log(cycle)
   //const auctions = await getAuctions()
   //console.log(auctions)
   // MODIFY AUCTION
