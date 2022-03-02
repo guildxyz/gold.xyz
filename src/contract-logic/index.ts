@@ -1,6 +1,6 @@
 import { Keypair } from "@solana/web3.js"
 import { AuctionConfig, NFTData } from "./queries/types"
-import { CONNECTION, SECRET2, SECRET3 } from "./test"
+import { CONNECTION, SECRET2, SECRET3, sendTransaction } from "./test"
 import claimFunds from "./transactions/claimFunds"
 import claimRewards from "./transactions/claimRewards"
 import deleteAuction from "./transactions/deleteAuction"
@@ -36,7 +36,6 @@ global.Response = fetch.Response
   //  perCycleAmount: 1000,
   //  mintAddress: PublicKey.default.toString(),
   //}
-  
   const auctionConfig: AuctionConfig = {
     id: "weheho",
     name: "Weheho",
@@ -46,7 +45,7 @@ global.Response = fetch.Response
     ownerPubkey: auctionOwner.publicKey.toString(),
     asset: nftAsset,
     encorePeriod: 0,
-    cyclePeriod: 86400,
+    cyclePeriod: 180,
     numberOfCycles: 20,
     startTime: null,
     minBid: 0.07,
@@ -54,59 +53,64 @@ global.Response = fetch.Response
   // CREATE AUCTION
   //const startAuctionTx = await startAuction(auctionConfig);
   //console.log(startAuctionTx)
-  //await sendTransaction(startAuctionTransaction, auctionOwner);
+  //await sendTransaction(startAuctionTx, auctionOwner);
   //console.log("Auction created successfully.");
   // QUERY AUCTION
   //console.log(await auctionExists("gold-dao"))
-  //const auction = await getAuction(auctionConfig.id)
-  //console.log(auction)
-  //const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
-  //console.log(cycle)
+  const auction = await getAuction(auctionConfig.id)
+  console.log(auction)
+  const cycle = await getAuctionCycle(auction.rootStatePubkey, auction.currentCycle)
+  console.log(cycle)
   //const auctions = await getAuctions()
   //console.log(auctions)
   // MODIFY AUCTION
   //const modifyAuctionTx = await modifyAuction(
   //  auctionOwner.publicKey.toString(),
-  //  "this-id",
+  //  auctionConfig.id,
   //  {
   //    //description: "this is a description",
-  //    //socials: ["aaa.aaa", "bbb.bbb"]
-  //    encorePeriod: 20,
+  //    socials: ["aaa.aaa", "bbb.bbb"],
+  //    encorePeriod: 0,
   //  }
   //);
-  //console.log(modifyAuctionTx.instructions[0])
+  //await sendTransaction(modifyAuctionTx, auctionOwner);
+  //console.log("Auction data updated successfully")
   // CLAIM FUNDS
   //const claimFundsTx = await claimFunds(
-  //  "loller",
+  //  auctionConfig.id,
+  //  bidder.publicKey.toString(), // bidder claims funds for the auction owner
   //  auctionOwner.publicKey.toString(),
-  //  auctionOwner.publicKey.toString(),
-  //  1,
-  //  32.23
+  //  auction.currentCycle,
+  //  0.05,
   //);
-  //console.log(claimFundsTx)
+  //await sendTransaction(claimFundsTx, bidder);
+  //console.log("Funds claimed successfully")
   // PLACE BID
   //const placeBidTx = await placeBid(
   //  bidder.publicKey.toString(),
-  //  "loller",
-  //  3,
-  //  12.3,
-  //  //bidder.publicKey.toString(),
+  //  auctionConfig.id,
+  //  auction.currentCycle,
+  //  0.07,
   //);
+  //await sendTransaction(placeBidTx, bidder);
+  //console.log("bid placed successfully")
   // CLAIM REWARDS
   //const claimRewardsTx = await claimRewards(
   //  auctionOwner.publicKey.toString(),
   //  bidder.publicKey.toString(),
-  //  "this-is-id",
-  //  32,
+  //  auctionConfig.id,
+  //  1,
   //  "Nft"
   //);
-  //console.log(claimRewardsTx.instructions[0])
+  //await sendTransaction(claimRewardsTx, auctionOwner);
+  //console.log("Reward claimed successfully")
   // DELETE AUCTION
   //const deleteAuctionTx = await deleteAuction(
-  //  "loller",//auction.id,
-  //  auctionOwner.publicKey.toString(),//auction.ownerPubkey,
-  //  1,//auction.currentCycle,
+  //  auction.id,
+  //  auctionOwner.publicKey.toString(),
+  //  auction.currentCycle,
   //  bidder.publicKey.toString(),
   //);
+  //await sendTransaction(deleteAuctionTx, auctionOwner);
   //console.log(deleteAuctionTx)
 })()
