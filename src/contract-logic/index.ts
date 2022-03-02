@@ -99,7 +99,7 @@ global.Response = fetch.Response
   //  auctionOwner.publicKey.toString(),
   //  bidder.publicKey.toString(),
   //  auctionConfig.id,
-  //  1,
+  //  6,
   //  "Nft"
   //);
   //await sendTransaction(claimRewardsTx, auctionOwner);
