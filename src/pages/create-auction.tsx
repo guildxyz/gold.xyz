@@ -35,7 +35,7 @@ const CreateGuildPage = (): JSX.Element => {
     defaultValues: {
       name: "",
       asset: {
-        type: "NFT",
+        type: "Nft",
         name: "",
         symbol: "",
       },
@@ -44,6 +44,7 @@ const CreateGuildPage = (): JSX.Element => {
       numberOfCycles: 0,
       encorePeriod: "",
       startTime: "",
+      socials: [],
     },
   })
 

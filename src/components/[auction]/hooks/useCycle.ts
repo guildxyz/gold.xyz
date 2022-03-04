@@ -1,4 +1,3 @@
-import { PublicKey } from "@solana/web3.js"
 import { getAuctionCycle } from "contract-logic/queries/getAuctions"
 import { useRouter } from "next/router"
 import useSWR from "swr"
@@ -10,7 +9,10 @@ import useAuction from "./useAuction"
  */
 
 const handleGetCycle = (_, auctionPubkey: string, cycleNumber: number) =>
-  getAuctionCycle(new PublicKey(auctionPubkey), cycleNumber)
+  getAuctionCycle(auctionPubkey, cycleNumber).then((data) => ({
+    ...data,
+    endTimestamp: data.endTimestamp * 1000,
+  }))
 
 const useCycle = (forceCurrentCycle?: boolean) => {
   const router = useRouter()

@@ -1,11 +1,8 @@
-import { useConnection } from "@solana/wallet-adapter-react"
 import { getAuctions } from "contract-logic/queries/getAuctions"
 import useSWR from "swr"
 
 const useAuctions = (secondaryPool?: boolean) => {
-  const { connection } = useConnection()
-
-  const handleGetAuctions = () => getAuctions(connection, secondaryPool)
+  const handleGetAuctions = () => getAuctions(secondaryPool)
 
   const { data, isValidating, error } = useSWR(
     `auctions${secondaryPool ? "_inactive" : ""}`,
