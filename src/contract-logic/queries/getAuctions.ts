@@ -1,5 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js"
-import { Auction, AuctionBase, NFTData, TokenData, Cycle} from "./types"
+import { Auction, AuctionBase, Cycle } from "./types"
 
 export async function getAuction(auctionId: string): Promise<Auction> {
   const { getAuctionWasm } = await import("gold-glue")
@@ -22,7 +21,9 @@ export async function getAuctionCycle(rootStatePubkey: string, cycleNum: number)
 }
 
 export async function getAuctions(secondary?: boolean): Promise<Array<AuctionBase>> {
-  const { getAuctionsWasm } = await import("gold-glue")
+  const { getAuctionsWasm } = await import(
+    `gold-glue${typeof window === "undefined" ? "-node" : ""}`
+  )
   let flag = false
   if (secondary) {
     flag = true

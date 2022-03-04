@@ -47,6 +47,7 @@
     "swr": "^1.1.1",
     "tweetnacl": "^1.0.3",
     "xstate": "^4.26.1",
+    "gold-glue-node": "github:agoraxyz/gold-glue#dev-nodejs",
     "gold-glue": "github:agoraxyz/gold-glue#dev"
   },
   "devDependencies": {
