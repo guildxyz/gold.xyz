@@ -66,7 +66,9 @@ const Page = (): JSX.Element => {
   const [hasStarted, setHasStarted] = useState<boolean>(true)
 
   useEffect(() => {
-    setHasStarted(!auction || !auction.startTime || auction.startTime < Date.now())
+    setHasStarted(
+      !auction || !auction.startTime || auction.startTime * 1000 < Date.now()
+    )
   }, [auction])
 
   const cycleState = useMemo(() => {
@@ -115,7 +117,7 @@ const Page = (): JSX.Element => {
             onExpire: celebrate,
           }
         : {
-            expiryTimestamp: auction.startTime,
+            expiryTimestamp: auction.startTime * 1000,
             onExpire: () => setHasStarted(true),
           },
     [auction?.startTime, celebrate, cycle?.endTimestamp, hasStarted]
