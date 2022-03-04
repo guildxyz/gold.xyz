@@ -38,13 +38,13 @@ import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
   const { auction, error: auctionError } = useAuction()
   const { cycle, error: cycleError, mutate: mutateCycle } = useCycle()
-  const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
+  const nftData = useNftData(auction?.asset?.type === "Nft" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
   const showCoinfetti = useCoinfetti()
@@ -58,11 +58,14 @@ const Page = (): JSX.Element => {
       cycle?.cycleNumber !== auction?.currentCycle
     )
       return "inactive"
+    console.log(Date.now(), cycle?.endTimestamp)
     if (Date.now() < cycle?.endTimestamp) return "active"
     if (auction?.currentCycle < auction?.numberOfCycles || cycle?.bids?.length === 0)
       return "intermediate"
     return "inactive"
   }, [auction, cycle])
+
+  useEffect(() => console.log(cycleState), [cycleState])
 
   if (auctionError || cycleError)
     return (

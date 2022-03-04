@@ -9,11 +9,11 @@ import AssetOption from "./components/AssetOption"
 
 const options = [
   {
-    value: "NFT",
+    value: "Nft",
     title: "NFT",
   },
   {
-    value: "TOKEN",
+    value: "Token",
     title: "Token",
     disabled: true,
   },
@@ -29,14 +29,14 @@ const AssetSelector = () => {
     control,
     name: "asset.type",
     rules: { required: "You must pick an asset type" },
-    defaultValue: "NFT",
+    defaultValue: "Nft",
   })
 
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "asset",
     onChange: field.onChange,
     value: field.value,
-    defaultValue: "NFT",
+    defaultValue: "Nft",
   })
 
   const group = getRootProps()

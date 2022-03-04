@@ -22,7 +22,7 @@ export type AuctionBaseConfig = {
   id: string
   name: string
   goalTreasuryAmount?: number
-  ownerPubkey: PublicKey
+  ownerPubkey: string
 }
 // NOTE encore_period: if bid occurs within this period before the auction
 // ends, same amount of extra time is added to the auction end
