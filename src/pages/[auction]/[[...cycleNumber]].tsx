@@ -38,7 +38,7 @@ import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
@@ -58,14 +58,11 @@ const Page = (): JSX.Element => {
       cycle?.cycleNumber !== auction?.currentCycle
     )
       return "inactive"
-    console.log(Date.now(), cycle?.endTimestamp)
     if (Date.now() < cycle?.endTimestamp) return "active"
     if (auction?.currentCycle < auction?.numberOfCycles || cycle?.bids?.length === 0)
       return "intermediate"
     return "inactive"
   }, [auction, cycle])
-
-  useEffect(() => console.log(cycleState), [cycleState])
 
   if (auctionError || cycleError)
     return (
