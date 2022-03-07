@@ -113,10 +113,12 @@ const Page = (): JSX.Element => {
     () =>
       hasStarted
         ? {
+            key: "has-started",
             expiryTimestamp: cycle?.endTimestamp,
             onExpire: celebrate,
           }
         : {
+            key: "has-not-started",
             expiryTimestamp: auction.startTime * 1000,
             onExpire: () => setHasStarted(true),
           },
