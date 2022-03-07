@@ -46,7 +46,8 @@
     "slugify": "^1.6.3",
     "swr": "^1.1.1",
     "tweetnacl": "^1.0.3",
-    "xstate": "^4.26.1"
+    "xstate": "^4.26.1",
+    "gold-glue": "github:agoraxyz/gold-glue#dev"
   },
   "devDependencies": {
     "@hookform/devtools": "^4.0.1",

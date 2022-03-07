@@ -22,6 +22,7 @@ const GoalAmount = () => {
           <NumberInputField
             {...register("goalTreasuryAmount", {
               required: "This field is required.",
+              valueAsNumber: true,
             })}
             placeholder="0"
           />

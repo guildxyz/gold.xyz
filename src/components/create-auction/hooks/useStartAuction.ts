@@ -1,6 +1,6 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { AuctionConfig, NFTData } from "contract-logic/queries/types"
-import { startAuction } from "contract-logic/transactions/startAuction"
+import startAuction from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
@@ -84,10 +84,10 @@ const useStartAuction = () => {
           (_data.cyclePeriod === "CUSTOM"
             ? _data.customCyclePeriod
             : +_data.cyclePeriod) * HOUR_IN_SECONDS,
-        ownerPubkey: publicKey,
+        ownerPubkey: publicKey.toString(),
       }
 
-      if (_data.asset.type !== "NFT") return onSubmit(finalData)
+      if (_data.asset.type !== "Nft") return onSubmit(finalData)
 
       // would be better with react-hook-form's validation but it's tricky with useFieldArray so just doing this for now
       if (!_data.nfts.length)
@@ -145,6 +145,9 @@ const useStartAuction = () => {
           status: "error",
         })
       }
+
+      delete finalData.nfts
+      delete finalData.customCyclePeriod
 
       setData(finalData)
 
