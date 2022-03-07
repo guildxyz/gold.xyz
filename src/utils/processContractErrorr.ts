@@ -93,17 +93,44 @@ const processContractError = (
     case "210":
       return {
         title: "Invalid cycle period",
-        description: "Make sure to set the cycle period correctly",
+        description:
+          "Make sure the round term is selected. If it is set to custom, make sure to set it correctly",
       }
 
     case "211":
       return {
         title: "Auction ID not ASCII",
         description:
-          "The id generated from the auction name contains invalid characters",
+          "The id generated from the auction name contains invalid characters. Make sure to not use emojis in the auction name",
       }
 
-    case "214": // Invalid encore period
+    case "1fe":
+      return {
+        title: "Top bidder mismatch",
+        description: "It's not possible to bid as the top bidder",
+      }
+
+    case "214":
+      return {
+        title: "Invalid encore period",
+        description:
+          "If set, the encore period has to be a positive number, and cannot be more than the half of the round term",
+      }
+
+    case "216":
+      return {
+        title: "Reward already claimed",
+        description: "This reward has already been claimed",
+      }
+
+    case "217":
+      return {
+        title: "Unclaimed rewards",
+        description:
+          "This auction has some unclaimed rewards. It cannot be deleted until all the rewards are claimed",
+      }
+
+    case "215": // Invalid protocol fee
     case "213": // String too long -> This one does not seem to be thrown anywhere
     case "212": // Token auction inconsistency
     case "20f": // Invalid per cycle amount
@@ -113,7 +140,6 @@ const processContractError = (
     case "209": // Invalid account owner
     case "208": // Invalid program address
     case "207": // Metadata manipulation error
-    case "1fe": // Top bidder account mismatch
     case "1fa": // Invalid seeds
     case "1f4": // Invalid instruction
     case "1f8": // Contract already initialized
