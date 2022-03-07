@@ -4,9 +4,7 @@ import useSWR from "swr"
 import useAuctions from "./useAuctions"
 
 const handleGetAuctions = (_, auctions, publicKey) =>
-  auctions.filter(
-    (auction) => auction.ownerPubkey.toString() === publicKey.toString()
-  )
+  auctions.filter((auction) => auction.ownerPubkey === publicKey)
 
 const useUsersAuctions = (): AuctionBase[] => {
   const { auctions } = useAuctions()
@@ -15,7 +13,7 @@ const useUsersAuctions = (): AuctionBase[] => {
   const shouldFetch = auctions?.length && publicKey
 
   const { data } = useSWR(
-    shouldFetch ? ["usersAuctions", auctions, publicKey] : null,
+    shouldFetch ? ["usersAuctions", auctions, publicKey.toString()] : null,
     handleGetAuctions
   )
 

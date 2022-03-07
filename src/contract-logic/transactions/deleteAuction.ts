@@ -1,31 +1,24 @@
-import { Connection, PublicKey, Transaction } from "@solana/web3.js"
-import { serialize } from "borsh"
-import { DeleteAuctionArgs, SCHEMA } from "../schema"
-import { padTo32Bytes } from "../utils/padTo32Bytes"
-import { parseInstruction } from "../utils/parseInstruction"
-import { NUM_OF_CYCLES_TO_DELETE } from "../consts"
+import { Transaction } from "@solana/web3.js"
+import parseInstruction from "./parseInstruction"
 
-export async function deleteAuction(
+export default async function deleteAuction(
   auctionId: string,
-  auctionOwnerPubkey: PublicKey
+  auctionOwnerPubkey: string,
+  cycleNumber: number,
+  topBidderPubkey?: string,
 ) {
-  const { deleteAuctionWasm, getTopBidderWasm, getCurrentCycleWasm } = await import("../wasm-factory")
-
-  const topBidder = await getTopBidderWasm(auctionId)
-  const currentCycleNumber = await getCurrentCycleWasm(auctionId)
-
-  const auctionIdArray = padTo32Bytes(auctionId)
-  const deleteAuctionArgs = new DeleteAuctionArgs({
-    auctionOwnerPubkey,
-    topBidderPubkey: topBidder,
-    auctionId: auctionIdArray,
-    currentAuctionCycle: currentCycleNumber,
-    numOfCyclesToDelete: NUM_OF_CYCLES_TO_DELETE,
-  })
+  const { deleteAuctionWasm } = await import("gold-glue")
 
   try {
-    const instruction = parseInstruction(deleteAuctionWasm(serialize(SCHEMA, deleteAuctionArgs)))
-    return new Transaction().add(instruction)
+    const instructions = await deleteAuctionWasm({
+      auctionOwnerPubkey,
+      topBidderPubkey,
+      auctionId,
+      cycleNumber,
+    })
+    let tx = new Transaction()
+    instructions.forEach((ix) => tx.add(parseInstruction(ix)))
+    return tx
   } catch (e) {
     console.log("wasm error:", e)
   }

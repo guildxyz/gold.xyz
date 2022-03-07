@@ -1,22 +1,20 @@
-import { PublicKey } from "@solana/web3.js"
-
 export type Bid = {
-  bidderPubkey: PublicKey
+  bidderPubkey: string
   amount: number
 }
 
 export type NFTData = {
-  type: "NFT"
+  type: "Nft"
   name: string
   symbol: string
   uri: string
-  isRepeated: boolean
+  isRepeating: boolean
 }
 
 export type TokenData = {
-  type: "TOKEN"
+  type: "Token"
   decimals: number
-  mintAddress: PublicKey
+  mintAddress?: string
   perCycleAmount: number
 }
 
@@ -24,7 +22,7 @@ export type AuctionBaseConfig = {
   id: string
   name: string
   goalTreasuryAmount?: number
-  ownerPubkey: PublicKey
+  ownerPubkey: string
 }
 // NOTE encore_period: if bid occurs within this period before the auction
 // ends, same amount of extra time is added to the auction end
@@ -51,7 +49,7 @@ export type Auction = AuctionConfig &
     isFinished: boolean
     isFrozen: boolean
     isFiltered: boolean
-    rootStatePubkey: PublicKey
+    rootStatePubkey: string
   }
 
 export type Cycle = {

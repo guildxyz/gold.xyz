@@ -23,12 +23,13 @@ const CreateGuildPage = (): JSX.Element => {
     defaultValues: {
       name: "",
       asset: {
-        type: "NFT",
+        type: "Nft",
         name: "",
         symbol: "",
       },
       nfts: [],
       numberOfCycles: 0,
+      socials: [],
     },
   })
 
