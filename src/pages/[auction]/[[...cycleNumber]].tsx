@@ -26,6 +26,7 @@ import Layout from "components/common/Layout"
 import Link from "components/common/Link"
 import Section from "components/common/Section"
 import BidHistory from "components/[auction]/BidHistory"
+import ClaimRewardButton from "components/[auction]/ClaimRewardButton"
 import Countdown from "components/[auction]/Countdown"
 import CycleEndAlert from "components/[auction]/CycleEndAlert"
 import HighestBid from "components/[auction]/HighestBid"
@@ -63,6 +64,17 @@ const Page = (): JSX.Element => {
       return "intermediate"
     return "inactive"
   }, [auction, cycle])
+
+  const canClaim = useMemo(
+    () =>
+      !!cycle &&
+      !!publicKey &&
+      !!auction &&
+      cycle.endTimestamp !== 0 &&
+      cycle.bids?.[0]?.bidderPubkey === publicKey.toString() &&
+      (auction.currentCycle > cycle.cycleNumber || auction.isFinished),
+    [cycle, publicKey, auction]
+  )
 
   if (auctionError || cycleError)
     return (
@@ -140,16 +152,19 @@ const Page = (): JSX.Element => {
                 </Link>
               )}
             </HStack>
-            <Skeleton isLoaded={!!nftData} w="fit-content" minW="180px" minH="2em">
-              <Heading
-                as="h3"
-                fontSize={{ base: "2xl", md: "3xl" }}
-                fontFamily="display"
-                d="inline-block"
-              >
-                {nftData?.name}
-              </Heading>
-            </Skeleton>
+            <HStack justifyContent="space-between" alignItems="center" w="full">
+              <Skeleton isLoaded={!!nftData} w="fit-content" minW="180px" minH="2em">
+                <Heading
+                  as="h3"
+                  fontSize={{ base: "2xl", md: "3xl" }}
+                  fontFamily="display"
+                  d="inline-block"
+                >
+                  {nftData?.name}
+                </Heading>
+              </Skeleton>
+              {canClaim && <ClaimRewardButton />}
+            </HStack>
             <HStack
               divider={<Divider orientation="vertical" />}
               spacing="8"
