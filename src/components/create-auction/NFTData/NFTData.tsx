@@ -4,42 +4,21 @@ import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
 import useToast from "hooks/useToast"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
-import { v4 as uuidv4 } from "uuid"
+import pinFileToIPFS from "utils/pinataUpload"
 import NFTCard from "./components/NFTCard"
 import useDropzone from "./hooks/useDropzone"
 
 type Props = {
-  setUploadPromise: (uploadPromise: Promise<Record<string, string>>) => void
-}
-
-const uploadImages = async (
-  files: File[],
-  clientId: string,
-  ids: string[]
-): Promise<Record<string, string>> => {
-  const formData = new FormData()
-  files.forEach((file, index) => formData.append(ids[index], file))
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-file/${clientId}`,
-    {
-      method: "POST",
-      body: formData,
-    }
-  )
-
-  const body = await response.json()
-
-  if (response.ok) return body
-  else throw Error(body.message ?? "Failed to upload images")
+  setUploadPromise: (uploadPromise: Promise<void | void[]>) => void
 }
 
 const NFTData = ({ setUploadPromise }: Props) => {
   const toast = useToast()
   const [progresses, setProgresses] = useState<Record<string, number>>({})
   const [hashes, setHashes] = useState<Record<string, string>>({})
+  const [imageErrors, setImageErrors] = useState<Record<string, string>>({})
   const { fields, append, remove } = useFieldArray({ name: "nfts" })
   const {
     register,
@@ -50,12 +29,12 @@ const NFTData = ({ setUploadPromise }: Props) => {
   const nfts = useWatch({ name: "nfts" })
 
   useEffect(() => {
-    register("asset.isRepeated")
+    register("asset.isRepeating")
   }, [])
 
   useEffect(() => {
-    if (nfts.length === 1) setValue("asset.isRepeated", true)
-    else setValue("asset.isRepeated", false)
+    if (nfts.length === 1) setValue("asset.isRepeating", true)
+    else setValue("asset.isRepeating", false)
   }, [nfts])
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -72,75 +51,113 @@ const NFTData = ({ setUploadPromise }: Props) => {
     onDrop,
   })
 
-  const setupEventSource = useCallback(
-    (clientId: string) =>
-      new Promise<EventSource>((resolve, reject) => {
-        const source = new EventSource(
-          `${process.env.NEXT_PUBLIC_UPLOADER_API}/${clientId}`
-        )
-
-        source.addEventListener("progress", (event: Event) => {
-          try {
-            const progressReport: Record<string, number> = JSON.parse(
-              (event as Event & { data: string }).data
-            )
-            setProgresses((prev: Record<string, number>) => ({
-              ...prev,
-              ...progressReport,
-            }))
-          } catch (error) {
-            console.error(`Failed to parse SSE "progress" event message`, error)
-          }
-        })
-
-        source.addEventListener("open", () => resolve(source))
-
-        source.addEventListener("error", () =>
-          reject(Error("Failed to open SSE connection"))
-        )
-      }),
-    [setProgresses]
-  )
-
   // Not triggering upload on acceptedFiles change, since we need the generated field ids
   useEffect(() => {
     if (acceptedFiles.length > 0) {
-      const uploadProgressId = uuidv4()
-      setupEventSource(uploadProgressId)
-        .then((progressEventSource) =>
+      const newFields = fields.filter(
+        ({ id }) => !(id in hashes || id in progresses)
+      )
+
+      setProgresses((prev) => ({
+        ...prev,
+        ...Object.fromEntries(newFields.map(({ id }) => [id, 0])),
+      }))
+
+      fetch("/api/pinata-key").then((response) =>
+        response.json().then(({ jwt, key }) => {
           setUploadPromise(
-            uploadImages(
-              acceptedFiles,
-              uploadProgressId,
-              fields
-                .slice(fields.length - acceptedFiles.length)
-                .map((field) => field.id)
+            Promise.all(
+              newFields.map(({ id }, index) =>
+                pinFileToIPFS({
+                  jwt,
+                  data: [acceptedFiles[index]],
+                  onProgress: (progress) =>
+                    setProgresses((prev) => ({ ...prev, [id]: progress })),
+                })
+                  .then(({ IpfsHash }) => {
+                    setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
+                  })
+                  .catch((error) =>
+                    setImageErrors((prev) => ({
+                      ...prev,
+                      [id]:
+                        typeof error === "string"
+                          ? error
+                          : error.message || "Something went wrong",
+                    }))
+                  )
+              )
             )
-              .then((hashReport) => {
-                setHashes((prev) => ({ ...prev, ...hashReport }))
-                return hashReport
-              })
-              .catch((e) => {
+              .catch((error) => {
                 toast({
                   status: "error",
                   title: "Upload failed",
-                  description: e?.message ?? "Failed to upload images",
+                  description: error.message || "Failed to upload images to IPFS",
                 })
-                return {}
               })
-              .finally(() => progressEventSource.close())
+              .finally(() => {
+                fetch("/api/pinata-key", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ key }),
+                })
+              })
           )
-        )
-        .catch((e) => {
-          console.error("Failed to open SSE connection", e)
-          toast({
-            status: "error",
-            title: "Upload failed",
-            description: e?.message ?? "Failed to upload images",
-          })
         })
+      )
     }
   }, [fields])
+
+  const getUploadRetryFn = (fieldId: string, index: number) => () => {
+    setImageErrors((prev) => {
+      const newImageErrors = { ...prev }
+      delete newImageErrors[fieldId]
+      return newImageErrors
+    })
+
+    setProgresses((prev) => ({
+      ...prev,
+      [fieldId]: 0,
+    }))
+
+    fetch("/api/pinata-key").then((response) =>
+      response.json().then(({ jwt, key }) => {
+        setUploadPromise(
+          pinFileToIPFS({
+            jwt,
+            data: [nfts?.[index]?.file],
+            onProgress: (progress) =>
+              setProgresses((prev) => ({
+                ...prev,
+                [fieldId]: progress,
+              })),
+          })
+            .then(({ IpfsHash }) => {
+              setHashes((prev) => ({
+                ...prev,
+                [fieldId]: IpfsHash,
+              }))
+            })
+            .catch((error) =>
+              setImageErrors((prev) => ({
+                ...prev,
+                [fieldId]:
+                  typeof error === "string"
+                    ? error
+                    : error.message || "Something went wrong",
+              }))
+            )
+            .finally(() => {
+              fetch("/api/pinata-key", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key }),
+              })
+            })
+        )
+      })
+    )
+  }
 
   return (
     <>
@@ -184,6 +201,12 @@ const NFTData = ({ setUploadPromise }: Props) => {
                 removeNft={() => remove(index)}
                 progress={progresses[field.id] ?? 0}
                 imageHash={hashes[field.id] ?? ""}
+                error={imageErrors[field.id] ?? ""}
+                retryUpload={
+                  imageErrors[field.id]?.length > 0
+                    ? getUploadRetryFn(field.id, index)
+                    : undefined
+                }
               />
             ))}
             {/* </AnimatePresence> */}

@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import useAuction from "components/[auction]/hooks/useAuction"
-import { deleteAuction } from "contract-logic/transactions/deleteAuction"
+import deleteAuction from "contract-logic/transactions/deleteAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
@@ -26,7 +26,11 @@ export default function DeleteDialog({ isOpen, onClose }) {
   const alertCancelRef = useRef()
 
   const handleDeleteAuction = async () => {
-    const tx = await deleteAuction(auction?.id, auction?.ownerPubkey)
+    const tx = await deleteAuction(
+      auction?.id,
+      auction?.ownerPubkey,
+      auction?.currentCycle
+    )
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,
@@ -45,7 +49,7 @@ export default function DeleteDialog({ isOpen, onClose }) {
         status: "success",
       })
       mutate("auctions", (auctions) =>
-        auctions.filter((auction_) => auction_.id !== auction.id)
+        auctions?.filter((auction_) => auction_.id !== auction.id)
       )
       router.push("/")
     },

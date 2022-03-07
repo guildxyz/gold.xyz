@@ -44,11 +44,11 @@ import shortenHex from "utils/shortenHex"
 const Page = (): JSX.Element => {
   const { auction, error: auctionError } = useAuction()
   const { cycle, error: cycleError, mutate: mutateCycle } = useCycle()
-  const nftData = useNftData(auction?.asset?.type === "NFT" ? auction?.asset : null)
+  const nftData = useNftData(auction?.asset?.type === "Nft" ? auction?.asset : null)
   const { publicKey } = useWallet()
   const router = useRouter()
   const showCoinfetti = useCoinfetti()
-  const statSize = useBreakpointValue({ base: "md", md: "lg" })
+  const statSize = useBreakpointValue({ base: "md", xl: "lg" })
 
   const cycleState = useMemo(() => {
     if (!auction || !cycle) return undefined

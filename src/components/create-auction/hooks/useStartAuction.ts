@@ -1,11 +1,12 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { AuctionConfig, NFTData } from "contract-logic/queries/types"
-import { startAuction } from "contract-logic/transactions/startAuction"
+import startAuction from "contract-logic/transactions/startAuction"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
+import pinFileToIpfs from "utils/pinataUpload"
 
 const HOUR_IN_SECONDS = 3600
 
@@ -83,10 +84,10 @@ const useStartAuction = () => {
           (_data.cyclePeriod === "CUSTOM"
             ? _data.customCyclePeriod
             : +_data.cyclePeriod) * HOUR_IN_SECONDS,
-        ownerPubkey: publicKey,
+        ownerPubkey: publicKey.toString(),
       }
 
-      if (_data.asset.type !== "NFT") return onSubmit(finalData)
+      if (_data.asset.type !== "Nft") return onSubmit(finalData)
 
       // would be better with react-hook-form's validation but it's tricky with useFieldArray so just doing this for now
       if (!_data.nfts.length)
@@ -132,22 +133,27 @@ const useStartAuction = () => {
           })
         )
 
-      const cid = await fetch(
-        `${process.env.NEXT_PUBLIC_UPLOADER_API}/upload-metadata`,
-        {
-          method: "POST",
-          body: JSON.stringify({ data: metaDatas }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((res) => res.json())
+      const { IpfsHash } = await pinFileToIpfs({
+        data: metaDatas,
+        fileNames: metaDatas.map((_, index) => `${_data.id}/${index}.json`),
+      })
+
+      if (!IpfsHash) {
+        return toast({
+          title: "IPFS upload failed",
+          description: "Failed to upload metadata of the images to IPFS",
+          status: "error",
+        })
+      }
+
+      delete finalData.nfts
+      delete finalData.customCyclePeriod
 
       setData(finalData)
 
       return onSubmit({
         ...finalData,
-        asset: { ...finalData.asset, uri: `https://ipfs.io/ipfs/${cid}` },
+        asset: { ...finalData.asset, uri: `https://ipfs.io/ipfs/${IpfsHash}` },
       })
     },
     error,
