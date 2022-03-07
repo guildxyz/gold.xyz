@@ -29,12 +29,12 @@ const NFTData = ({ setUploadPromise }: Props) => {
   const nfts = useWatch({ name: "nfts" })
 
   useEffect(() => {
-    register("asset.isRepeated")
+    register("asset.isRepeating")
   }, [])
 
   useEffect(() => {
-    if (nfts.length === 1) setValue("asset.isRepeated", true)
-    else setValue("asset.isRepeated", false)
+    if (nfts.length === 1) setValue("asset.isRepeating", true)
+    else setValue("asset.isRepeating", false)
   }, [nfts])
 
   const onDrop = (acceptedFiles: File[]) => {

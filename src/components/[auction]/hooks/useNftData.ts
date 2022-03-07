@@ -16,14 +16,14 @@ const useNftData = (asset: NFTData) => {
   const gatewayUri = asset?.uri?.replace?.("ipfs://", "https://ipfs.io/ipfs/")
 
   const uri = useMemo(
-    () => `${gatewayUri}/${asset?.isRepeated ? "0" : cycleNumber}.json`,
+    () => `${gatewayUri}/${asset?.isRepeating ? "0" : cycleNumber}.json`,
     [asset, gatewayUri, cycleNumber]
   )
 
   const { data } = useSWRImmutable(shouldFetch ? uri : null)
 
   if (!data) return null
-  if (!asset.isRepeated) return data
+  if (!asset.isRepeating) return data
   return {
     ...data,
     image: data.image?.replace?.("ipfs://", "https://ipfs.io/ipfs/"),
