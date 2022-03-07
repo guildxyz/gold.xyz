@@ -1,7 +1,7 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import useAuction from "components/[auction]/hooks/useAuction"
 import useCycle from "components/[auction]/hooks/useCycle"
-import { placeBid } from "contract-logic/transactions/placeBid"
+import placeBid from "contract-logic/transactions/placeBid"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import processContractError from "utils/processContractErrorr"
@@ -20,7 +20,12 @@ const usePlaceBid = (setValue) => {
 
   const handlePlaceBid = async ({ amount: inputAmount }: Data) => {
     const amount_ = parseFloat(inputAmount)
-    const tx = await placeBid(auction.id, publicKey, amount_)
+    const tx = await placeBid(
+      publicKey.toString(),
+      auction.id,
+      auction?.currentCycle,
+      amount_
+    )
     console.log(tx)
     const signature = await sendTransaction(tx, connection, {
       skipPreflight: false,

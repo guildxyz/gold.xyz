@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import useAuction from "components/[auction]/hooks/useAuction"
-import { claimFunds } from "contract-logic/transactions/claimFunds"
+import claimFunds from "contract-logic/transactions/claimFunds"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
 import { useRef } from "react"
@@ -18,14 +18,16 @@ import processContractError from "utils/processContractErrorr"
 const ClaimDialog = ({ isOpen, onClose }) => {
   const { auction, mutate } = useAuction()
   const { connection } = useConnection()
-  const { sendTransaction } = useWallet()
+  const { sendTransaction, publicKey } = useWallet()
   const toast = useToast({ status: "error" })
   const alertCancelRef = useRef()
 
   const handleClaimFunds = async () => {
     const tx = await claimFunds(
       auction?.id,
+      publicKey.toString(),
       auction?.ownerPubkey,
+      auction?.currentCycle,
       auction?.availableTreasuryAmount
     )
     console.log(tx)
