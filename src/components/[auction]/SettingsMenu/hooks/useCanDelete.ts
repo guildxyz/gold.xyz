@@ -12,12 +12,7 @@ const fetchCanDelete = (
     [...new Array(endIndex)].map((_, cycleNumber) =>
       getAuctionCycle(rootStatePubkey, cycleNumber + 1)
     )
-  ).then((responses) => {
-    console.log(responses)
-    const result = responses.every(({ endTimestamp }) => endTimestamp === 0)
-    console.log(result)
-    return result
-  })
+  ).then((responses) => responses.every(({ endTimestamp }) => endTimestamp === 0))
 
 const useCanDelete = () => {
   const { auction } = useAuction()
