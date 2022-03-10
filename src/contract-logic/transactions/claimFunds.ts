@@ -9,7 +9,7 @@ export default async function claimFunds(
   amount: number
 ): Promise<Transaction> {
   const { claimFundsWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
   )
 
   try {

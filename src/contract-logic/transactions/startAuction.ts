@@ -4,7 +4,7 @@ import parseInstruction from "./parseInstruction"
 
 export default async function startAuction(auctionConfig: AuctionConfig) {
   const { initializeAuctionWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
   )
   try {
     const instruction = parseInstruction(await initializeAuctionWasm(auctionConfig))

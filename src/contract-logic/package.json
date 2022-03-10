@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@solana/web3.js": "^1.30.2",
-    "gold-glue": "github:agoraxyz/gold-glue#main-nodejs",
-    "gold-glue-dev": "github:agoraxyz/gold-glue#dev-nodejs"
+    "gold-glue": "github:agoraxyz/gold-glue#dev-nodejs"
   }
 }

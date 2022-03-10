@@ -13,7 +13,7 @@ export default async function modifyAuction(
   modifyData: ModifyData
 ): Promise<Transaction> {
   const { modifyAuctionWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
   )
 
   try {

@@ -10,7 +10,7 @@ export default async function claimRewards(
   existingTokenMint?: string
 ): Promise<Transaction> {
   const { claimRewardsWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
   )
 
   try {

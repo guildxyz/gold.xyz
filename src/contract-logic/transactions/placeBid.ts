@@ -9,7 +9,7 @@ export default async function placeBid(
   topBidderPubkey?: string
 ) {
   const { placeBidWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
   )
 
   try {

@@ -2,7 +2,7 @@ import { Auction, AuctionBase, Cycle } from "./types"
 
 export async function getAuction(auctionId: string): Promise<Auction> {
   const { getAuctionWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
   )
   try {
     const auction = await getAuctionWasm(auctionId)
@@ -14,7 +14,7 @@ export async function getAuction(auctionId: string): Promise<Auction> {
 
 export async function getAuctionCycle(rootStatePubkey: string, cycleNum: number): Promise<Cycle> {
   const { getAuctionCycleWasm, Pubkey } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
   )
   try {
     const cycle = await getAuctionCycleWasm(new Pubkey(rootStatePubkey), BigInt(cycleNum))
@@ -26,7 +26,7 @@ export async function getAuctionCycle(rootStatePubkey: string, cycleNum: number)
 
 export async function getAuctions(secondary?: boolean): Promise<Array<AuctionBase>> {
   const { getAuctionsWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
   )
   let flag = false
   if (secondary) {
