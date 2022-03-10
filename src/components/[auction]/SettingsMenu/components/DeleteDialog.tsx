@@ -1,10 +1,12 @@
 import {
+  Alert,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  AlertIcon,
   Button,
 } from "@chakra-ui/react"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
@@ -15,6 +17,7 @@ import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useRef } from "react"
 import { useSWRConfig } from "swr"
+import useCanDelete from "../hooks/useCanDelete"
 
 export default function DeleteDialog({ isOpen, onClose }) {
   const { mutate } = useSWRConfig()
@@ -24,6 +27,7 @@ export default function DeleteDialog({ isOpen, onClose }) {
   const toast = useToast()
   const router = useRouter()
   const alertCancelRef = useRef()
+  const { canDelete } = useCanDelete()
 
   const handleDeleteAuction = async () => {
     const tx = await deleteAuction(
@@ -72,6 +76,13 @@ export default function DeleteDialog({ isOpen, onClose }) {
           <AlertDialogHeader>Delete auction</AlertDialogHeader>
 
           <AlertDialogBody>
+            {canDelete === false && (
+              <Alert status="warning" mb={5}>
+                <AlertIcon />
+                Some rewards haven't been claimed yet! Deleting an auction is only
+                possible once all the rewards have been claimed.
+              </Alert>
+            )}
             Are you sure? Deleting the auction cannot be undone. Current cycle's top
             bidder will be refunded and you receive all remaining funds from your
             treasury.
