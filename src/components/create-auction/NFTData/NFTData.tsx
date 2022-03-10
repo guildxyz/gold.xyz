@@ -3,15 +3,15 @@ import CardMotionWrapper from "components/common/CardMotionWrapper"
 import Section from "components/common/Section"
 import UploadFile from "components/create-auction/UploadFile"
 import { AnimateSharedLayout } from "framer-motion"
+import usePinata from "hooks/usePinata"
 import useToast from "hooks/useToast"
-import { useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
-import pinFileToIPFS from "utils/pinataUpload"
 import NFTCard from "./components/NFTCard"
 import useDropzone from "./hooks/useDropzone"
 
 type Props = {
-  setUploadPromise: (uploadPromise: Promise<void | void[]>) => void
+  setUploadPromise: Dispatch<SetStateAction<Promise<void | void[]>>>
 }
 
 const NFTData = ({ setUploadPromise }: Props) => {
@@ -25,6 +25,8 @@ const NFTData = ({ setUploadPromise }: Props) => {
     setValue,
     formState: { errors },
   } = useFormContext()
+
+  const pinFile = usePinata()
 
   const nfts = useWatch({ name: "nfts" })
 
@@ -63,46 +65,33 @@ const NFTData = ({ setUploadPromise }: Props) => {
         ...Object.fromEntries(newFields.map(({ id }) => [id, 0])),
       }))
 
-      fetch("/api/pinata-key").then((response) =>
-        response.json().then(({ jwt, key }) => {
-          setUploadPromise(
-            Promise.all(
-              newFields.map(({ id }, index) =>
-                pinFileToIPFS({
-                  jwt,
-                  data: [acceptedFiles[index]],
-                  onProgress: (progress) =>
-                    setProgresses((prev) => ({ ...prev, [id]: progress })),
-                })
-                  .then(({ IpfsHash }) => {
-                    setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
-                  })
-                  .catch((error) =>
-                    setImageErrors((prev) => ({
-                      ...prev,
-                      [id]:
-                        typeof error === "string"
-                          ? error
-                          : error.message || "Something went wrong",
-                    }))
-                  )
-              )
-            )
-              .catch((error) => {
-                toast({
-                  status: "error",
-                  title: "Upload failed",
-                  description: error.message || "Failed to upload images to IPFS",
-                })
-              })
-              .finally(() => {
-                fetch("/api/pinata-key", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ key }),
-                })
-              })
+      const pinRequests = newFields.map(({ id }, index) =>
+        pinFile({
+          data: [acceptedFiles[index]],
+          onProgress: (progress) =>
+            setProgresses((prev) => ({ ...prev, [id]: progress })),
+        })
+          .then(({ IpfsHash }) => {
+            setHashes((prev) => ({ ...prev, [id]: IpfsHash }))
+          })
+          .catch((error) =>
+            setImageErrors((prev) => ({
+              ...prev,
+              [id]:
+                typeof error === "string"
+                  ? error
+                  : error.message || "Something went wrong",
+            }))
           )
+      )
+
+      setUploadPromise(
+        Promise.all(pinRequests).catch((error) => {
+          toast({
+            status: "error",
+            title: "Upload failed",
+            description: error.message || "Failed to upload images to IPFS",
+          })
         })
       )
     }
@@ -120,42 +109,30 @@ const NFTData = ({ setUploadPromise }: Props) => {
       [fieldId]: 0,
     }))
 
-    fetch("/api/pinata-key").then((response) =>
-      response.json().then(({ jwt, key }) => {
-        setUploadPromise(
-          pinFileToIPFS({
-            jwt,
-            data: [nfts?.[index]?.file],
-            onProgress: (progress) =>
-              setProgresses((prev) => ({
-                ...prev,
-                [fieldId]: progress,
-              })),
-          })
-            .then(({ IpfsHash }) => {
-              setHashes((prev) => ({
-                ...prev,
-                [fieldId]: IpfsHash,
-              }))
-            })
-            .catch((error) =>
-              setImageErrors((prev) => ({
-                ...prev,
-                [fieldId]:
-                  typeof error === "string"
-                    ? error
-                    : error.message || "Something went wrong",
-              }))
-            )
-            .finally(() => {
-              fetch("/api/pinata-key", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ key }),
-              })
-            })
-        )
+    setUploadPromise(
+      pinFile({
+        data: [nfts?.[index]?.file],
+        onProgress: (progress) =>
+          setProgresses((prev) => ({
+            ...prev,
+            [fieldId]: progress,
+          })),
       })
+        .then(({ IpfsHash }) => {
+          setHashes((prev) => ({
+            ...prev,
+            [fieldId]: IpfsHash,
+          }))
+        })
+        .catch((error) =>
+          setImageErrors((prev) => ({
+            ...prev,
+            [fieldId]:
+              typeof error === "string"
+                ? error
+                : error.message || "Something went wrong",
+          }))
+        )
     )
   }
 
