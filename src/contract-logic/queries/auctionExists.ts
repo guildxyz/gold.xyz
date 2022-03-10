@@ -1,7 +1,5 @@
 const auctionExists = async (auction_id: string): Promise<boolean> => {
-  const { auctionExistsWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
-  )
+  const { auctionExistsWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
   return auctionExistsWasm(auction_id).then((exists) => exists)
 }
 

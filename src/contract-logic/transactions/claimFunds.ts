@@ -8,9 +8,7 @@ export default async function claimFunds(
   cycleNumber: number,
   amount: number
 ): Promise<Transaction> {
-  const { claimFundsWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
-  )
+  const { claimFundsWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
 
   try {
     const instruction = parseInstruction(

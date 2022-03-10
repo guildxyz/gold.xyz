@@ -8,9 +8,7 @@ export default async function placeBid(
   amount: number,
   topBidderPubkey?: string
 ) {
-  const { placeBidWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
-  )
+  const { placeBidWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
 
   try {
     const instruction = parseInstruction(

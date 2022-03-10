@@ -7,9 +7,7 @@ export default async function deleteAuction(
   cycleNumber: number,
   topBidderPubkey?: string
 ) {
-  const { deleteAuctionWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
-  )
+  const { deleteAuctionWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
 
   try {
     const instructions = await deleteAuctionWasm({

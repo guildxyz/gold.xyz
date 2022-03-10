@@ -12,9 +12,7 @@ export default async function modifyAuction(
   auctionId: string,
   modifyData: ModifyData
 ): Promise<Transaction> {
-  const { modifyAuctionWasm } = await import(
-    `gold-glue${process.env.NODE_ENV === "production" || process.env.IS_VERCEL ? "" : "-dev"}`
-  )
+  const { modifyAuctionWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
 
   try {
     const instruction = parseInstruction(
