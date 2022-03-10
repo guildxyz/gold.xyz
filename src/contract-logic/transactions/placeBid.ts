@@ -6,18 +6,22 @@ export default async function placeBid(
   auctionId: string,
   cycleNumber: number,
   amount: number,
-  topBidderPubkey?: string,
+  topBidderPubkey?: string
 ) {
-  const { placeBidWasm } = await import("gold-glue")
+  const { placeBidWasm } = await import(
+    `gold-glue${process.env.NODE_ENV === "production" ? "" : "-dev"}`
+  )
 
   try {
-    const instruction = parseInstruction(await placeBidWasm({
-      bidderPubkey,
-      auctionId,
-      cycleNumber,
-      amount,
-      topBidderPubkey,
-    }))
+    const instruction = parseInstruction(
+      await placeBidWasm({
+        bidderPubkey,
+        auctionId,
+        cycleNumber,
+        amount,
+        topBidderPubkey,
+      })
+    )
     return new Transaction().add(instruction)
   } catch (e) {
     console.log("wasm error:", e)
