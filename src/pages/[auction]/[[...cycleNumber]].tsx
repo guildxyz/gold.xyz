@@ -25,7 +25,6 @@ import Card from "components/common/Card"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
 import Section from "components/common/Section"
-import useAuctions from "components/index/hooks/useAuctions"
 import BidHistory from "components/[auction]/BidHistory"
 import ClaimRewardButton from "components/[auction]/ClaimRewardButton"
 import Countdown from "components/[auction]/Countdown"
@@ -52,8 +51,6 @@ const Page = (): JSX.Element => {
   const showCoinfetti = useCoinfetti()
   const statSize = useBreakpointValue({ base: "md", xl: "lg" })
 
-  const { auctions } = useAuctions()
-
   const cycleState = useMemo(() => {
     if (!auction || !cycle) return undefined
     if (
@@ -65,13 +62,14 @@ const Page = (): JSX.Element => {
     if (
       Date.now() < cycle.endTimestamp ||
       (!auction.isFinished &&
-        auctions?.every((primaryAuction) => primaryAuction.id !== auction.id))
+        cycle.cycleNumber === auction.currentCycle &&
+        cycle.endTimestamp + 12_000 < Date.now())
     )
       return "active"
     if (auction.currentCycle < auction.numberOfCycles || cycle.bids?.length === 0)
       return "intermediate"
     return "inactive"
-  }, [auction, cycle, auctions])
+  }, [auction, cycle])
 
   const canClaim = useMemo(
     () =>
