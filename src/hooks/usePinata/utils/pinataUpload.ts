@@ -1,14 +1,14 @@
 import Bottleneck from "bottleneck"
 
-type PinataPinFileResponse = {
+export type PinataPinFileResponse = {
   IpfsHash: string
   PinSize: number
   Timestamp: string
   isDuplicate?: boolean
 }
 
-type PinToIPFSProps = {
-  jwt?: string
+export type PinToIPFSProps = {
+  jwt: string
   data: (File | string)[]
   fileNames?: string[]
   pinataOptions?: {
@@ -40,13 +40,6 @@ const pinFileToIPFS = ({
   pinataLimiter.schedule(
     () =>
       new Promise<PinataPinFileResponse>(async (resolve, reject) => {
-        const apiKey =
-          jwt?.length > 0
-            ? { jwt, key: undefined }
-            : await fetch("/api/pinata-key").then((response) =>
-                response.json().then((body) => ({ jwt: body.jwt, key: body.key }))
-              )
-
         const formData = new FormData()
 
         if (data.length <= 0)
@@ -76,27 +69,24 @@ const pinFileToIPFS = ({
 
         const xhr = new XMLHttpRequest()
         xhr.open("POST", "https://api.pinata.cloud/pinning/pinFileToIPFS")
-        xhr.setRequestHeader("Authorization", `Bearer ${apiKey.jwt}`)
+        xhr.setRequestHeader("Authorization", `Bearer ${jwt}`)
 
         xhr.upload.onprogress = (event) =>
           onProgress?.((event.loaded / event.total) * 0.9)
-        xhr.onload = async () => {
-          if (!jwt)
-            await fetch("/api/pinata-key", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ key: apiKey.key }),
-            }).catch(() => console.error("Failed to revoke API key after request"))
 
+        xhr.onload = async () => {
           if (xhr.status >= 200 && xhr.status < 300) {
             onProgress?.(1)
             resolve(JSON.parse(xhr.response))
           } else {
             onProgress?.(0)
-            if (xhr.status === 401) reject("Invalid authorization")
+            if ([401, 403].includes(xhr.status)) reject("Invalid authorization")
             else reject("Upload request failed")
           }
         }
+
+        xhr.timeout = 5000
+
         xhr.onerror = () => reject("Upload request failed")
 
         xhr.onabort = () => reject("Upload request aborted")

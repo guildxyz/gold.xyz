@@ -7,19 +7,21 @@ export default async function claimRewards(
   auctionId: string,
   cycleNumber: number,
   tokenType: string,
-  existingTokenMint?: string,
+  existingTokenMint?: string
 ): Promise<Transaction> {
-  const { claimRewardsWasm } = await import("gold-glue")
+  const { claimRewardsWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
 
   try {
-    const instruction = parseInstruction(await claimRewardsWasm({
-      payerPubkey,
-      topBidderPubkey,
-      auctionId,
-      cycleNumber,
-      tokenType,
-      existingTokenMint,
-    }))
+    const instruction = parseInstruction(
+      await claimRewardsWasm({
+        payerPubkey,
+        topBidderPubkey,
+        auctionId,
+        cycleNumber,
+        tokenType,
+        existingTokenMint,
+      })
+    )
     return new Transaction().add(instruction)
   } catch (e) {
     console.log("wasm error:", e)
