@@ -242,51 +242,25 @@ const WrappedPage = ({ fallback }) => (
 )
 
 const getStaticProps: GetStaticProps = async ({ params }) => {
-  console.log(params)
   const auction = await getAuction(params.auction as string)
-  console.log(auction)
   const gatewayUri =
     auction.asset.type === "Nft"
       ? auction.asset.uri.replace?.("ipfs://", "https://ipfs.io/ipfs/") ?? ""
       : ""
-  /* const cycles = await Promise.all(
-    [...new Array(auction.currentCycle - 1)].map((_, cycleNumber) =>
-      Promise.all([
-        unstable_serialize([
-          "cycle",
-          auction.rootStatePubkey.toString(),
-          cycleNumber + 1,
-        ]),
-        handleGetCycle("cycle", auction.rootStatePubkey.toString(), cycleNumber + 1),
-      ])
-    )
-  ).then(Object.fromEntries) */
-  /*const nftData =
-    auction.asset.type === "Nft"
-      ? auction.asset.isRepeating
-        ? await Promise.all([
-            `${gatewayUri}/0.json`,
-            fetcher(`${gatewayUri}/0.json`),
-          ]).then(Object.fromEntries)
-        : await Promise.all(
-            [...new Array(auction.currentCycle - 1)].map((_, cycleNumber) =>
-              Promise.all([
-                `${gatewayUri}/${cycleNumber}.json`,
-                fetcher(`${gatewayUri}/${cycleNumber}.json`),
-              ])
-            )
-          ).then(Object.fromEntries)
-      : {}*/
 
   const nftData =
     auction.asset.type === "Nft"
       ? await fetcher(
-          `${gatewayUri}/${
-            auction.asset.isRepeating
-              ? "0"
-              : params.cycleNumber ?? auction.currentCycle
-          }.json`
-        )
+          `${gatewayUri}${
+            auction.asset.uri.endsWith(".json")
+              ? ""
+              : `/${
+                  auction.asset.isRepeating
+                    ? "0"
+                    : params.cycleNumber ?? auction.currentCycle
+                }.json`
+          }`
+        ).catch(() => null)
       : null
 
   return {
@@ -294,13 +268,17 @@ const getStaticProps: GetStaticProps = async ({ params }) => {
       fallback: {
         [unstable_serialize(["auction", params.auction as string])]: auction,
         // ...cycles,
-        ...(auction.asset.type === "Nft"
+        ...(auction.asset.type === "Nft" && nftData
           ? {
-              [`${gatewayUri}/${
-                auction.asset.isRepeating
-                  ? "0"
-                  : params.cycleNumber ?? auction.currentCycle
-              }.json`]: nftData,
+              [`${gatewayUri}${
+                auction.asset.uri.endsWith(".json")
+                  ? ""
+                  : `/${
+                      auction.asset.isRepeating
+                        ? "0"
+                        : params.cycleNumber ?? auction.currentCycle
+                    }.json`
+              }`]: nftData,
             }
           : {}),
       },
