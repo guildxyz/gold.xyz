@@ -1,4 +1,5 @@
 import { Transaction } from "@solana/web3.js"
+import importGlue from "contract-logic/importGlue"
 import parseInstruction from "./parseInstruction"
 
 export default async function claimRewards(
@@ -9,7 +10,7 @@ export default async function claimRewards(
   tokenType: string,
   existingTokenMint?: string
 ): Promise<Transaction> {
-  const { claimRewardsWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
+  const { claimRewardsWasm } = await importGlue()
 
   try {
     const instruction = parseInstruction(

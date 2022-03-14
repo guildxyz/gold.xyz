@@ -1,7 +1,7 @@
 import { getAuctions } from "contract-logic/queries/getAuctions"
 import useSWR from "swr"
 
-const useAuctions = (secondaryPool?: boolean) => {
+const useAuctions = (secondaryPool = false) => {
   const handleGetAuctions = () => getAuctions(secondaryPool)
 
   const { data, isValidating, error } = useSWR(

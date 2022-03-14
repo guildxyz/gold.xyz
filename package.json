@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:mainnet": "export NEXT_PUBLIC_GOLD_GLUE=gold-glue && npx next build",
     "build": "next build",
+    "build:devnet": "export NEXT_PUBLIC_GOLD_GLUE=gold-glue-dev && npx next build",
     "start": "next start",
     "contract-logic": "npm run start --workspace=src/contract-logic",
     "type-check": "tsc --pretty --noEmit",

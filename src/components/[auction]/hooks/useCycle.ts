@@ -42,4 +42,5 @@ const useCycle = (forceCurrentCycle?: boolean) => {
   }
 }
 
+export { handleGetCycle }
 export default useCycle

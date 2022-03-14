@@ -148,6 +148,7 @@ const getStaticProps: GetStaticProps = async () => {
     props: {
       fallback: { auctions: active, auctions_inactive: inactive },
     },
+    revalidate: 30_000,
   }
 }
 

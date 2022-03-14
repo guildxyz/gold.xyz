@@ -1,4 +1,5 @@
 import { Transaction } from "@solana/web3.js"
+import importGlue from "contract-logic/importGlue"
 import parseInstruction from "./parseInstruction"
 
 export default async function deleteAuction(
@@ -7,7 +8,7 @@ export default async function deleteAuction(
   cycleNumber: number,
   topBidderPubkey?: string
 ) {
-  const { deleteAuctionWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
+  const { deleteAuctionWasm } = await importGlue()
 
   try {
     const instructions = await deleteAuctionWasm({
