@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react"
 import SocialLinkTag from "components/common/SocialLinkTag"
 import { useController, useForm, useWatch } from "react-hook-form"
+import parseSocialLink from "utils/parseSocialLink"
 
 type Props = {
   shouldRenderLabel: boolean
@@ -81,6 +82,15 @@ const SocialLinks = ({ shouldRenderLabel = false }: Props) => {
               {...socialLinkForm.register("socialLinkInput", {
                 validate: (v) => {
                   if (socials.includes(v.trim()))
+                    return "This social link is already added"
+                  const parsedValue = parseSocialLink(v)
+                  if (
+                    !!parsedValue.id &&
+                    socials.some(
+                      (socialLink) =>
+                        parseSocialLink(socialLink).id === parsedValue.id
+                    )
+                  )
                     return "This social link is already added"
                   return true
                 },
