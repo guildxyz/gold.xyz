@@ -6,6 +6,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Tooltip,
   Wrap,
 } from "@chakra-ui/react"
 import SocialLinkTag from "components/common/SocialLinkTag"
@@ -18,7 +19,7 @@ type Props = {
 
 const SocialLinks = ({ shouldRenderLabel = false }: Props) => {
   const {
-    field: { onBlur, onChange, value, ref },
+    field: { onChange },
   } = useController({ name: "socials" })
   const socials = useWatch({ name: "socials" })
 
@@ -67,7 +68,8 @@ const SocialLinks = ({ shouldRenderLabel = false }: Props) => {
               />
             ))}
             {socialLinkInputValue.length > 0 &&
-              !socialLinkForm.formState.errors.socialLinkInput && (
+              !socialLinkForm.formState.errors.socialLinkInput &&
+              socials.length < 5 && (
                 <SocialLinkTag
                   link={socialLinkInputValue.trim()}
                   opacity={0.2}
@@ -103,16 +105,26 @@ const SocialLinks = ({ shouldRenderLabel = false }: Props) => {
               placeholder="https://twitter.com/goldxyz_"
             />
             <InputRightElement mr={2}>
-              <Button
-                size="sm"
-                type="submit"
-                onClick={socialLinkForm.handleSubmit(() => {
-                  onChange([...socials, socialLinkInputValue.trim()])
-                  socialLinkForm.setValue("socialLinkInput", "")
-                })}
+              <Tooltip
+                placement="right"
+                label="Maximum 5 social links are allowed"
+                isDisabled={socials.length < 5}
+                shouldWrapChildren
               >
-                Add
-              </Button>
+                <Button
+                  isDisabled={socials.length >= 5}
+                  size="sm"
+                  type="submit"
+                  onClick={socialLinkForm.handleSubmit(() => {
+                    if (socialLinkInputValue.trim().length > 0) {
+                      onChange([...socials, socialLinkInputValue.trim()])
+                      socialLinkForm.setValue("socialLinkInput", "")
+                    }
+                  })}
+                >
+                  Add
+                </Button>
+              </Tooltip>
             </InputRightElement>
           </InputGroup>
           <FormErrorMessage>
