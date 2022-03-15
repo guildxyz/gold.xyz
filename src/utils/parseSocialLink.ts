@@ -11,15 +11,16 @@ const socials = [
 
 const parseSocialLink = (link: string) => {
   const trimmed = link.trim()
-  for (const { regEx, type, matchIndex, idPrefix } of socials) {
-    if (regEx.test(trimmed)) {
-      return {
-        type,
-        id: `${idPrefix}${trimmed.match(regEx)[matchIndex]}`,
-        link: trimmed,
-        Logo: TwitterLogo,
-        colorScheme: "twitter",
-      }
+  const matchedSocial = socials.find(({ regEx }) => regEx.test(trimmed))
+
+  if (matchedSocial) {
+    const { type, idPrefix, regEx, matchIndex, Logo, colorScheme } = matchedSocial
+    return {
+      type: type,
+      id: `${idPrefix}${trimmed.match(regEx)[matchIndex]}`,
+      link: trimmed,
+      Logo,
+      colorScheme,
     }
   }
 
