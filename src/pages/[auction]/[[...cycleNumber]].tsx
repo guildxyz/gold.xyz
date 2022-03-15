@@ -19,12 +19,14 @@ import {
   Text,
   useBreakpointValue,
   VStack,
+  Wrap,
 } from "@chakra-ui/react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Card from "components/common/Card"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
 import Section from "components/common/Section"
+import SocialLinkTag from "components/common/SocialLinkTag"
 import BidHistory from "components/[auction]/BidHistory"
 import ClaimRewardButton from "components/[auction]/ClaimRewardButton"
 import Countdown from "components/[auction]/Countdown"
@@ -116,6 +118,12 @@ const Page = (): JSX.Element => {
         </HStack>
       }
     >
+      <Wrap mb={4}>
+        {auction?.socials?.length > 0 &&
+          auction.socials.map((socialLink) => (
+            <SocialLinkTag key={socialLink} link={socialLink} size="md" />
+          ))}
+      </Wrap>
       <Card mb={12}>
         <SimpleGrid templateColumns={{ base: "1fr", lg: "5fr 4fr" }} minH="510px">
           <Center bg="gray.900" pos={"relative"} minH="300px">

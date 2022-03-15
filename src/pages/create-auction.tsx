@@ -11,6 +11,7 @@ import NameAndIcon from "components/create-auction/NameAndIcon"
 import NFTData from "components/create-auction/NFTData"
 import NumberOfCycles from "components/create-auction/NumberOfCycles"
 import RoundSelector from "components/create-auction/RoundSelector"
+import SocialLinks from "components/create-auction/SocialLinks"
 import SubmitButton from "components/create-auction/SubmitButton"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useState } from "react"
@@ -60,6 +61,10 @@ const CreateGuildPage = (): JSX.Element => {
 
               <Section title="Description">
                 <Description />
+              </Section>
+
+              <Section title="Social links">
+                <SocialLinks />
               </Section>
 
               <Divider />
