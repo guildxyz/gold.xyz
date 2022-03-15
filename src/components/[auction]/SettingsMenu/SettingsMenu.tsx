@@ -7,9 +7,15 @@ import {
   MenuList,
   useDisclosure,
 } from "@chakra-ui/react"
-import { CurrencyDollarSimple, Gear, TrashSimple } from "phosphor-react"
+import {
+  CurrencyDollarSimple,
+  Gear,
+  PencilSimpleLine,
+  TrashSimple,
+} from "phosphor-react"
 import ClaimDialog from "./components/ClaimDialog"
 import DeleteDialog from "./components/DeleteDialog"
+import EditDrawer from "./components/EditDrawer"
 
 const SettingsMenu = () => {
   const {
@@ -22,6 +28,11 @@ const SettingsMenu = () => {
     onOpen: onOpenDelete,
     onClose: onCloseDelete,
   } = useDisclosure()
+  const {
+    isOpen: isOpenEdit,
+    onOpen: onOpenEdit,
+    onClose: onCloseEdit,
+  } = useDisclosure()
 
   return (
     <>
@@ -33,6 +44,14 @@ const SettingsMenu = () => {
           icon={<Icon as={Gear} />}
         />
         <MenuList border="none" shadow="md">
+          <MenuItem
+            py="2"
+            icon={<PencilSimpleLine />}
+            onClick={onOpenEdit}
+            color="indigo.300"
+          >
+            Edit Auction
+          </MenuItem>
           <MenuItem
             py="2"
             icon={<CurrencyDollarSimple />}
@@ -53,6 +72,7 @@ const SettingsMenu = () => {
       </Menu>
       <ClaimDialog isOpen={isOpenClaim} onClose={onCloseClaim} />
       <DeleteDialog isOpen={isOpenDelete} onClose={onCloseDelete} />
+      <EditDrawer isOpen={isOpenEdit} onClose={onCloseEdit} />
     </>
   )
 }
