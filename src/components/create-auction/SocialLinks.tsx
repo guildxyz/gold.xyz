@@ -13,7 +13,7 @@ import { useController, useForm, useWatch } from "react-hook-form"
 import parseSocialLink from "utils/parseSocialLink"
 
 type Props = {
-  shouldRenderLabel: boolean
+  shouldRenderLabel?: boolean
 }
 
 const SocialLinks = ({ shouldRenderLabel = false }: Props) => {
