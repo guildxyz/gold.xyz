@@ -10,7 +10,7 @@ type FormData = {
   socials: string[]
 }
 
-const useEditAuction = () => {
+const useEditAuction = (onClose: () => void) => {
   const { connection } = useConnection()
   const { publicKey, sendTransaction } = useWallet()
   const { auction, mutate: mutateAuction } = useAuction()
@@ -40,6 +40,7 @@ const useEditAuction = () => {
         status: "success",
       })
       mutateAuction()
+      onClose()
     },
     onError: (e) =>
       toast({

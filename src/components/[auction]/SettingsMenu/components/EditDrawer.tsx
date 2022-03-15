@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   chakra,
   Drawer,
@@ -13,6 +14,7 @@ import {
 } from "@chakra-ui/react"
 import DrawerHeader from "components/common/DrawerHeader"
 import EncorePeriod from "components/create-auction/EncorePeriod"
+import SocialLinks from "components/create-auction/SocialLinks"
 import useAuction from "components/[auction]/hooks/useAuction"
 import { useRef } from "react"
 import { FormProvider, useForm } from "react-hook-form"
@@ -38,7 +40,7 @@ const EditModal = ({ isOpen, onClose }: Props) => {
     },
   })
 
-  const { isLoading, onSubmit } = useEditAuction()
+  const { isLoading, onSubmit } = useEditAuction(onClose)
 
   return (
     <Drawer
@@ -69,6 +71,10 @@ const EditModal = ({ isOpen, onClose }: Props) => {
                   showLabel
                   cyclePeriodInSeconds={auction?.cyclePeriod}
                 />
+
+                <Box w="full">
+                  <SocialLinks shouldRenderLabel />
+                </Box>
               </VStack>
             </FormProvider>
           </DrawerBody>

@@ -2,15 +2,20 @@ import {
   Button,
   FormControl,
   FormErrorMessage,
-  HStack,
+  FormLabel,
   Input,
   InputGroup,
   InputRightElement,
+  Wrap,
 } from "@chakra-ui/react"
 import SocialLinkTag from "components/common/SocialLinkTag"
 import { useController, useForm, useWatch } from "react-hook-form"
 
-const SocialLinks = () => {
+type Props = {
+  shouldRenderLabel: boolean
+}
+
+const SocialLinks = ({ shouldRenderLabel = false }: Props) => {
   const {
     field: { onBlur, onChange, value, ref },
   } = useController({ name: "socials" })
@@ -28,19 +33,6 @@ const SocialLinks = () => {
 
   return (
     <>
-      <HStack>
-        {socials.map((link: string) => (
-          <SocialLinkTag
-            link={link}
-            key={link}
-            onClose={() =>
-              onChange(
-                socials.filter((socialLink) => socialLink.trim() !== link.trim())
-              )
-            }
-          />
-        ))}
-      </HStack>
       {/*<Textarea
         onBlur={onBlur}
         value={value?.join("\n") || ""}
@@ -51,12 +43,39 @@ const SocialLinks = () => {
         placeholder="Optional"
       />*/}
       <form
-        onSubmit={socialLinkForm.handleSubmit(() => {
-          onChange([...socials, socialLinkInputValue.trim()])
-          socialLinkForm.setValue("socialLinkInput", "")
-        })}
+        onSubmit={(event) => {
+          event.preventDefault()
+          socialLinkForm.handleSubmit(() => {
+            onChange([...socials, socialLinkInputValue.trim()])
+            socialLinkForm.setValue("socialLinkInput", "")
+          })(event)
+        }}
       >
         <FormControl isInvalid={!!socialLinkForm.formState.errors.socialLinkInput}>
+          {shouldRenderLabel && <FormLabel>Social Links</FormLabel>}
+          <Wrap mb={4}>
+            {socials.map((link: string) => (
+              <SocialLinkTag
+                link={link}
+                key={link}
+                onClose={() =>
+                  onChange(
+                    socials.filter((socialLink) => socialLink.trim() !== link.trim())
+                  )
+                }
+              />
+            ))}
+            {socialLinkInputValue.length > 0 &&
+              !socialLinkForm.formState.errors.socialLinkInput && (
+                <SocialLinkTag
+                  link={socialLinkInputValue.trim()}
+                  opacity={0.2}
+                  // eslint-disable-next-line @typescript-eslint/no-empty-function
+                  onClose={() => {}}
+                />
+              )}
+          </Wrap>
+
           <InputGroup size="lg" maxW="lg">
             <Input
               {...socialLinkForm.register("socialLinkInput", {
@@ -69,7 +88,14 @@ const SocialLinks = () => {
               placeholder="https://twitter.com/goldxyz_"
             />
             <InputRightElement mr={2}>
-              <Button size="sm" type="submit">
+              <Button
+                size="sm"
+                type="submit"
+                onClick={socialLinkForm.handleSubmit(() => {
+                  onChange([...socials, socialLinkInputValue.trim()])
+                  socialLinkForm.setValue("socialLinkInput", "")
+                })}
+              >
                 Add
               </Button>
             </InputRightElement>

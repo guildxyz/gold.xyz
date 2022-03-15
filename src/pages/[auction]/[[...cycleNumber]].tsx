@@ -121,7 +121,7 @@ const Page = (): JSX.Element => {
       <Wrap mb={4}>
         {auction?.socials?.length > 0 &&
           auction.socials.map((socialLink) => (
-            <SocialLinkTag key={socialLink} link={socialLink} size="md" />
+            <SocialLinkTag key={socialLink} link={socialLink} />
           ))}
       </Wrap>
       <Card mb={12}>
