@@ -81,6 +81,7 @@ const SocialLinks = ({ shouldRenderLabel = false }: Props) => {
             <Input
               {...socialLinkForm.register("socialLinkInput", {
                 validate: async (v) => {
+                  if (socials.length <= 0) return true
                   if (socials.includes(v.trim()))
                     return "This social link is already added"
                   const parsedValue = await parseSocialLink(v)
