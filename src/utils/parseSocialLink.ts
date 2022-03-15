@@ -1,4 +1,5 @@
-import { GithubLogo, MediumLogo, TwitterLogo } from "phosphor-react"
+import { DiscordLogo, GithubLogo, MediumLogo, TwitterLogo } from "phosphor-react"
+import fetcher from "./fetcher"
 
 const socials = [
   {
@@ -8,6 +9,18 @@ const socials = [
     idPrefix: "@",
     Logo: TwitterLogo,
     colorScheme: "twitter",
+  },
+  {
+    regEx: /^(https:\/\/)?(www\.)?discord\.(gg|com\/invite){1}\/(.*?)\/?$/i,
+    type: "DISCORD",
+    matchIndex: 4,
+    idPrefix: "",
+    Logo: DiscordLogo,
+    colorScheme: "DISCORD",
+    fetchId: (inviteCode: string) =>
+      fetcher(`https://discord.com/api/v10/invites/${inviteCode}`).then(
+        ({ guild }) => guild?.name ?? inviteCode
+      ),
   },
   {
     regEx: /^(https:\/\/)?(www\.)?github\.com\/(.*?)\/?$/i,
@@ -27,14 +40,20 @@ const socials = [
   },
 ]
 
-const parseSocialLink = (link: string) => {
+const parseSocialLink = async (link: string) => {
   const trimmed = link.trim()
   const matchedSocial = socials.find(({ regEx }) => regEx.test(trimmed))
 
   if (matchedSocial) {
-    const { type, idPrefix, regEx, matchIndex, Logo, colorScheme } = matchedSocial
+    const { type, idPrefix, regEx, matchIndex, Logo, colorScheme, fetchId } =
+      matchedSocial
+    if (fetchId) {
+      const idFromRegex = trimmed.match(regEx)[matchIndex]
+      const id = await fetchId(idFromRegex)
+      return { type, id, link: trimmed, Logo, colorScheme }
+    }
     return {
-      type: type,
+      type,
       id: `${idPrefix}${trimmed.match(regEx)[matchIndex]}`,
       link: trimmed,
       Logo,

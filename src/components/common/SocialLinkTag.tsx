@@ -1,6 +1,7 @@
 import { Tag, TagCloseButton, TagLabel, TagProps } from "@chakra-ui/react"
 import Link from "components/common/Link"
-import { ReactElement, useMemo } from "react"
+import { ReactElement } from "react"
+import useSWRImmutable from "swr/immutable"
 import parseSocialLink from "utils/parseSocialLink"
 
 type Props = {
@@ -12,12 +13,12 @@ type Props = {
 } & TagProps
 
 const SocialLinkTag = ({ link, onClose, ...rest }: Props) => {
-  const {
-    link: parsedLink,
-    Logo,
-    colorScheme,
-    id,
-  } = useMemo(() => parseSocialLink(link), [link])
+  const { data } = useSWRImmutable(
+    ["socialLink", link],
+    (_: string, socialLink: string) => parseSocialLink(socialLink)
+  )
+
+  const { link: parsedLink, Logo, colorScheme, id } = data ?? { id: "Loading..." }
 
   if (link.trim().length <= 0) return null
 
@@ -30,7 +31,7 @@ const SocialLinkTag = ({ link, onClose, ...rest }: Props) => {
     >
       {Logo && <Logo />}
       <TagLabel ml={Logo ? 2 : 0}>
-        <Link href={parsedLink} target="_blank">
+        <Link href={parsedLink ?? ""} target="_blank">
           {id ?? parsedLink}
         </Link>
       </TagLabel>

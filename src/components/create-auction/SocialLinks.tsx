@@ -80,18 +80,22 @@ const SocialLinks = ({ shouldRenderLabel = false }: Props) => {
           <InputGroup size="lg" maxW="lg">
             <Input
               {...socialLinkForm.register("socialLinkInput", {
-                validate: (v) => {
+                validate: async (v) => {
                   if (socials.includes(v.trim()))
                     return "This social link is already added"
-                  const parsedValue = parseSocialLink(v)
-                  if (
-                    !!parsedValue.id &&
-                    socials.some(
-                      (socialLink) =>
-                        parseSocialLink(socialLink).id === parsedValue.id
+                  const parsedValue = await parseSocialLink(v)
+                  if (!!parsedValue.id) {
+                    const found = await Promise.any(
+                      socials.map((socialLink) =>
+                        parseSocialLink(socialLink).then(
+                          ({ id }) => id === parsedValue.id
+                        )
+                      )
                     )
-                  )
-                    return "This social link is already added"
+                    if (found) {
+                      return "This social link is already added"
+                    }
+                  }
                   return true
                 },
               })}
