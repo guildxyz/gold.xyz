@@ -1,4 +1,5 @@
 import { Transaction } from "@solana/web3.js"
+import importGlue from "contract-logic/importGlue"
 import parseInstruction from "./parseInstruction"
 
 export type ModifyData = {
@@ -12,7 +13,7 @@ export default async function modifyAuction(
   auctionId: string,
   modifyData: ModifyData
 ): Promise<Transaction> {
-  const { modifyAuctionWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
+  const { modifyAuctionWasm } = await importGlue()
 
   try {
     const instruction = parseInstruction(

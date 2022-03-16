@@ -1,4 +1,5 @@
 import { Transaction } from "@solana/web3.js"
+import importGlue from "contract-logic/importGlue"
 import parseInstruction from "./parseInstruction"
 
 export default async function placeBid(
@@ -8,7 +9,7 @@ export default async function placeBid(
   amount: number,
   topBidderPubkey?: string
 ) {
-  const { placeBidWasm } = await import(`${process.env.NEXT_PUBLIC_GOLD_GLUE}`)
+  const { placeBidWasm } = await importGlue()
 
   try {
     const instruction = parseInstruction(

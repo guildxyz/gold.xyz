@@ -8,7 +8,11 @@ import ExplorerCardMotionWrapper from "components/index/ExplorerCardMotionWrappe
 import useAuctions from "components/index/hooks/useAuctions"
 import useUsersAuctions from "components/index/hooks/useUsersAuctions"
 import SearchBar from "components/index/SearchBar"
+import { getAuctions } from "contract-logic/queries/getAuctions"
+import { AuctionBase } from "contract-logic/queries/types"
+import { GetStaticProps } from "next"
 import { useMemo, useState } from "react"
+import { SWRConfig } from "swr"
 
 const filterByName = (name: string, searchInput: string) =>
   name.toLowerCase().includes(searchInput.toLowerCase())
@@ -121,4 +125,32 @@ const Page = (): JSX.Element => {
   )
 }
 
-export default Page
+type Props = {
+  fallback: {
+    auctions: AuctionBase[]
+    auctions_inactive: AuctionBase[]
+  }
+}
+
+const WrappedPage = ({ fallback }: Props) => (
+  <SWRConfig value={{ fallback }}>
+    <Page />
+  </SWRConfig>
+)
+
+const getStaticProps: GetStaticProps = async () => {
+  const [active, inactive] = await Promise.all([
+    getAuctions(false),
+    getAuctions(true),
+  ])
+
+  return {
+    props: {
+      fallback: { auctions: active, auctions_inactive: inactive },
+    },
+    revalidate: 30_000,
+  }
+}
+
+export { getStaticProps }
+export default WrappedPage
