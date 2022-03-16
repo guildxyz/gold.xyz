@@ -16,7 +16,12 @@ const useNftData = (asset: NFTData) => {
   const gatewayUri = asset?.uri?.replace?.("ipfs://", "https://ipfs.io/ipfs/")
 
   const uri = useMemo(
-    () => `${gatewayUri}/${asset?.isRepeating ? "0" : cycleNumber}.json`,
+    () =>
+      `${gatewayUri}${
+        asset.uri.endsWith(".json")
+          ? ""
+          : `/${asset.isRepeating ? "0" : cycleNumber}.json`
+      }`,
     [asset, gatewayUri, cycleNumber]
   )
 

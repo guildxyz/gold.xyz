@@ -37,13 +37,16 @@ import PlaceBid from "components/[auction]/PlaceBid"
 import ProgressBar from "components/[auction]/ProgressBar"
 import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
-import { getAuction, getAuctions } from "contract-logic/queries/getAuctions"
+import {
+  getAuction,
+  getAuctionCycle,
+  getAuctions,
+} from "contract-logic/queries/getAuctions"
 import { GetStaticPaths, GetStaticProps } from "next"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { SWRConfig, unstable_serialize } from "swr"
-import fetcher from "utils/fetcher"
 import shortenHex from "utils/shortenHex"
 
 const Page = (): JSX.Element => {
@@ -235,50 +238,97 @@ const Page = (): JSX.Element => {
   )
 }
 
-const WrappedPage = ({ fallback }) => (
-  <SWRConfig value={{ fallback }}>
-    <Page />
-  </SWRConfig>
-)
+const WrappedPage = ({ fallback }) => {
+  useEffect(() => console.log(fallback), [fallback])
+
+  return (
+    <SWRConfig value={{ fallback }}>
+      <Page />
+    </SWRConfig>
+  )
+}
 
 const getStaticProps: GetStaticProps = async ({ params }) => {
+  /* if (params.cycleNumber) return { props: { fallback: {} } }
+
+  const auctionIds = await getAuctions(false).then((auctions) =>
+    auctions.map((auction) => auction.id)
+  )
+
+  if (!auctionIds.includes(params.auction as string))
+    return { props: { fallback: {} } } */
+
   const auction = await getAuction(params.auction as string)
   const gatewayUri =
     auction.asset.type === "Nft"
       ? auction.asset.uri.replace?.("ipfs://", "https://ipfs.io/ipfs/") ?? ""
       : ""
 
-  const nftData =
+  const uriPath =
     auction.asset.type === "Nft"
-      ? await fetcher(
-          `${gatewayUri}${
-            auction.asset.uri.endsWith(".json")
-              ? ""
-              : `/${
-                  auction.asset.isRepeating
-                    ? "0"
-                    : params.cycleNumber ?? auction.currentCycle
-                }.json`
-          }`
-        ).catch(() => null)
+      ? `${gatewayUri}${
+          auction.asset.uri.endsWith(".json")
+            ? ""
+            : `/${
+                auction.asset.isRepeating
+                  ? "0"
+                  : params.cycleNumber ?? auction.currentCycle
+              }.json`
+        }`
       : null
+
+  const nftData = uriPath
+    ? await fetch(uriPath)
+        .then((response) => response.json().catch(() => null))
+        .catch(() => null)
+    : null
+
+  const image =
+    nftData && nftData?.image?.length > 0
+      ? await fetch(
+          `${nftData?.image?.replace?.("ipfs://", "https://ipfs.io/ipfs/")}`
+        )
+          .then((response) =>
+            response
+              .arrayBuffer()
+              .then(
+                (buffer) =>
+                  `data:${response.headers.get("content-type")};base64,${btoa(
+                    String.fromCharCode(...new Uint8Array(buffer))
+                  )}`
+              )
+          )
+          .catch(() => null)
+      : null
+
+  console.log({ image })
+
+  const cycle = await getAuctionCycle(
+    auction.rootStatePubkey.toString(),
+    auction.currentCycle
+  )
+    .then((data) => ({
+      ...data,
+      endTimestamp: data.endTimestamp * 1000,
+    }))
+    .catch(() => null)
 
   return {
     props: {
       fallback: {
         [unstable_serialize(["auction", params.auction as string])]: auction,
-        // ...cycles,
-        ...(auction.asset.type === "Nft" && nftData
+        ...(uriPath && nftData
           ? {
-              [`${gatewayUri}${
-                auction.asset.uri.endsWith(".json")
-                  ? ""
-                  : `/${
-                      auction.asset.isRepeating
-                        ? "0"
-                        : params.cycleNumber ?? auction.currentCycle
-                    }.json`
-              }`]: nftData,
+              [uriPath]: image ? { ...nftData, image } : nftData,
+            }
+          : {}),
+        ...(cycle
+          ? {
+              [unstable_serialize([
+                "cycle",
+                auction.rootStatePubkey.toString(),
+                auction.currentCycle,
+              ])]: cycle,
             }
           : {}),
       },
@@ -288,16 +338,24 @@ const getStaticProps: GetStaticProps = async ({ params }) => {
 }
 
 const getStaticPaths: GetStaticPaths = async () => {
-  const active = await getAuctions(false)
+  const auctionIds = await Promise.all([getAuctions(false), getAuctions(true)]).then(
+    ([activeAuctions, inactiveAuctions]) =>
+      [activeAuctions, inactiveAuctions].flatMap((auctions) =>
+        auctions.map((auction) => auction.id)
+      )
+  )
+  /* const auctionIds = await getAuctions(false).then((auctions) =>
+    auctions.map((auction) => auction.id)
+  ) */
 
   return {
-    paths: active.map((auction) => ({
+    paths: auctionIds.map((auction) => ({
       params: {
-        auction: auction.id,
+        auction,
         cycleNumber: undefined, // Only prerendering the current cycle
       },
     })),
-    fallback: "blocking",
+    fallback: true,
   }
 }
 
