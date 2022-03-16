@@ -288,31 +288,13 @@ const getStaticProps: GetStaticProps = async ({ params }) => {
 }
 
 const getStaticPaths: GetStaticPaths = async () => {
-  const [active, inactive] = await Promise.all([
-    getAuctions(false).then((auctionBaseArray) =>
-      Promise.all(auctionBaseArray.map((auctionBase) => getAuction(auctionBase.id)))
-    ),
-    getAuctions(true).then((auctionBaseArray) =>
-      Promise.all(auctionBaseArray.map((auctionBase) => getAuction(auctionBase.id)))
-    ),
-  ])
+  const active = await getAuctions(false)
 
-  /* return {
-    paths: [...active, ...inactive].flatMap((auction) =>
-      [...new Array(auction.currentCycle)].map((_, cycleNumber) => ({
-        params: {
-          auction: auction.id,
-          cycleNumber: [cycleNumber.toString()],
-        },
-      }))
-    ),
-    fallback: "blocking",
-  } */
   return {
-    paths: [...active, ...inactive].map((auction) => ({
+    paths: active.map((auction) => ({
       params: {
         auction: auction.id,
-        cycleNumber: undefined,
+        cycleNumber: undefined, // Only prerendering the current cycle
       },
     })),
     fallback: "blocking",
