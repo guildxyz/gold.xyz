@@ -5,9 +5,6 @@ const withTM = require("next-transpile-modules")([
   "@solana/wallet-adapter-phantom",
 ])
 
-const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin")
-// const SSRPlugin =
-//   require("next/dist/build/webpack/plugins/nextjs-ssr-import").default
 const { dirname, relative, resolve, join } = require("path")
 
 /** @type {import("next").NextConfig} */
@@ -24,25 +21,6 @@ module.exports = withTM({
       test: /\.wasm$/,
       type: "webassembly/sync",
     })
-
-    //  if (!process.env.IS_VERCEL) {
-    //    config.plugins.push(
-    //      new WasmPackPlugin({
-    //        crateDirectory: resolve("./rust/client"),
-    //        args: "--log-level warn",
-    //        extraArgs: `--features ${process.env.NEXT_PUBLIC_NETWORK}`,
-    //        outDir: "../../src/contract-logic/wasm-factory",
-    //        outName: "instructions",
-    //      })
-    //    )
-    //  }
-
-    //  // From https://github.com/vercel/next.js/issues/22581#issuecomment-864476385
-    //  const ssrPlugin = config.plugins.find((plugin) => plugin instanceof SSRPlugin)
-
-    //  if (ssrPlugin) {
-    //    patchSsrPlugin(ssrPlugin)
-    //  }
 
     return config
   },
