@@ -16,7 +16,7 @@ import { Error } from "components/common/Error"
 import Link from "components/common/Link"
 import Modal from "components/common/Modal"
 import { ArrowSquareOut } from "phosphor-react"
-import React, { Dispatch, SetStateAction, useEffect } from "react"
+import React, { useEffect } from "react"
 import ConnectorButton from "./components/ConnectorButton"
 import processWalletError from "./utils/processWalletError"
 
@@ -25,8 +25,6 @@ type Props = {
   onClose: () => void
   error: WalletError
   removeError: () => void
-  activeWallet: Wallet
-  setActiveWallet: Dispatch<SetStateAction<Wallet>>
 }
 
 const WalletModal = ({
@@ -34,15 +32,20 @@ const WalletModal = ({
   onClose,
   error,
   removeError,
-  activeWallet,
-  setActiveWallet,
 }: Props): JSX.Element => {
-  const { wallets, select, connected, connecting } = useWallet()
+  const {
+    wallets,
+    select,
+    connected,
+    connecting,
+    wallet: selectedWallet,
+    connect,
+  } = useWallet()
 
   const handleConnect = (wallet: Wallet) => {
     removeError()
     select(wallet.name)
-    setActiveWallet(wallet)
+    connect().catch(() => null) // Error gets set by the provider, so just ignoring the rejection here
   }
 
   useEffect(() => {
@@ -65,8 +68,8 @@ const WalletModal = ({
                   wallet={wallet}
                   onClick={() => handleConnect(wallet)}
                   disabled={connecting}
-                  isActive={wallet === activeWallet}
-                  isLoading={connecting && activeWallet === wallet}
+                  isActive={connected && wallet === selectedWallet}
+                  isLoading={connecting && selectedWallet === wallet}
                 />
               ))}
             </Stack>

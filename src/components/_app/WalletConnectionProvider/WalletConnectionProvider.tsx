@@ -1,10 +1,6 @@
 import { WalletAdapterNetwork, WalletError } from "@solana/wallet-adapter-base"
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react"
-import {
-  getLedgerWallet,
-  getPhantomWallet,
-  Wallet,
-} from "@solana/wallet-adapter-wallets"
+import { getLedgerWallet, getPhantomWallet } from "@solana/wallet-adapter-wallets"
 import { clusterApiUrl } from "@solana/web3.js"
 import { FC, useMemo, useState } from "react"
 import WalletModalProvider from "../WalletModalProvider"
@@ -19,20 +15,16 @@ const WalletConnectionProvider: FC = ({ children }) => {
   const wallets = useMemo(() => [getPhantomWallet(), getLedgerWallet()], [])
 
   const [error, setError] = useState<WalletError>()
-  const [activeWallet, setActiveWallet] = useState<Wallet>()
 
   const onError = (_error: WalletError) => {
     setError(_error)
-    setActiveWallet(null)
   }
   const removeError = () => setError(null)
 
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} onError={onError} autoConnect>
-        <WalletModalProvider
-          {...{ error, removeError, activeWallet, setActiveWallet }}
-        >
+        <WalletModalProvider {...{ error, removeError }}>
           {children}
         </WalletModalProvider>
       </WalletProvider>
