@@ -19,7 +19,7 @@ const ClaimDialog = ({ isOpen, onClose }) => {
   const { auction, mutate } = useAuction()
   const { connection } = useConnection()
   const { sendTransaction, publicKey } = useWallet()
-  const toast = useToast({ status: "error" })
+  const toast = useToast()
   const alertCancelRef = useRef()
 
   const handleClaimFunds = async () => {
@@ -50,7 +50,7 @@ const ClaimDialog = ({ isOpen, onClose }) => {
       mutate()
       onClose()
     },
-    onError: (e) => toast(processContractError(e)),
+    onError: (e) => toast({ status: "error", ...processContractError(e) }),
   })
 
   return (

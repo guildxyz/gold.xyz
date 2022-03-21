@@ -29,7 +29,7 @@ export type FormData = {
 
 const useStartAuction = () => {
   const [data, setData] = useState<AuctionConfig>()
-  const toast = useToast({ status: "error" })
+  const toast = useToast()
   const { connection } = useConnection()
   const { mutate } = useSWRConfig()
   const router = useRouter()
@@ -62,7 +62,7 @@ const useStartAuction = () => {
         mutate("auctions")
         router.push(`/${data.id}`)
       },
-      onError: (e) => toast(processContractError(e)),
+      onError: (e) => toast({ status: "error", ...processContractError(e) }),
     }
   )
 

@@ -12,7 +12,7 @@ type Data = {
 }
 
 const usePlaceBid = (setValue) => {
-  const toast = useToast({ status: "error" })
+  const toast = useToast()
   const { connection } = useConnection()
   const { sendTransaction, publicKey } = useWallet()
   const { auction, mutate: mutateAuction } = useAuction()
@@ -38,7 +38,7 @@ const usePlaceBid = (setValue) => {
   }
 
   return useSubmit<Data, any>(handlePlaceBid, {
-    onError: (e) => toast(processContractError(e)),
+    onError: (e) => toast({ status: "error", ...processContractError(e) }),
     onSuccess: () => {
       toast({
         title: "Bid placed successfully",

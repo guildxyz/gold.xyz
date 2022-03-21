@@ -25,7 +25,7 @@ export default function DeleteDialog({ isOpen, onClose }) {
   const { auction } = useAuction()
   const { connection } = useConnection()
   const { sendTransaction } = useWallet()
-  const toast = useToast({ status: "error" })
+  const toast = useToast()
   const router = useRouter()
   const alertCancelRef = useRef()
   const { canDelete } = useCanDelete()
@@ -58,7 +58,7 @@ export default function DeleteDialog({ isOpen, onClose }) {
       )
       router.push("/")
     },
-    onError: (e) => toast(processContractError(e)),
+    onError: (e) => toast({ status: "error", ...processContractError(e) }),
   })
 
   return (
