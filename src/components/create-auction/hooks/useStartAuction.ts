@@ -7,6 +7,7 @@ import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useSWRConfig } from "swr"
+import processContractError from "utils/processContractErrorr"
 
 const HOUR_IN_SECONDS = 3600
 
@@ -61,12 +62,7 @@ const useStartAuction = () => {
         mutate("auctions")
         router.push(`/${data.id}`)
       },
-      onError: (e) =>
-        toast({
-          title: "Error creating auction",
-          description: e.toString(),
-          status: "error",
-        }),
+      onError: (e) => toast({ status: "error", ...processContractError(e) }),
     }
   )
 

@@ -4,6 +4,7 @@ import useCycle from "components/[auction]/hooks/useCycle"
 import placeBid from "contract-logic/transactions/placeBid"
 import useSubmit from "hooks/useSubmit"
 import useToast from "hooks/useToast"
+import processContractError from "utils/processContractErrorr"
 
 type Data = {
   // string as it comes from the form
@@ -37,11 +38,7 @@ const usePlaceBid = (setValue) => {
   }
 
   return useSubmit<Data, any>(handlePlaceBid, {
-    onError: () =>
-      toast({
-        title: "Error placing bid",
-        status: "error",
-      }),
+    onError: (e) => toast({ status: "error", ...processContractError(e) }),
     onSuccess: () => {
       toast({
         title: "Bid placed successfully",

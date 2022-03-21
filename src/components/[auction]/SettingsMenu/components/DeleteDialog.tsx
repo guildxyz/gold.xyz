@@ -17,6 +17,7 @@ import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useRef } from "react"
 import { useSWRConfig } from "swr"
+import processContractError from "utils/processContractErrorr"
 import useCanDelete from "../hooks/useCanDelete"
 
 export default function DeleteDialog({ isOpen, onClose }) {
@@ -57,12 +58,7 @@ export default function DeleteDialog({ isOpen, onClose }) {
       )
       router.push("/")
     },
-    onError: (e) =>
-      toast({
-        title: "Error deleting auction",
-        description: e.toString(),
-        status: "error",
-      }),
+    onError: (e) => toast({ status: "error", ...processContractError(e) }),
   })
 
   return (
