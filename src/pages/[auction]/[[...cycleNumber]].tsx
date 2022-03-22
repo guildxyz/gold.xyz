@@ -39,8 +39,22 @@ import SettingsMenu from "components/[auction]/SettingsMenu"
 import { useCoinfetti } from "components/_app/Coinfetti"
 import { useRouter } from "next/router"
 import { CaretLeft, CaretRight } from "phosphor-react"
-import { useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { TimerResult, useTimer } from "react-timer-hook"
 import shortenHex from "utils/shortenHex"
+
+const displayTime = (timer: TimerResult) => {
+  const displayDays = !!timer.days
+  const displayHours = displayDays || !!timer.hours
+  const displayMinutes = displayHours || !!timer.minutes
+
+  if (displayDays)
+    return `${timer.days} days ${timer.hours} hours ${timer.minutes} minutes ${timer.seconds} seconds`
+  if (displayHours)
+    return `${timer.hours} hours ${timer.minutes} minutes ${timer.seconds} seconds`
+  if (displayMinutes) return `${timer.minutes} minutes ${timer.seconds} seconds`
+  return `${timer.seconds} seconds`
+}
 
 const Page = (): JSX.Element => {
   const { auction, error: auctionError } = useAuction()
@@ -50,6 +64,13 @@ const Page = (): JSX.Element => {
   const router = useRouter()
   const showCoinfetti = useCoinfetti()
   const statSize = useBreakpointValue({ base: "md", xl: "lg" })
+  const [hasStarted, setHasStarted] = useState<boolean>(true)
+
+  useEffect(() => {
+    setHasStarted(
+      !auction || !auction.startTime || auction.startTime * 1000 < Date.now()
+    )
+  }, [auction])
 
   const cycleState = useMemo(() => {
     if (!auction || !cycle) return undefined
@@ -70,6 +91,46 @@ const Page = (): JSX.Element => {
       return "intermediate"
     return "inactive"
   }, [auction, cycle])
+
+  const celebrate = useCallback(async () => {
+    if (cycleState === "inactive") return
+    await mutateCycle()
+    if (
+      publicKey !== undefined &&
+      cycle?.bids?.[0]?.bidderPubkey?.toString() === publicKey?.toString()
+    )
+      showCoinfetti()
+  }, [cycle?.bids, cycleState, mutateCycle, publicKey, showCoinfetti])
+
+  // Using usetimer here just to convert seconds to day, hour, minute, second
+  const encoreTime = useTimer({
+    expiryTimestamp: new Date(Date.now() + (auction?.encorePeriod ?? 0) * 1000),
+    autoStart: false,
+  })
+  useEffect(
+    () =>
+      encoreTime.restart(
+        new Date(Date.now() + (auction?.encorePeriod ?? 0) * 1000),
+        false
+      ),
+    [auction]
+  )
+
+  const countdownProps = useMemo(
+    () =>
+      hasStarted
+        ? {
+            key: "has-started",
+            expiryTimestamp: cycle?.endTimestamp,
+            onExpire: celebrate,
+          }
+        : {
+            key: "has-not-started",
+            expiryTimestamp: auction.startTime * 1000,
+            onExpire: () => setHasStarted(true),
+          },
+    [auction?.startTime, celebrate, cycle?.endTimestamp, hasStarted]
+  )
 
   const canClaim = useMemo(
     () =>
@@ -93,13 +154,6 @@ const Page = (): JSX.Element => {
         </Alert>
       </Layout>
     )
-
-  const celebrate = async () => {
-    if (cycleState === "inactive") return
-    await mutateCycle()
-    if (cycle?.bids?.[0]?.bidderPubkey?.toString() !== publicKey?.toString()) return
-    showCoinfetti()
-  }
 
   return (
     <Layout
@@ -187,12 +241,15 @@ const Page = (): JSX.Element => {
               <Stat size={statSize}>
                 {cycleState === "active" ? (
                   <>
-                    <StatLabel>Ends in</StatLabel>
-                    <Skeleton isLoaded={!!cycle?.endTimestamp}>
-                      <Countdown
-                        expiryTimestamp={cycle?.endTimestamp}
-                        onExpire={celebrate}
-                      />
+                    <StatLabel>{hasStarted ? "Ends in" : "Starts in"}</StatLabel>
+                    <Skeleton
+                      isLoaded={
+                        hasStarted ? !!cycle?.endTimestamp : !!auction?.startTime
+                      }
+                    >
+                      {!!countdownProps.expiryTimestamp && (
+                        <Countdown {...countdownProps} />
+                      )}
                     </Skeleton>
                   </>
                 ) : (
@@ -208,16 +265,31 @@ const Page = (): JSX.Element => {
               </Stat>
             </HStack>
             {cycleState !== undefined &&
-              (cycleState === "active" ? (
+              (!hasStarted ? (
+                <Alert status="info" alignItems="center">
+                  <AlertIcon mb="3px" />
+                  This Auction hasn't started yet
+                </Alert>
+              ) : cycleState === "active" ? (
                 <PlaceBid />
               ) : cycleState === "intermediate" ? (
-                <CycleEndAlert />
+                <>{!!cycle.endTimestamp && <CycleEndAlert />}</>
               ) : (
                 <Box>
                   <Tag size="lg">Auction ended</Tag>
                 </Box>
               ))}
-            <BidHistory cycleState={cycleState} />
+            {cycle &&
+              auction &&
+              cycleState === "active" &&
+              cycle.endTimestamp - Date.now() <= auction.encorePeriod * 1000 && (
+                <Alert status="info" alignItems="center">
+                  <AlertIcon mb="3px" />
+                  If you bid now the bidding period will be extended to{" "}
+                  {displayTime(encoreTime)}
+                </Alert>
+              )}
+            {hasStarted && <BidHistory cycleState={cycleState} />}
           </VStack>
         </SimpleGrid>
       </Card>

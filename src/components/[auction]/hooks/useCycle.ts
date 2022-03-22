@@ -28,7 +28,7 @@ const useCycle = (forceCurrentCycle?: boolean) => {
     shouldFetch ? ["cycle", auction.rootStatePubkey.toString(), cycleNumber] : null,
     handleGetCycle,
     {
-      onSuccess: (cycle) => console.log("cycle", cycle),
+      onSuccess: (cycle) => console.log("cycle", { cycleNumber, ...cycle }),
       refreshInterval: 5000,
     }
   )

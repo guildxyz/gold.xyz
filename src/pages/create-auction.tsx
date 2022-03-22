@@ -1,4 +1,12 @@
-import { Divider, Flex, Stack, VStack } from "@chakra-ui/react"
+import {
+  Divider,
+  Flex,
+  Grid,
+  Stack,
+  Tooltip,
+  useBreakpointValue,
+  VStack,
+} from "@chakra-ui/react"
 import { DevTool } from "@hookform/devtools"
 import { useWallet } from "@solana/wallet-adapter-react"
 import Layout from "components/common/Layout"
@@ -6,14 +14,18 @@ import Section from "components/common/Section"
 import WalletNotConnectedAlert from "components/common/WalletNotConnectedAlert"
 import AssetSelector from "components/create-auction/AssetSelector"
 import Description from "components/create-auction/Description"
+import EncorePeriod from "components/create-auction/EncorePeriod"
 import GoalAmount from "components/create-auction/GoalAmount"
+import MinimumBidAmount from "components/create-auction/MinimumBidAmount"
 import NameAndIcon from "components/create-auction/NameAndIcon"
 import NFTData from "components/create-auction/NFTData"
 import NumberOfCycles from "components/create-auction/NumberOfCycles"
 import RoundSelector from "components/create-auction/RoundSelector"
+import StartTime from "components/create-auction/StartTime"
 import SubmitButton from "components/create-auction/SubmitButton"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
-import { useState } from "react"
+import { Warning } from "phosphor-react"
+import { useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const CreateGuildPage = (): JSX.Element => {
@@ -28,7 +40,10 @@ const CreateGuildPage = (): JSX.Element => {
         symbol: "",
       },
       nfts: [],
+      minimumBidAmount: "",
       numberOfCycles: 0,
+      encorePeriod: "",
+      startTime: "",
       socials: [],
     },
   })
@@ -38,6 +53,12 @@ const CreateGuildPage = (): JSX.Element => {
   )
 
   const [uploadPromise, setUploadPromise] = useState<Promise<void | void[]>>(null)
+
+  const optionalFieldsGridCols = useBreakpointValue({ base: 1, md: 2, lg: 3 })
+
+  const { current: isFirefox } = useRef<boolean>(
+    /firefox|fxios/i.test(navigator.userAgent)
+  )
 
   return (
     <FormProvider {...methods}>
@@ -90,6 +111,38 @@ const CreateGuildPage = (): JSX.Element => {
               <Section title="Number of rounds">
                 <NumberOfCycles />
               </Section>
+
+              <Divider />
+
+              <Grid
+                templateColumns={`repeat(${optionalFieldsGridCols}, 1fr)`}
+                gap={5}
+                w="full"
+              >
+                <Section title="Minimum bid amount">
+                  <MinimumBidAmount />
+                </Section>
+
+                <Section title="Encore period">
+                  <EncorePeriod />
+                </Section>
+
+                <Section
+                  title="Start Time"
+                  titleRightElement={
+                    isFirefox && (
+                      <Tooltip
+                        label="This kind of input field is very unintuitive in Firefox. You can only select the date in the picker tool, the time has to be typed in manually. In the last field it expects 'AM' or 'PM'."
+                        shouldWrapChildren
+                      >
+                        <Warning />
+                      </Tooltip>
+                    )
+                  }
+                >
+                  <StartTime />
+                </Section>
+              </Grid>
             </VStack>
 
             <Flex justifyContent="right" mt="14">

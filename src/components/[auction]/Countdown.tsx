@@ -1,5 +1,6 @@
 import { StatGroup, useBreakpointValue } from "@chakra-ui/react"
 import { Stat, StatHelpText, StatNumber } from "@chakra-ui/stat"
+import { useEffect } from "react"
 import { useTimer } from "react-timer-hook"
 
 type Props = {
@@ -8,11 +9,15 @@ type Props = {
 }
 
 const Countdown = ({ expiryTimestamp, onExpire }: Props): JSX.Element => {
-  const { seconds, minutes, hours, days } = useTimer({
+  const { seconds, minutes, hours, days, restart } = useTimer({
     expiryTimestamp: new Date(expiryTimestamp),
     onExpire,
   })
   const statSize = useBreakpointValue({ base: "sm", md: "md", xl: "lg" })
+
+  useEffect(() => {
+    restart(new Date(expiryTimestamp))
+  }, [expiryTimestamp]) // Including restart would cause a render loop here
 
   return (
     <StatGroup sx={{ gap: "6px" }}>
