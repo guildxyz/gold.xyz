@@ -73,7 +73,7 @@
   },
   "lint-staged": {
     "src/**/*.@(ts|tsx)": "tsc-files --pretty --noEmit",
-    "src/**/*.@(js|jsx|css|md)": "npm run format"
+    "src/**/*.@(js|jsx|ts|tsx|css|md)": "npm run format"
   },
   "workspaces": [
     "src/contract-logic"
